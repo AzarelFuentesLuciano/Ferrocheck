@@ -1,0 +1,26 @@
+{
+    "name": "azarelfuentesluciano/ferrocheck",
+    "description": "Sistema inteligente de verificación ferroviaria para VASCOR",
+    "type": "project",
+    "license": "proprietary",
+
+    "require": {
+        "php": "^8.0"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+
+    "authors": [
+        {
+            "name": "Azarel Fuentes",
+            "email": "azarelfuentes5@gmail.com"
+        }
+    ],
+
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
