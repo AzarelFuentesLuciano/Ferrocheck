@@ -4,15 +4,24 @@ declare(strict_types=1);
 
 session_start();
 
-/*
-|--------------------------------------------------------------------------
-| FERROCHECK
-|--------------------------------------------------------------------------
-| Punto de entrada del sistema
-|--------------------------------------------------------------------------
-*/
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-echo "<h1>🚂 FerroCheck</h1>";
-echo "<h3>Sistema Inteligente de Verificación Ferroviaria</h3>";
-echo "<hr>";
-echo "Sistema iniciado correctamente.";
+use App\Controllers\DashboardController;
+use App\Controllers\InventarioController;
+use App\Controllers\VerificadorController;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['equipos'])) {
+    $controller = new VerificadorController();
+    $controller->verificar();
+    return;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
+    $controller = new InventarioController();
+    $controller->importar();
+    return;
+}
+
+$controller = new DashboardController();
+$controller->index();
