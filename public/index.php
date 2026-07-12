@@ -8,8 +8,21 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\DashboardController;
+use App\Controllers\DetallePlataformaController;
 use App\Controllers\InventarioController;
 use App\Controllers\VerificadorController;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dashboard_stats'])) {
+    $controller = new DashboardController();
+    $controller->resumenTarjetas();
+    return;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigo_equipo'])) {
+    $controller = new DetallePlataformaController();
+    $controller->detalle();
+    return;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['equipos'])) {
     $controller = new VerificadorController();

@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const tickerDate = document.querySelector('.ticker-date');
     const tickerTime = document.querySelector('.ticker-time');
     const tickerLastUpdate = document.querySelector('.ticker-last-update');
+    const ultimaImportacionLabel = document.querySelector('.status-banner__footer span');
+    const ultimaImportacionValor = document.querySelector('.status-banner__footer strong');
     const infoItems = Array.from(document.querySelectorAll('.info-panel__item'));
     let lastTimeText = '';
     let currentInfoIndex = 0;
@@ -65,7 +67,211 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'state-no-encontrado';
     };
 
-    const actualizarTarjetasVerificador = (data) => {
+    const etiquetaFecha = (valor) => {
+        if (!valor) {
+            return '—';
+        }
+
+        const fecha = new Date(valor);
+        if (Number.isNaN(fecha.getTime())) {
+            return String(valor);
+        }
+
+        return fecha.toLocaleString('es-MX');
+    };
+
+    const obtenerValor = (detalle, campo) => {
+        const valor = detalle?.[campo];
+        if (valor === null || valor === undefined || String(valor).trim() === '') {
+            return '—';
+        }
+        return String(valor);
+    };
+
+    const seccionesDetalle = [
+        {
+            titulo: 'Informacion General',
+            campos: [
+                { label: 'Equipo', key: 'equipo' },
+                { label: 'Producto', key: 'producto' },
+                { label: 'Tipo de embarque', key: 'tipo_de_embarque' },
+                { label: 'Tipo de equipo', key: 'tipo_especifico_de_equipo' },
+                { label: 'Tipo generico', key: 'tipo_generico_de_equipo' }
+            ]
+        },
+        {
+            titulo: 'Ubicacion',
+            campos: [
+                { label: 'Estacion', key: 'estacion' },
+                { label: 'Estacion origen', key: 'estacion_de_origen' },
+                { label: 'Estacion destino', key: 'estacion_de_destino' },
+                { label: 'Estacion ultimo movimiento', key: 'estacion_de_ultimo_movimiento' },
+                { label: 'Ferrocarril', key: 'ferrocarril' },
+                { label: 'Ferrocarril actual', key: 'ferrocarril_actual' },
+                { label: 'Ruta', key: 'ruta' }
+            ]
+        },
+        {
+            titulo: 'Movimiento',
+            campos: [
+                { label: 'Ultimo movimiento', key: 'ultimo_movimiento' },
+                { label: 'Fecha ultimo movimiento', key: 'fecha_de_ultimo_movimiento' },
+                { label: 'ETA', key: 'eta' },
+                { label: 'ETI', key: 'eti' },
+                { label: 'Disponible', key: 'disponible' },
+                { label: 'Estatus del viaje', key: 'estatus_del_viaje' },
+                { label: 'Estatus de situado', key: 'estatus_de_situado' }
+            ]
+        },
+        {
+            titulo: 'Carga',
+            campos: [
+                { label: 'Remitente', key: 'remitente' },
+                { label: 'Consignatario', key: 'consignatario' },
+                { label: 'Peso', key: 'peso_total_del_carro' },
+                { label: 'Toneladas', key: 'ton_neta' },
+                { label: 'Longitud', key: 'longitud_de_carro' },
+                { label: 'Limite de carga', key: 'limite_de_carga' }
+            ]
+        },
+        {
+            titulo: 'Operacion',
+            campos: [
+                { label: 'Numero de guia', key: 'numero_de_guia' },
+                { label: 'Numero BOL', key: 'numero_de_bol' },
+                { label: 'ID Tren', key: 'id_de_tren' },
+                { label: 'Indicador de actividad', key: 'indicador_de_actividad' },
+                { label: 'Dia remitido', key: 'dia_remitido' }
+            ]
+        }
+    ];
+
+    let detalleModal = null;
+
+    const crearDetalleModal = () => {
+        if (detalleModal) {
+            return detalleModal;
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'detallePlataformaModal';
+        modal.style.position = 'fixed';
+        modal.style.inset = '0';
+        modal.style.background = 'rgba(10, 16, 32, 0.62)';
+        modal.style.display = 'none';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.padding = '20px';
+        modal.style.zIndex = '9999';
+
+        modal.innerHTML = `
+            <div style="width:min(1080px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 22px 60px rgba(0,0,0,.28);padding:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;">
+                    <div>
+                        <p style="margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#64748b;">Detalle de Plataforma</p>
+                        <h3 id="detalleModalTitulo" style="margin:4px 0 0;font-size:22px;color:#0f172a;">Equipo</h3>
+                    </div>
+                    <button type="button" id="detalleModalCerrar" style="border:none;background:#e2e8f0;color:#0f172a;border-radius:10px;padding:8px 12px;cursor:pointer;">Cerrar</button>
+                </div>
+                <p id="detalleModalMeta" style="margin:0 0 14px;color:#64748b;font-size:13px;"></p>
+                <div id="detalleModalContenido"></div>
+                <div style="margin-top:22px;padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
+                    <h4 style="margin:0 0 8px;color:#0f172a;">Evidencias</h4>
+                    <p style="margin:0 0 10px;color:#334155;">No existen evidencias registradas</p>
+                    <button type="button" disabled style="border:none;background:#cbd5e1;color:#334155;border-radius:10px;padding:10px 14px;cursor:not-allowed;">Proximamente</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        modal.querySelector('#detalleModalCerrar')?.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        detalleModal = modal;
+        return modal;
+    };
+
+    const renderDetalleSecciones = (detalle) => {
+        const bloques = seccionesDetalle.map((seccion) => {
+            const filas = seccion.campos.map((campo) => {
+                return `
+                    <div style="display:grid;grid-template-columns:220px 1fr;gap:10px;padding:6px 0;border-bottom:1px dashed #e2e8f0;">
+                        <strong style="color:#334155;">${escapeHtml(campo.label)}</strong>
+                        <span style="color:#0f172a;">${escapeHtml(obtenerValor(detalle, campo.key))}</span>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <section style="padding:14px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;">
+                    <h4 style="margin:0 0 10px;color:#0f172a;">${escapeHtml(seccion.titulo)}</h4>
+                    ${filas}
+                </section>
+            `;
+        }).join('');
+
+        return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;">${bloques}</div>`;
+    };
+
+    const abrirDetalleModal = (payload) => {
+        const modal = crearDetalleModal();
+        const titulo = modal.querySelector('#detalleModalTitulo');
+        const meta = modal.querySelector('#detalleModalMeta');
+        const contenido = modal.querySelector('#detalleModalContenido');
+
+        if (!titulo || !meta || !contenido) {
+            return;
+        }
+
+        if (!payload?.success || !payload.data) {
+            titulo.textContent = 'Detalle no disponible';
+            meta.textContent = '';
+            contenido.innerHTML = `<p style="margin:0;padding:14px;border-radius:10px;background:#fff1f2;color:#be123c;">${escapeHtml(payload?.message || 'El equipo solicitado ya no existe en el inventario.')}</p>`;
+            modal.style.display = 'flex';
+            return;
+        }
+
+        const detalle = payload.data;
+        titulo.textContent = `Equipo ${obtenerValor(detalle, 'equipo')}`;
+        meta.textContent = `Ultima actualizacion: ${etiquetaFecha(detalle.fecha_importacion || detalle.fecha_actualizacion || '')}`;
+        contenido.innerHTML = renderDetalleSecciones(detalle);
+        modal.style.display = 'flex';
+    };
+
+    const solicitarDetalleEquipo = async (codigoEquipo) => {
+        const body = new URLSearchParams();
+        body.set('codigo_equipo', codigoEquipo);
+
+        const response = await fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: body.toString()
+        });
+
+        const payload = await response.json();
+        if (!response.ok) {
+            return {
+                success: false,
+                message: payload?.message || 'No se pudo obtener el detalle del equipo.'
+            };
+        }
+
+        return payload;
+    };
+
+    const actualizarTarjetasVerificador = (respuesta) => {
+        const data = respuesta?.data ?? respuesta ?? {};
+
         if (statCardsByTitle['Inventario Ferromex']) {
             statCardsByTitle['Inventario Ferromex'].textContent = String(data.inventario_ferromex ?? 0);
         }
@@ -77,6 +283,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (statCardsByTitle['No encontrados']) {
             statCardsByTitle['No encontrados'].textContent = String(data.no_encontrado ?? 0);
+        }
+
+        if ('ultima_actualizacion' in data && ultimaImportacionLabel && ultimaImportacionValor) {
+            ultimaImportacionLabel.textContent = '📅 Última importación';
+            ultimaImportacionValor.textContent = formatearUltimaImportacion(data.ultima_actualizacion);
+        }
+    };
+
+    const formatearUltimaImportacion = (fechaMysql) => {
+        if (!fechaMysql || String(fechaMysql).trim() === '') {
+            return 'Sin registros';
+        }
+
+        const valor = String(fechaMysql).trim();
+        const fecha = new Date(valor.replace(' ', 'T'));
+
+        if (Number.isNaN(fecha.getTime())) {
+            return 'Sin registros';
+        }
+
+        const formatter = new Intl.DateTimeFormat('es-MX', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        return formatter.format(fecha).replace(',', '');
+    };
+
+    const cargarResumenDashboard = async () => {
+        try {
+            const body = new URLSearchParams();
+            body.set('dashboard_stats', '1');
+
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: body.toString()
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                return;
+            }
+
+            actualizarTarjetasVerificador(result.data || {});
+        } catch (_error) {
+            // Keep UI stable if dashboard refresh fails.
         }
     };
 
@@ -300,6 +560,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSidebarState();
     setInterval(updateClock, 1000);
     panelTimer = window.setInterval(cycleInfoPanel, 2400);
+    cargarResumenDashboard();
+    window.setInterval(cargarResumenDashboard, 30000);
 
     const navItems = Array.from(document.querySelectorAll('.top-nav__item'));
     const sections = Array.from(document.querySelectorAll('main .panel-card, main .result-panel, main .status-banner, main .stats-grid'));
@@ -473,6 +735,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(error);
             } finally {
                 verifyBtn.disabled = false;
+            }
+        });
+    }
+
+    if (resultsTableBody) {
+        resultsTableBody.addEventListener('click', async (event) => {
+            const button = event.target.closest('.action-link');
+            if (!button) {
+                return;
+            }
+
+            const row = button.closest('tr');
+            const codigo = row?.querySelector('td')?.textContent?.trim() || '';
+
+            if (!codigo) {
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                const payload = await solicitarDetalleEquipo(codigo);
+                abrirDetalleModal(payload);
+            } catch (error) {
+                abrirDetalleModal({
+                    success: false,
+                    message: error?.message || 'No se pudo obtener el detalle del equipo.'
+                });
+            } finally {
+                button.disabled = false;
             }
         });
     }

@@ -121,9 +121,44 @@ class InventarioRepository
         return $stmt->fetchAll();
     }
 
+    public function buscarEquipoPorCodigo(string $codigo): ?array
+    {
+        $codigoNormalizado = strtoupper(trim($codigo));
+
+        if ($codigoNormalizado === '') {
+            return null;
+        }
+
+        $sql = 'SELECT * FROM inventario WHERE UPPER(equipo) = ? LIMIT 1';
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute([$codigoNormalizado]);
+        $registro = $stmt->fetch();
+
+        return $registro === false ? null : $registro;
+    }
+
     public function contarInventario(): int
     {
         $stmt = $this->conexion->query('SELECT COUNT(*) FROM inventario');
         return (int) $stmt->fetchColumn();
+    }
+
+    public function obtenerResumenDashboard(): array
+    {
+        $ubicacionExpr = "UPPER(COALESCE(NULLIF(estacion, ''), NULLIF(estacion_de_ultimo_movimiento, ''), NULLIF(estacion_de_destino, ''), NULLIF(estacion_de_origen, ''), ''))";
+
+        $sql = "
+            SELECT
+                COUNT(*) AS inventario_ferromex,
+                SUM(CASE WHEN {$ubicacionExpr} LIKE '%ENCANTADA%' THEN 1 ELSE 0 END) AS en_encantada,
+                SUM(CASE WHEN {$ubicacionExpr} NOT LIKE '%ENCANTADA%' THEN 1 ELSE 0 END) AS otra_ubicacion,
+                MAX(fecha_importacion) AS ultima_actualizacion
+            FROM inventario
+        ";
+
+        $stmt = $this->conexion->query($sql);
+        $resultado = $stmt->fetch();
+
+        return $resultado === false ? [] : $resultado;
     }
 }
