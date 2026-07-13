@@ -175,7 +175,7 @@ require_once __DIR__ . '/../../../config/config.php';
                     <div class="accordion-content">
                         <form action="<?php echo BASE_URL; ?>/index.php" method="post" enctype="multipart/form-data" class="importador-form">
                             <label class="dropzone" for="fileInput" id="dropzone">
-                                <input type="file" id="fileInput" name="archivo" accept=".xlsx,.xls" hidden>
+                                <input type="file" id="fileInput" name="archivo" accept=".csv,.xlsx,.xls" hidden>
                                 <div class="dropzone-content">
                                     <div class="dropzone-icon">📄</div>
                                     <h2>Arrastra y suelta tu archivo aquí</h2>
