@@ -54,6 +54,42 @@ class InventarioRepository
         return $columnas;
     }
 
+    private function obtenerColumnasTablaInventario(): array
+    {
+        $stmt = $this->conexion->query('SHOW COLUMNS FROM inventario');
+        $rows = $stmt->fetchAll();
+        $columnas = [];
+
+        foreach ($rows as $row) {
+            $campo = (string) ($row['Field'] ?? '');
+            if ($campo !== '') {
+                $columnas[] = $campo;
+            }
+        }
+
+        return $columnas;
+    }
+
+    private function obtenerColumnasImportables(): array
+    {
+        $catalogadas = $this->obtenerColumnasInternas();
+        $tabla = $this->obtenerColumnasTablaInventario();
+
+        if (empty($tabla)) {
+            throw new \RuntimeException('No se pudieron detectar columnas en la tabla inventario.');
+        }
+
+        $importables = array_values(array_filter($catalogadas, static function (string $columna) use ($tabla): bool {
+            return in_array($columna, $tabla, true);
+        }));
+
+        if (empty($importables)) {
+            throw new \RuntimeException('El esquema de inventario no contiene columnas compatibles para importar.');
+        }
+
+        return $importables;
+    }
+
     private function normalizarRegistroParaInsercion(array $registro, array $columnas): array
     {
         $valores = [];
@@ -77,7 +113,7 @@ class InventarioRepository
             return 0;
         }
 
-        $columnas = $this->obtenerColumnasInternas();
+        $columnas = $this->obtenerColumnasImportables();
         if (empty($columnas)) {
             throw new \RuntimeException('No existen columnas internas disponibles para la importación.');
         }
@@ -145,11 +181,48 @@ class InventarioRepository
 
     public function obtenerResumenDashboard(): array
     {
-        $ubicacionExpr = "UPPER(COALESCE(NULLIF(estacion, ''), NULLIF(estacion_de_ultimo_movimiento, ''), NULLIF(estacion_de_destino, ''), NULLIF(estacion_de_origen, ''), ''))";
+        $columnasTabla = $this->obtenerColumnasTablaInventario();
+
+        $camposUbicacion = [
+            'estacion',
+            'estacion_de_ultimo_movimiento',
+            'estacion_de_destino',
+            'estacion_de_origen',
+        ];
+
+        $coalesceUbicacion = [];
+        foreach ($camposUbicacion as $campo) {
+            if (in_array($campo, $columnasTabla, true)) {
+                $coalesceUbicacion[] = "NULLIF($campo, '')";
+            }
+        }
+
+        if (empty($coalesceUbicacion)) {
+            $ubicacionExpr = "''";
+        } else {
+            $ubicacionExpr = 'UPPER(COALESCE(' . implode(', ', $coalesceUbicacion) . ", ''))";
+        }
+
+        $campoFerrocarril = in_array('ferrocarril_actual', $columnasTabla, true)
+            ? 'ferrocarril_actual'
+            : (in_array('ferrocarril', $columnasTabla, true) ? 'ferrocarril' : "''");
+
+        $campoEquipo = in_array('equipo', $columnasTabla, true) ? 'equipo' : 'NULL';
+
+        $expresionFerromex = $campoFerrocarril === "''"
+            ? '0'
+            : "SUM(CASE WHEN UPPER(COALESCE($campoFerrocarril, '')) LIKE '%FERROMEX%' THEN 1 ELSE 0 END)";
+
+        $expresionKansas = $campoFerrocarril === "''"
+            ? '0'
+            : "SUM(CASE WHEN UPPER(COALESCE($campoFerrocarril, '')) LIKE '%KANSAS%' THEN 1 ELSE 0 END)";
 
         $sql = "
             SELECT
-                COUNT(*) AS inventario_ferromex,
+                COUNT(*) AS cantidad_registros,
+                COUNT(DISTINCT NULLIF(TRIM(COALESCE($campoEquipo, '')), '')) AS total_plataformas,
+                $expresionFerromex AS total_ferromex,
+                $expresionKansas AS total_kansas,
                 SUM(CASE WHEN {$ubicacionExpr} LIKE '%ENCANTADA%' THEN 1 ELSE 0 END) AS en_encantada,
                 SUM(CASE WHEN {$ubicacionExpr} NOT LIKE '%ENCANTADA%' THEN 1 ELSE 0 END) AS otra_ubicacion,
                 MAX(fecha_importacion) AS ultima_actualizacion
