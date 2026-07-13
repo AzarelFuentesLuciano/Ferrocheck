@@ -1,7 +1,11 @@
 <?php
 
 if (!defined('BASE_URL')) {
-    define('BASE_URL', '/Ferrocheck/public');
+    $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+    $host = explode(':', $host)[0] ?? $host;
+    $isLocal = in_array($host, ['localhost', '127.0.0.1'], true);
+
+    define('BASE_URL', $isLocal ? '/Ferrocheck/public' : '');
 }
 
 if (!defined('DB_HOST')) {
