@@ -83,6 +83,10 @@ require_once __DIR__ . '/../../../config/config.php';
                         <span class="sidebar__icon">📋</span>
                         <span class="sidebar__text">Resultados</span>
                     </a>
+                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=operaciones-patio" class="sidebar__item" data-label="Operaciones de Patio">
+                        <span class="sidebar__icon">⚙</span>
+                        <span class="sidebar__text">Operaciones de Patio</span>
+                    </a>
                 </div>
             </aside>
             <main class="main-content">
