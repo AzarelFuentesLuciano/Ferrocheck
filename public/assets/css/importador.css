@@ -880,6 +880,8 @@ input {
 .results-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 0;
 }
 
 .results-table th {
@@ -893,10 +895,91 @@ input {
     border-bottom: 1px solid var(--border);
 }
 
+.results-table th:nth-child(1),
+.results-table td:nth-child(1) {
+    width: 15%;
+}
+
+.results-table th:nth-child(2),
+.results-table td:nth-child(2) {
+    width: 18%;
+}
+
+.results-table th:nth-child(3),
+.results-table td:nth-child(3) {
+    width: 18%;
+}
+
+.results-table th:nth-child(4),
+.results-table td:nth-child(4) {
+    display: none;
+}
+
+.results-table th:nth-child(5),
+.results-table td:nth-child(5) {
+    width: 18%;
+}
+
+.results-table th:nth-child(6),
+.results-table td:nth-child(6) {
+    width: 16%;
+}
+
+.results-table th:nth-child(7),
+.results-table td:nth-child(7) {
+    width: 15%;
+}
+
 .results-table td {
     padding: 12px 10px;
     border-bottom: 1px solid #eef3f8;
     font-size: 0.95rem;
+}
+
+.results-table tbody tr.state-encantada td:nth-child(3) {
+    background: rgba(16, 185, 129, 0.14);
+    color: #047857;
+    border-color: rgba(16, 185, 129, 0.24);
+}
+
+.results-table tbody tr.state-otra td:nth-child(3),
+.results-table tbody tr.state-evidencia td:nth-child(3) {
+    background: rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
+    border-color: rgba(37, 99, 235, 0.22);
+}
+
+.results-table tbody tr.state-no-encontrado td:nth-child(3) {
+    background: rgba(239, 68, 68, 0.12);
+    color: #b91c1c;
+    border-color: rgba(239, 68, 68, 0.22);
+}
+
+.results-table tbody tr.state-encantada td:nth-child(3),
+.results-table tbody tr.state-otra td:nth-child(3),
+.results-table tbody tr.state-evidencia td:nth-child(3),
+.results-table tbody tr.state-no-encontrado td:nth-child(3) {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 800;
+    white-space: nowrap;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.results-table tbody tr.state-encantada td:nth-child(3)::before,
+.results-table tbody tr.state-otra td:nth-child(3)::before,
+.results-table tbody tr.state-evidencia td:nth-child(3)::before,
+.results-table tbody tr.state-no-encontrado td:nth-child(3)::before {
+    content: '';
+}
+
+.results-table thead th:nth-child(3) {
+    text-align: center;
+}
+
+.results-table tbody td:nth-child(3) {
+    text-align: center;
 }
 
 .results-table tbody tr {
