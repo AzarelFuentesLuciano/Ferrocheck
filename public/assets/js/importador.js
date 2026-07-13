@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${escapeHtml(item.codigo)}</td>
                     <td>${escapeHtml(item.transportista || '—')}</td>
                     <td><span class="ubicacion-pill ${ubicacionClass(item.ubicacion)}">${escapeHtml(item.ubicacion || 'Sin registro')}</span></td>
-                    <td><span class="status-pill ${estadoClass(item.estado)}">${escapeHtml(estadoTexto(item.estado))}</span></td>
+                    <td aria-hidden="true"></td>
                     <td>${escapeHtml(item.ultima_actualizacion || '—')}</td>
                     <td>${escapeHtml(item.evidencia || '—')}</td>
                     <td><button class="action-link" type="button">${escapeHtml(item.accion || 'Ver')}</button></td>
