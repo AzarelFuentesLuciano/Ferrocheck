@@ -386,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${escapeHtml(item.ubicacion || 'Sin registro')}
                         </span>
                     </td>
+                    <td aria-hidden="true"></td>
                     <td>${escapeHtml(item.ultima_actualizacion || '—')}</td>
                     <td>${escapeHtml(item.evidencia || '—')}</td>
                     <td><button class="action-link" type="button">${escapeHtml(item.accion || 'Ver')}</button></td>
