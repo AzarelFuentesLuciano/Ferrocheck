@@ -93,6 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'ubicacion-default';
     };
 
+    const filaUbicacionClass = (ubicacion) => {
+        const claseUbicacion = ubicacionClass(ubicacion);
+
+        if (claseUbicacion === 'ubicacion-encantada') return 'state-encantada';
+        if (claseUbicacion === 'ubicacion-patio') return 'state-patio';
+        if (claseUbicacion === 'ubicacion-via') return 'state-via';
+        if (claseUbicacion === 'ubicacion-taller') return 'state-taller';
+        if (claseUbicacion === 'ubicacion-no-encontrado') return 'state-no-encontrado';
+        return 'state-default';
+    };
+
     const etiquetaFecha = (valor) => {
         if (!valor) {
             return '—';
@@ -378,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rows = resultados.map((item) => {
             return `
-                <tr class="${filaClass(item.estado)}">
+                <tr class="${filaUbicacionClass(item.ubicacion)}">
                     <td>${escapeHtml(item.codigo)}</td>
                     <td>${escapeHtml(item.transportista || '—')}</td>
                     <td>
