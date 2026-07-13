@@ -67,6 +67,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'state-no-encontrado';
     };
 
+    const ubicacionClass = (ubicacion) => {
+        const texto = String(ubicacion ?? '').trim().toUpperCase();
+
+        if (texto === '' || texto.includes('SIN REGISTRO') || texto.includes('NO ENCONTRADO')) {
+            return 'ubicacion-no-encontrado';
+        }
+
+        if (texto.includes('ENCANTA')) {
+            return 'ubicacion-encantada';
+        }
+
+        if (texto.includes('PATIO')) {
+            return 'ubicacion-patio';
+        }
+
+        if (texto.includes('VÍA') || texto.includes('VIA')) {
+            return 'ubicacion-via';
+        }
+
+        if (texto.includes('TALLER')) {
+            return 'ubicacion-taller';
+        }
+
+        return 'ubicacion-default';
+    };
+
     const etiquetaFecha = (valor) => {
         if (!valor) {
             return '—';
@@ -355,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <tr class="${filaClass(item.estado)}">
                     <td>${escapeHtml(item.codigo)}</td>
                     <td>${escapeHtml(item.transportista || '—')}</td>
-                    <td>${escapeHtml(item.ubicacion || 'Sin registro')}</td>
+                    <td><span class="ubicacion-pill ${ubicacionClass(item.ubicacion)}">${escapeHtml(item.ubicacion || 'Sin registro')}</span></td>
                     <td><span class="status-pill ${estadoClass(item.estado)}">${escapeHtml(estadoTexto(item.estado))}</span></td>
                     <td>${escapeHtml(item.ultima_actualizacion || '—')}</td>
                     <td>${escapeHtml(item.evidencia || '—')}</td>
