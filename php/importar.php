@@ -100,21 +100,71 @@ function cargarCatalogoColumnas(): array
 /**
  * Normalizes text for robust header comparison.
  */
+function repararTextoMojibake(string $texto): string
+{
+    $texto = str_replace("\xC2\xA0", ' ', $texto);
+
+    return strtr($texto, [
+        'Ã¡' => 'á',
+        'Ã©' => 'é',
+        'Ã­' => 'í',
+        'Ã³' => 'ó',
+        'Ãº' => 'ú',
+        'Ã¼' => 'ü',
+        'Ã±' => 'ñ',
+        'Ã�' => 'Á',
+        'Ã‰' => 'É',
+        'Ã�' => 'Í',
+        'Ã“' => 'Ó',
+        'Ãš' => 'Ú',
+        'Ãœ' => 'Ü',
+        'Ã‘' => 'Ñ',
+        'Â' => '',
+        'â€™' => "'",
+        'â€œ' => '"',
+        'â€\x9d' => '"',
+        'â€“' => '-',
+    ]);
+}
+
+/**
+ * Converts text to safe ASCII while preserving compatibility with legacy encodings.
+ */
+function transliterarAsciiSeguro(string $texto): string
+{
+    $candidatos = [
+        $texto,
+        @mb_convert_encoding($texto, 'UTF-8', 'ISO-8859-1'),
+        @mb_convert_encoding($texto, 'UTF-8', 'Windows-1252'),
+    ];
+
+    foreach ($candidatos as $candidato) {
+        if (!is_string($candidato) || $candidato === '') {
+            continue;
+        }
+
+        $ascii = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $candidato);
+        if ($ascii !== false && $ascii !== '') {
+            return $ascii;
+        }
+    }
+
+    return $texto;
+}
+
+/**
+ * Normalizes text for robust header comparison.
+ */
 function normalizarTexto(string $texto): string
 {
-    $valor = trim($texto);
+    $valor = trim(repararTextoMojibake($texto));
 
     if ($valor === '') {
         return '';
     }
 
-    $valor = mb_convert_encoding($valor, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
-    $transliterado = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $valor);
-
-    if ($transliterado !== false) {
-        $valor = $transliterado;
-    }
-
+    $valor = preg_replace('/\s+/u', ' ', $valor) ?? $valor;
+    $valor = transliterarAsciiSeguro($valor);
     $valor = strtolower($valor);
 
     return preg_replace('/[^a-z0-9]+/', '', $valor) ?? '';

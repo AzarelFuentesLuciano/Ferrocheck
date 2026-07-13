@@ -10,22 +10,68 @@ class ExcelService
 {
     private const UMBRAL_COINCIDENCIA = 25.0;
 
+    private function repararTextoMojibake(string $texto): string
+    {
+        $texto = str_replace("\xC2\xA0", ' ', $texto);
+
+        return strtr($texto, [
+            'Ã¡' => 'á',
+            'Ã©' => 'é',
+            'Ã­' => 'í',
+            'Ã³' => 'ó',
+            'Ãº' => 'ú',
+            'Ã¼' => 'ü',
+            'Ã±' => 'ñ',
+            'Ã�' => 'Á',
+            'Ã‰' => 'É',
+            'Ã�' => 'Í',
+            'Ã“' => 'Ó',
+            'Ãš' => 'Ú',
+            'Ãœ' => 'Ü',
+            'Ã‘' => 'Ñ',
+            'Â' => '',
+            'â€™' => "'",
+            'â€œ' => '"',
+            'â€\x9d' => '"',
+            'â€“' => '-',
+        ]);
+    }
+
+    private function transliterarAsciiSeguro(string $texto): string
+    {
+        $candidatos = [
+            $texto,
+            @mb_convert_encoding($texto, 'UTF-8', 'ISO-8859-1'),
+            @mb_convert_encoding($texto, 'UTF-8', 'Windows-1252'),
+        ];
+
+        foreach ($candidatos as $candidato) {
+            if (!is_string($candidato) || $candidato === '') {
+                continue;
+            }
+
+            $ascii = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $candidato);
+            if ($ascii !== false && $ascii !== '') {
+                return $ascii;
+            }
+        }
+
+        return $texto;
+    }
+
     private function normalizarEncabezado(string $texto): string
     {
-        $normalizado = trim($texto);
+        $normalizado = trim($this->repararTextoMojibake($texto));
 
         if ($normalizado === '') {
             return '';
         }
 
-        $normalizado = mb_convert_encoding($normalizado, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
-        $normalizado = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $normalizado);
+        $normalizado = preg_replace('/\s+/u', ' ', $normalizado) ?? $normalizado;
+        $normalizado = $this->transliterarAsciiSeguro($normalizado);
+        $normalizado = strtolower((string) $normalizado);
 
-        if ($normalizado === false) {
-            $normalizado = trim($texto);
-        }
-
-        return strtolower((string) $normalizado);
+        return preg_replace('/[^a-z0-9]+/', '', $normalizado) ?? '';
     }
 
     private function obtenerCatalogoColumnas(): array
