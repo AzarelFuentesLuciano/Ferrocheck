@@ -42,7 +42,7 @@ class VerificadorService
         $registrosPorEquipo = [];
 
         foreach ($registros as $registro) {
-            $codigo = strtoupper((string) ($registro['equipo'] ?? ''));
+            $codigo = preg_replace('/\s+/', '', strtoupper((string) ($registro['equipo'] ?? ''))) ?? '';
             if ($codigo !== '' && !isset($registrosPorEquipo[$codigo])) {
                 $registrosPorEquipo[$codigo] = $registro;
             }

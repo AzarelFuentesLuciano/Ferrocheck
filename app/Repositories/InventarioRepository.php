@@ -113,23 +113,31 @@ class InventarioRepository
             return [];
         }
 
-        $placeholders = implode(', ', array_fill(0, count($equipos), '?'));
-        $sql = 'SELECT * FROM inventario WHERE UPPER(equipo) IN (' . $placeholders . ')';
+        $equiposNormalizados = array_values(array_filter(array_map(static function (string $equipo): string {
+            return preg_replace('/\s+/', '', strtoupper(trim($equipo))) ?? '';
+        }, $equipos), static fn (string $equipo): bool => $equipo !== ''));
+
+        if (empty($equiposNormalizados)) {
+            return [];
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($equiposNormalizados), '?'));
+        $sql = 'SELECT * FROM inventario WHERE REPLACE(UPPER(equipo), " ", "") IN (' . $placeholders . ')';
         $stmt = $this->conexion->prepare($sql);
-        $stmt->execute(array_map(static fn (string $equipo): string => strtoupper($equipo), $equipos));
+        $stmt->execute($equiposNormalizados);
 
         return $stmt->fetchAll();
     }
 
     public function buscarEquipoPorCodigo(string $codigo): ?array
     {
-        $codigoNormalizado = strtoupper(trim($codigo));
+        $codigoNormalizado = preg_replace('/\s+/', '', strtoupper(trim($codigo))) ?? '';
 
         if ($codigoNormalizado === '') {
             return null;
         }
 
-        $sql = 'SELECT * FROM inventario WHERE UPPER(equipo) = ? LIMIT 1';
+        $sql = 'SELECT * FROM inventario WHERE REPLACE(UPPER(equipo), " ", "") = ? LIMIT 1';
         $stmt = $this->conexion->prepare($sql);
         $stmt->execute([$codigoNormalizado]);
         $registro = $stmt->fetch();
