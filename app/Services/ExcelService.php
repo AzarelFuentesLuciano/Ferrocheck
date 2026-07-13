@@ -5,10 +5,165 @@ namespace App\Services;
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Csv;
 
 class ExcelService
 {
     private const UMBRAL_COINCIDENCIA = 25.0;
+
+    private function obtenerContextoArchivo(string $rutaArchivo): array
+    {
+        $archivo = $_FILES['archivo'] ?? [];
+        $nombre = (string) ($archivo['name'] ?? basename($rutaArchivo));
+        $mime = (string) ($archivo['type'] ?? '');
+
+        if ($mime === '') {
+            $detectado = @mime_content_type($rutaArchivo);
+            $mime = is_string($detectado) ? $detectado : 'desconocido';
+        }
+
+        return [
+            'archivo' => $nombre,
+            'mime' => $mime,
+            'ruta_temporal' => $rutaArchivo,
+            'extension' => strtolower((string) pathinfo($nombre, PATHINFO_EXTENSION)),
+        ];
+    }
+
+    private function detectarDelimitadorCsv(string $rutaArchivo): string
+    {
+        $sample = (string) @file_get_contents($rutaArchivo, false, null, 0, 4096);
+        if ($sample === '') {
+            return ',';
+        }
+
+        $linea = strtok($sample, "\r\n");
+        $linea = $linea === false ? $sample : $linea;
+
+        $coma = substr_count($linea, ',');
+        $puntoComa = substr_count($linea, ';');
+        $tab = substr_count($linea, "\t");
+
+        if ($puntoComa >= $coma && $puntoComa >= $tab) {
+            return ';';
+        }
+
+        if ($tab > $coma && $tab > $puntoComa) {
+            return "\t";
+        }
+
+        return ',';
+    }
+
+    private function detectarTipoArchivo(string $rutaArchivo, array $contexto): array
+    {
+        $extension = $contexto['extension'];
+        $mime = strtolower((string) ($contexto['mime'] ?? ''));
+
+        if (in_array($extension, ['xlsx', 'xls'], true)) {
+            return [
+                'tipo' => $extension,
+                'lector' => strtoupper($extension),
+                'extension' => $extension,
+            ];
+        }
+
+        if ($extension === 'csv') {
+            return [
+                'tipo' => 'csv',
+                'lector' => 'CSV',
+                'extension' => $extension,
+            ];
+        }
+
+        $sample = (string) @file_get_contents($rutaArchivo, false, null, 0, 4096);
+        $linea = strtok($sample, "\r\n");
+        $linea = $linea === false ? $sample : $linea;
+        $pareceCsv = $linea !== '' && (
+            substr_count($linea, ',') >= 3
+            || substr_count($linea, ';') >= 3
+            || substr_count($linea, "\t") >= 3
+        );
+
+        if (strpos($mime, 'csv') !== false || strpos($mime, 'text/plain') !== false || $pareceCsv) {
+            return [
+                'tipo' => 'csv',
+                'lector' => 'CSV',
+                'extension' => $extension,
+            ];
+        }
+
+        $readerType = IOFactory::identify($rutaArchivo);
+        $tipo = strtolower((string) $readerType);
+        if (!in_array($tipo, ['csv', 'xlsx', 'xls'], true)) {
+            throw new \RuntimeException('Tipo de archivo no soportado para importación de inventario.');
+        }
+
+        return [
+            'tipo' => $tipo,
+            'lector' => strtoupper($tipo),
+            'extension' => $extension,
+        ];
+    }
+
+    private function detectarCodificacionCsv(string $rutaArchivo): array
+    {
+        $contenido = (string) @file_get_contents($rutaArchivo, false, null, 0, 32768);
+        $bom = '';
+        $encodingBom = '';
+
+        if (strncmp($contenido, "\xEF\xBB\xBF", 3) === 0) {
+            $bom = 'UTF-8 BOM';
+            $encodingBom = 'UTF-8';
+            $contenido = substr($contenido, 3);
+        } elseif (strncmp($contenido, "\xFF\xFE", 2) === 0) {
+            $bom = 'UTF-16LE BOM';
+            $encodingBom = 'UTF-16LE';
+        } elseif (strncmp($contenido, "\xFE\xFF", 2) === 0) {
+            $bom = 'UTF-16BE BOM';
+            $encodingBom = 'UTF-16BE';
+        }
+
+        if ($encodingBom !== '') {
+            return [
+                'encoding' => $encodingBom,
+                'bom' => $bom,
+            ];
+        }
+
+        $detectado = mb_detect_encoding($contenido, ['UTF-8', 'Windows-1252', 'ISO-8859-1'], true);
+
+        if (!is_string($detectado) || $detectado === '') {
+            $detectado = 'Windows-1252';
+        }
+
+        return [
+            'encoding' => $detectado,
+            'bom' => $bom,
+        ];
+    }
+
+    private function crearReader(string $rutaArchivo, array $tipoDetectado, array $csvInfo)
+    {
+        if ($tipoDetectado['tipo'] === 'csv') {
+            $reader = IOFactory::createReader('Csv');
+
+            if ($reader instanceof Csv) {
+                $reader->setDelimiter($this->detectarDelimitadorCsv($rutaArchivo));
+                $reader->setEnclosure('"');
+                $reader->setSheetIndex(0);
+                $reader->setReadDataOnly(true);
+                $reader->setInputEncoding((string) ($csvInfo['encoding'] ?? 'UTF-8'));
+                $reader->setFallbackEncoding('Windows-1252');
+            }
+
+            return $reader;
+        }
+
+        $reader = IOFactory::createReaderForFile($rutaArchivo);
+        $reader->setReadDataOnly(true);
+        return $reader;
+    }
 
     private function repararTextoMojibake(string $texto): string
     {
@@ -139,7 +294,7 @@ class ExcelService
         return $columnas;
     }
 
-    private function registrarDiagnosticoDeteccion(array $diagnosticos): void
+    private function registrarDiagnosticoDeteccion(array $diagnostico): void
     {
         $logDir = __DIR__ . '/../../logs';
         $logFile = $logDir . '/excel_diagnostico.log';
@@ -148,10 +303,7 @@ class ExcelService
             mkdir($logDir, 0777, true);
         }
 
-        $entrada = [
-            'timestamp' => date('Y-m-d H:i:s'),
-            'diagnostico' => $diagnosticos,
-        ];
+        $entrada = ['timestamp' => date('Y-m-d H:i:s')] + $diagnostico;
 
         error_log(json_encode($entrada, JSON_UNESCAPED_UNICODE) . PHP_EOL, 3, $logFile);
     }
@@ -223,7 +375,7 @@ class ExcelService
         ];
     }
 
-    private function detectarHojaInventario($spreadsheet): ?array
+    private function detectarHojaInventario($spreadsheet, array $contextoDiagnostico): ?array
     {
         $sheetNames = $spreadsheet->getSheetNames();
         $diagnosticos = [];
@@ -283,7 +435,14 @@ class ExcelService
             }
         }
 
-        $this->registrarDiagnosticoDeteccion($diagnosticos);
+        $this->registrarDiagnosticoDeteccion([
+            'archivo_detectado' => $contextoDiagnostico['archivo'] ?? '',
+            'tipo_detectado' => $contextoDiagnostico['tipo_detectado'] ?? '',
+            'codificacion_detectada' => $contextoDiagnostico['codificacion_detectada'] ?? '',
+            'encabezados_originales' => $mejorCoincidencia['headers_originales'] ?? [],
+            'encabezados_normalizados' => $diagnosticos[count($diagnosticos) - 1]['encabezados_normalizados'] ?? [],
+            'diagnostico' => $diagnosticos,
+        ]);
 
         if ($mejorCoincidencia === null || !$mejorCoincidencia['validacion']['valido']) {
             return null;
@@ -325,10 +484,50 @@ class ExcelService
             throw new \RuntimeException('No se encontró el archivo Excel para cargar el inventario.');
         }
 
-        $spreadsheet = IOFactory::load($rutaArchivo);
-        $deteccion = $this->detectarHojaInventario($spreadsheet);
+        $contexto = $this->obtenerContextoArchivo($rutaArchivo);
+        $tipoDetectado = $this->detectarTipoArchivo($rutaArchivo, $contexto);
+        $csvInfo = ['encoding' => '', 'bom' => ''];
+
+        if ($tipoDetectado['tipo'] === 'csv') {
+            $csvInfo = $this->detectarCodificacionCsv($rutaArchivo);
+        }
+
+        $this->registrarDiagnosticoDeteccion([
+            'archivo_detectado' => $contexto['archivo'],
+            'tipo_detectado' => $tipoDetectado['tipo'],
+            'lector_detectado' => $tipoDetectado['lector'],
+            'mime_detectado' => $contexto['mime'],
+            'codificacion_detectada' => $csvInfo['encoding'],
+            'bom_detectado' => $csvInfo['bom'],
+        ]);
+
+        try {
+            $reader = $this->crearReader($rutaArchivo, $tipoDetectado, $csvInfo);
+            $spreadsheet = $reader->load($rutaArchivo);
+        } catch (\Throwable $e) {
+            $this->registrarDiagnosticoDeteccion([
+                'archivo_detectado' => $contexto['archivo'],
+                'tipo_detectado' => $tipoDetectado['tipo'],
+                'codificacion_detectada' => $csvInfo['encoding'],
+                'motivo_rechazo' => 'Error al abrir archivo: ' . $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
+
+        $deteccion = $this->detectarHojaInventario($spreadsheet, [
+            'archivo' => $contexto['archivo'],
+            'tipo_detectado' => $tipoDetectado['tipo'],
+            'codificacion_detectada' => $csvInfo['encoding'],
+        ]);
 
         if ($deteccion === null) {
+            $this->registrarDiagnosticoDeteccion([
+                'archivo_detectado' => $contexto['archivo'],
+                'tipo_detectado' => $tipoDetectado['tipo'],
+                'codificacion_detectada' => $csvInfo['encoding'],
+                'motivo_rechazo' => 'Archivo no válido: encabezados incompatibles con catálogo Ferromex.',
+            ]);
             throw new \RuntimeException('No se encontró un inventario válido de Ferromex en el archivo Excel.');
         }
 
