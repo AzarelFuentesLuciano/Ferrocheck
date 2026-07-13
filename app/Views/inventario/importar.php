@@ -254,6 +254,7 @@ TTGX852741"></textarea>
                                     <th>Código</th>
                                     <th>Transportista</th>
                                     <th>Ubicación</th>
+                                    <th aria-hidden="true"></th>
                                     <th>Última actualización</th>
                                     <th>Evidencia</th>
                                     <th>Acción</th>
@@ -264,6 +265,7 @@ TTGX852741"></textarea>
                                     <td>TTGX985062</td>
                                     <td>Ferromex</td>
                                     <td>Encantada</td>
+                                    <td aria-hidden="true"></td>
                                     <td>11/07/2026</td>
                                     <td>—</td>
                                     <td><button class="action-link" type="button">👁 Ver</button></td>
@@ -272,6 +274,7 @@ TTGX852741"></textarea>
                                     <td>TTGX852741</td>
                                     <td>Ferromex</td>
                                     <td>Monterrey</td>
+                                    <td aria-hidden="true"></td>
                                     <td>11/07/2026</td>
                                     <td>—</td>
                                     <td><button class="action-link" type="button">👁 Ver</button></td>
@@ -280,6 +283,7 @@ TTGX852741"></textarea>
                                     <td>BNFS301330</td>
                                     <td>Kansas</td>
                                     <td>Encantada</td>
+                                    <td aria-hidden="true"></td>
                                     <td>11/07/2026</td>
                                     <td>📷 Disponible</td>
                                     <td><button class="action-link" type="button">🖼 Ver foto</button></td>
@@ -288,6 +292,7 @@ TTGX852741"></textarea>
                                     <td>TTGX741852</td>
                                     <td>Kansas</td>
                                     <td>Sin registro</td>
+                                    <td aria-hidden="true"></td>
                                     <td>—</td>
                                     <td>❌</td>
                                     <td><button class="action-link" type="button">📷 Capturar</button></td>
