@@ -93,7 +93,7 @@ require_once __DIR__ . '/../../../config/config.php';
                 <section id="estado" class="status-banner panel-card fade-in">
                     <div class="status-banner__head">
                         <div>
-                            <p class="eyebrow">Estado del Sistema</p>
+                            <p class="eyebrow">Resumen del Sistema</p>
                             <h2>Operación continua y supervisión activa</h2>
                         </div>
                         <div class="status-banner__badge">Monitoreo en vivo</div>
@@ -201,7 +201,7 @@ require_once __DIR__ . '/../../../config/config.php';
                                     <span class="value" id="recordCount">0</span>
                                 </div>
                                 <div class="file-info-item">
-                                    <span class="label">Estado del archivo:</span>
+                                    <span class="label">Condición del archivo:</span>
                                     <span class="value" id="fileStatus">-</span>
                                 </div>
                             </div>
@@ -230,7 +230,7 @@ require_once __DIR__ . '/../../../config/config.php';
                         <div>
                             <p class="eyebrow">Verificación</p>
                             <h2>Verificador de Plataformas</h2>
-                            <p>Pegue uno o varios códigos para validar su estado y revisar si cuentan con evidencia.</p>
+                            <p>Pegue uno o varios códigos para validar su ubicación y revisar si cuentan con evidencia.</p>
                         </div>
                     </div>
                     <textarea class="verifier-textarea" placeholder="Ejemplo: TTGX985062
@@ -254,7 +254,6 @@ TTGX852741"></textarea>
                                     <th>Código</th>
                                     <th>Transportista</th>
                                     <th>Ubicación</th>
-                                    <th>Estado</th>
                                     <th>Última actualización</th>
                                     <th>Evidencia</th>
                                     <th>Acción</th>
@@ -265,7 +264,6 @@ TTGX852741"></textarea>
                                     <td>TTGX985062</td>
                                     <td>Ferromex</td>
                                     <td>Encantada</td>
-                                    <td><span class="status-pill status-encantada">EN ENCANTADA</span></td>
                                     <td>11/07/2026</td>
                                     <td>—</td>
                                     <td><button class="action-link" type="button">👁 Ver</button></td>
@@ -274,7 +272,6 @@ TTGX852741"></textarea>
                                     <td>TTGX852741</td>
                                     <td>Ferromex</td>
                                     <td>Monterrey</td>
-                                    <td><span class="status-pill status-otra">OTRA UBICACIÓN</span></td>
                                     <td>11/07/2026</td>
                                     <td>—</td>
                                     <td><button class="action-link" type="button">👁 Ver</button></td>
@@ -283,7 +280,6 @@ TTGX852741"></textarea>
                                     <td>BNFS301330</td>
                                     <td>Kansas</td>
                                     <td>Encantada</td>
-                                    <td><span class="status-pill status-evidencia">EVIDENCIA</span></td>
                                     <td>11/07/2026</td>
                                     <td>📷 Disponible</td>
                                     <td><button class="action-link" type="button">🖼 Ver foto</button></td>
@@ -292,7 +288,6 @@ TTGX852741"></textarea>
                                     <td>TTGX741852</td>
                                     <td>Kansas</td>
                                     <td>Sin registro</td>
-                                    <td><span class="status-pill status-no-encontrado">NO ENCONTRADO</span></td>
                                     <td>—</td>
                                     <td>❌</td>
                                     <td><button class="action-link" type="button">📷 Capturar</button></td>
