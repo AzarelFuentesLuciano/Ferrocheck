@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS inventario;
+
 CREATE TABLE inventario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     equipo VARCHAR(255) NULL,
