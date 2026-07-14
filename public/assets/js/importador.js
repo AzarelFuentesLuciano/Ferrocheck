@@ -521,7 +521,20 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             body: formData
         })
-            .then((response) => response.json())
+            .then(async (response) => {
+                if (!response.ok) {
+                    const responseText = await response.text();
+
+                    try {
+                        const errorPayload = JSON.parse(responseText);
+                        throw new Error(errorPayload.message || errorPayload.mensaje || responseText || `Error HTTP ${response.status}`);
+                    } catch (_error) {
+                        throw new Error(responseText || `Error HTTP ${response.status}`);
+                    }
+                }
+
+                return response.json();
+            })
             .then((result) => {
                 recordCount.textContent = result.registros ?? 0;
                 fileStatus.textContent = result.estado ?? 'No válido';
@@ -533,11 +546,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressFill.style.width = '100%';
                 progressPercent.textContent = '100%';
             })
-            .catch(() => {
+            .catch((error) => {
                 recordCount.textContent = '0';
                 fileStatus.textContent = 'No válido';
                 importBtn.disabled = true;
-                statusMessage.textContent = 'No se pudo analizar el archivo';
+                statusMessage.textContent = error.message;
                 statusMessage.style.color = 'var(--danger)';
                 progressFill.style.width = '0%';
                 progressPercent.textContent = '0%';
