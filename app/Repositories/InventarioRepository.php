@@ -71,6 +71,15 @@ class InventarioRepository
         $this->conexion->exec('DELETE FROM inventario');
     }
 
+    public function existeTablaInventario(): bool
+    {
+        $sql = 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = :tabla LIMIT 1';
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute([':tabla' => 'inventario']);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     public function insertarRegistros(array $registros): int
     {
         if (empty($registros)) {

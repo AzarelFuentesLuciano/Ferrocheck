@@ -27,6 +27,15 @@ class InventarioController
         $inventarioService = new InventarioService();
 
         if ($accion === 'importar') {
+            if (!$inventarioService->baseDatosInventarioInicializada()) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'La base de datos no está inicializada. Ejecute schema_inventario.sql.',
+                ]);
+                return;
+            }
+
             try {
                 $registrosImportados = $inventarioService->importarDesdeArchivo($rutaArchivo);
 

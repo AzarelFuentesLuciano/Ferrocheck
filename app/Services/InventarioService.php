@@ -24,6 +24,11 @@ class InventarioService
         return $this->inventarioRepository;
     }
 
+    public function baseDatosInventarioInicializada(): bool
+    {
+        return $this->obtenerInventarioRepository()->existeTablaInventario();
+    }
+
     public function analizarArchivo(string $rutaArchivo, string $nombreArchivo): array
     {
         if (empty($rutaArchivo)) {
