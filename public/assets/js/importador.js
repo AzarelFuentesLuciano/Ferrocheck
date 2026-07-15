@@ -482,12 +482,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const formattedTime = now.toLocaleTimeString('es-MX');
 
-    if (currentDate) {
-    currentDate.textContent = formattedDate;
-    }
-
-    if (currentTime) {
+        currentDate.textContent = formattedDate;
         currentTime.textContent = formattedTime;
+
+        if (tickerDate) {
+            tickerDate.textContent = `Fecha completa: ${new Date().toLocaleDateString('es-MX', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            })}`;
+        }
+
+        if (tickerTime) {
+            tickerTime.textContent = `Hora completa: ${new Date().toLocaleTimeString('es-MX')}`;
+        }
+
+        if (tickerLastUpdate) {
+            tickerLastUpdate.textContent = `Última actualización: ${new Date().toLocaleString('es-MX', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            })}`;
+        }
 
         if (currentTime.textContent !== lastTimeText) {
             currentTime.animate([
@@ -497,35 +516,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 duration: 280,
                 easing: 'ease-out'
             });
-
             lastTimeText = currentTime.textContent;
         }
-    }
 
-    if (tickerDate) {
-        tickerDate.textContent = `Fecha completa: ${new Date().toLocaleDateString('es-MX', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        })}`;
-    }
+        renderInfoPanel();
+    };
 
-    if (tickerTime) {
-        tickerTime.textContent = `Hora completa: ${new Date().toLocaleTimeString('es-MX')}`;
-    }
-
-    if (tickerLastUpdate) {
-        tickerLastUpdate.textContent = `Última actualización: ${new Date().toLocaleString('es-MX', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        })}`;
-    }
-
-renderInfoPanel();
     const resetProgress = () => {
         progressFill.style.width = '0%';
         progressPercent.textContent = '0%';
