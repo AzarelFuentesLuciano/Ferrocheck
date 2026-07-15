@@ -9,6 +9,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\DashboardController;
 use App\Controllers\DetallePlataformaController;
+use App\Controllers\ExportacionInventarioController;
 use App\Controllers\InventarioController;
 use App\Controllers\OperacionPatioController;
 use App\Controllers\VerificadorController;
@@ -28,6 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dashboard_stats'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigo_equipo'])) {
     $controller = new DetallePlataformaController();
     $controller->detalle();
+    return;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'exportar_xlsx') {
+    $controller = new ExportacionInventarioController();
+    $controller->exportar();
     return;
 }
 

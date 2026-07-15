@@ -54,6 +54,14 @@ class InventarioRepository
         return $columnas;
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function obtenerColumnasInventario(): array
+    {
+        return $this->obtenerColumnasInternas();
+    }
+
     private function normalizarRegistroParaInsercion(array $registro, array $columnas): array
     {
         $valores = [];
@@ -152,6 +160,38 @@ class InventarioRepository
         $registro = $stmt->fetch();
 
         return $registro === false ? null : $registro;
+    }
+
+    /**
+     * @param array<int, string> $equipos
+     * @return array<int, array<string, mixed>>
+     */
+    public function obtenerRegistrosParaExportacion(array $equipos = []): array
+    {
+        $columnas = $this->obtenerColumnasInternas();
+
+        if (empty($columnas)) {
+            return [];
+        }
+
+        $selectColumns = implode(', ', array_map(static fn (string $col): string => '`' . $col . '`', $columnas));
+        $selectColumns .= ', `fecha_importacion`';
+
+        $equiposNormalizados = array_values(array_filter(array_map(static function (string $equipo): string {
+            return preg_replace('/\s+/', '', strtoupper(trim($equipo))) ?? '';
+        }, $equipos), static fn (string $equipo): bool => $equipo !== ''));
+
+        if (!empty($equiposNormalizados)) {
+            $placeholders = implode(', ', array_fill(0, count($equiposNormalizados), '?'));
+            $sql = 'SELECT ' . $selectColumns . ' FROM inventario WHERE REPLACE(UPPER(equipo), " ", "") IN (' . $placeholders . ') ORDER BY equipo ASC';
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->execute($equiposNormalizados);
+            return $stmt->fetchAll();
+        }
+
+        $sql = 'SELECT ' . $selectColumns . ' FROM inventario ORDER BY equipo ASC';
+        $stmt = $this->conexion->query($sql);
+        return $stmt->fetchAll();
     }
 
     public function contarInventario(): int

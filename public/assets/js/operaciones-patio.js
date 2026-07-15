@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.querySelector('.menu-toggle');
     const sidebar = document.querySelector('.sidebar');
     const sidebarBackdrop = document.querySelector('.sidebar-backdrop');
+    const currentDate = document.getElementById('currentDate');
+    const currentTime = document.getElementById('currentTime');
 
     let desktopCollapsed = false;
     let mobileSidebarOpen = false;
@@ -45,6 +47,32 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSidebarState();
     });
 
+    document.querySelectorAll('.sidebar__item, .sidebar-submenu__item').forEach((item) => {
+        item.addEventListener('click', () => {
+            if (window.matchMedia('(max-width: 920px)').matches) {
+                mobileSidebarOpen = false;
+                updateSidebarState();
+            }
+        });
+    });
+
+    const updateClock = () => {
+        const now = new Date();
+        if (currentDate) {
+            currentDate.textContent = now.toLocaleDateString('es-MX', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        if (currentTime) {
+            currentTime.textContent = now.toLocaleTimeString('es-MX');
+        }
+    };
+
     window.addEventListener('resize', updateSidebarState);
+    updateClock();
+    setInterval(updateClock, 1000);
     updateSidebarState();
 });

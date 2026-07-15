@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const tickerLastUpdate = document.querySelector('.ticker-last-update');
     const ultimaImportacionLabel = document.querySelector('.status-banner__footer span');
     const ultimaImportacionValor = document.querySelector('.status-banner__footer strong');
+    const exportExcelBtn = document.getElementById('exportExcelBtn');
     const infoItems = Array.from(document.querySelectorAll('.info-panel__item'));
+    let hayFiltroBusquedaActivo = false;
     let lastTimeText = '';
     let currentInfoIndex = 0;
     let panelTimer = null;
@@ -47,6 +49,38 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
+    };
+
+    const obtenerEquiposFiltradosDesdeTabla = () => {
+        if (!resultsTableBody) {
+            return [];
+        }
+
+        const filas = Array.from(resultsTableBody.querySelectorAll('tr'));
+        const equipos = [];
+
+        for (const fila of filas) {
+            const style = window.getComputedStyle(fila);
+            if (style.display === 'none' || style.visibility === 'hidden') {
+                continue;
+            }
+
+            const primeraCelda = fila.querySelector('td');
+            if (!primeraCelda) {
+                continue;
+            }
+
+            const codigo = (primeraCelda.textContent || '').trim().toUpperCase();
+            if (codigo === '' || codigo === 'NO HAY RESULTADOS PARA MOSTRAR.') {
+                continue;
+            }
+
+            if (!equipos.includes(codigo)) {
+                equipos.push(codigo);
+            }
+        }
+
+        return equipos;
     };
 
     const estadoTexto = (estado) => {
@@ -758,6 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const equipos = verifierTextarea.value || '';
 
             if (!equipos.trim()) {
+                hayFiltroBusquedaActivo = false;
                 renderResultadosVerificador([]);
                 return;
             }
@@ -782,9 +817,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(result.message || 'No se pudo completar la verificación.');
                 }
 
+                hayFiltroBusquedaActivo = true;
                 actualizarTarjetasVerificador(result.data || {});
                 renderResultadosVerificador(result.data?.resultados || []);
             } catch (error) {
+                hayFiltroBusquedaActivo = false;
                 renderResultadosVerificador([]);
                 console.error(error);
             } finally {
@@ -819,6 +856,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             } finally {
                 button.disabled = false;
+            }
+        });
+    }
+
+    if (exportExcelBtn) {
+        exportExcelBtn.addEventListener('click', async () => {
+            const equiposFiltrados = hayFiltroBusquedaActivo
+                ? obtenerEquiposFiltradosDesdeTabla()
+                : [];
+            const formData = new FormData();
+            formData.append('accion', 'exportar_xlsx');
+            formData.append('equipos_filtrados', JSON.stringify(equiposFiltrados));
+
+            exportExcelBtn.disabled = true;
+
+            try {
+                const response = await fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const contentType = response.headers.get('Content-Type') || '';
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    let errorMessage = 'No se pudo generar el archivo Excel.';
+
+                    if (contentType.includes('application/json')) {
+                        try {
+                            const payload = JSON.parse(text);
+                            errorMessage = payload.message || errorMessage;
+                        } catch (_e) {
+                            errorMessage = text || errorMessage;
+                        }
+                    }
+
+                    throw new Error(errorMessage);
+                }
+
+                const blob = await response.blob();
+                const now = new Date();
+                const pad = (num) => String(num).padStart(2, '0');
+                const filename = `FerroCheck_${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}.xlsx`;
+
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert(error.message || 'No se pudo generar el archivo Excel.');
+            } finally {
+                exportExcelBtn.disabled = false;
             }
         });
     }
