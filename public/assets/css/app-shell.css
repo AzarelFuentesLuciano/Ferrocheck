@@ -17,6 +17,7 @@
 .app-shell {
     display: flex;
     flex-direction: column;
+    min-width: 0;
     min-height: 100vh;
 }
 
@@ -27,7 +28,8 @@
     top: 0;
     z-index: 40;
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    min-width: 0;
     align-items: center;
     min-height: 92px;
     padding: 14px 28px;
@@ -56,6 +58,7 @@
     display: flex;
     justify-self: center;
     align-items: center;
+    min-width: 0;
     gap: 12px;
 }
 
@@ -82,7 +85,7 @@
 
 .app-header-brand__rail--secondary { transform: rotate(25deg); }
 .app-header-brand__core { position: relative; color: var(--vascor-primary, #1769aa); font-weight: 700; }
-.app-header-brand__copy { display: grid; gap: 2px; }
+.app-header-brand__copy { display: grid; min-width: 0; gap: 2px; }
 .app-header-brand__copy strong { font-size: 1.05rem; color: var(--vascor-primary-dark, #102a43); }
 .app-header-brand__copy span { color: var(--vascor-text-muted, #657786); font-size: .8rem; }
 
@@ -105,7 +108,7 @@
 
 .app-header-meta__item small { font-size: .6rem; text-transform: uppercase; letter-spacing: .08em; }
 
-.app-shell-body { display: flex; flex: 1; min-height: 0; }
+.app-shell-body { display: flex; flex: 1; min-width: 0; min-height: 0; }
 
 .app-sidebar {
     width: 260px;
@@ -174,6 +177,7 @@
 }
 
 .app-footer {
+    min-width: 0;
     padding: 22px;
     border-top: 1px solid var(--vascor-border, #dfe7ed);
     background: #fff;
@@ -208,7 +212,7 @@
 }
 
 @media (max-width: 920px) {
-    .app-header { grid-template-columns: auto 1fr; padding-inline: 18px; }
+    .app-header { grid-template-columns: auto minmax(0, 1fr); padding-inline: 18px; }
     .app-header-brand { justify-self: start; margin-left: 14px; }
     .app-header-meta { display: none; }
 
