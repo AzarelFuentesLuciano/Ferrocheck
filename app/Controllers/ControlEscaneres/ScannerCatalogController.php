@@ -8,5 +8,5 @@ final class ScannerCatalogController
     private function filter(array$i):ScannerCatalogFilter{return new ScannerCatalogFilter($this->text($i,'q'),$this->text($i,'marca'),$this->text($i,'modelo'),$this->text($i,'estado'),$this->bool($i['activo']??null),$this->bool($i['incidencia']??null),max(1,(int)($i['pagina']??1)),min(100,max(1,(int)($i['por_pagina']??25))),isset($i['orden'])?(string)$i['orden']:'codigo',strtoupper((string)($i['direccion']??'ASC')));}
     private function text(array$i,string$k):?string{$v=trim((string)($i[$k]??''));return$v===''?null:$v;}
     private function bool(mixed$v):?bool{return match($v){'1',1,true=>true,'0',0,false=>false,default=>null};}
-    private function actions(int$id,string$status,bool$active):array{$a=['expediente'];if($active&&$status==='disponible')$a[]='entrega';if($active&&$status==='entregado')$a[]='recepcion';if($active)$a[]='incidencia';if($active&&in_array($status,['disponible','pendiente_reparacion','mantenimiento'],true))$a[]='mantenimiento';return$a;}
+    private function actions(int$id,string$status,bool$active):array{$a=['expediente'];if($active&&$status==='disponible')$a[]='entrega';if($active&&$status==='entregado')$a[]='recepcion';if($active)$a[]='incidencias';if($active&&in_array($status,['disponible','pendiente_reparacion','mantenimiento'],true))$a[]='mantenimiento';return$a;}
 }

@@ -13,6 +13,23 @@ use App\Controllers\ExportacionInventarioController;
 use App\Controllers\InventarioController;
 use App\Controllers\OperacionPatioController;
 use App\Controllers\VerificadorController;
+use App\Controllers\ControlEscaneres\ControlEscaneresWebController;
+use App\Factories\ControlEscaneresServiceFactory;
+use App\Security\ControlEscaneres\{SessionAuthenticatedActorProvider, SessionCsrfTokenManager};
+use App\Support\ControlEscaneres\{BusinessRequestContextFactory, ControlEscaneresErrorMapper, FlashMessageStore};
+
+if (($_GET['modulo'] ?? '') === 'control-escaneres') {
+    $controller = new ControlEscaneresWebController(
+        new ControlEscaneresServiceFactory(),
+        new SessionAuthenticatedActorProvider($_SESSION, $_SERVER['REMOTE_ADDR'] ?? null),
+        new SessionCsrfTokenManager($_SESSION),
+        new BusinessRequestContextFactory($_SERVER, session_id()),
+        new FlashMessageStore($_SESSION),
+        new ControlEscaneresErrorMapper(),
+    );
+    $controller->dispatch($_GET, $_POST, $_SERVER['REQUEST_METHOD'] ?? 'GET');
+    return;
+}
 
 if (($_GET['modulo'] ?? '') === 'operaciones-patio') {
     $controller = new OperacionPatioController();

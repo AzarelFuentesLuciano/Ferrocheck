@@ -3,7 +3,8 @@ if (!isset($contenidoModulo)) {
     $seccion = trim((string) ($_GET['seccion'] ?? 'dashboard'));
     $vistas = [
         'dashboard' => 'dashboard.php', 'catalogo' => 'catalogo.php', 'expediente' => 'expediente.php',
-        'entrega' => 'entrega.php', 'recepcion' => 'recepcion.php', 'historial' => 'historial.php',
+        'entrega' => 'entrega.php', 'recepcion' => 'recepcion.php', 'incidencias' => 'incidencias.php',
+        'mantenimiento' => 'mantenimiento.php', 'historial' => 'historial.php',
         'reportes' => 'reporte.php', 'reporte' => 'reporte.php',
     ];
     require __DIR__ . '/' . ($vistas[$seccion] ?? $vistas['dashboard']);
@@ -18,6 +19,8 @@ $navegacion = [
     'recepcion' => ['Recepción', '←'], 'historial' => ['Historial', '◷'],
     'reporte' => ['Reportes', '▥'],
 ];
+$navegacion['incidencias'] = ['Incidencias', '!'];
+$navegacion['mantenimiento'] = ['Mantenimiento', 'M'];
 ?>
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/control-escaneres/control-escaneres.css">
 <section class="ce-module" aria-label="Control de Escáneres">
