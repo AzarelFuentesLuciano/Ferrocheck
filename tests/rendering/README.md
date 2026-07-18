@@ -24,3 +24,15 @@ Comprueba:
 - error controlado cuando falta el layout.
 
 No comprueba integración con módulos, routing, endpoints, comportamiento JavaScript, responsive, RBAC ni fallback legacy. Es complementaria a `tests/smoke/smoke.php`; las 114 pruebas de humo continúan protegiendo el flujo activo, que todavía usa `importar.php`.
+
+## Legacy Render Bridge
+
+`LegacyRenderBridge` transforma un arreglo explícito y filtrado de variables legacy en un `RenderContext`. No usa `get_defined_vars()`, no lee superglobales y no acepta arreglos completos como `$_GET`, `$_POST` o `$_SESSION`. La clave `vistaActual` se ignora y nunca se ejecuta ni se utiliza para incluir archivos.
+
+Ejecución:
+
+```bash
+php tests/rendering/legacy-render-bridge-test.php
+```
+
+La prueba recorre de forma aislada `array legacy → LegacyRenderBridge → RenderContext → RenderAdapter → HTML`. No necesita base de datos, servidor, sesión, rutas, controladores, POST ni Excel. El bridge todavía no está conectado a `DashboardController` y no activa el App Shell en el flujo real.
