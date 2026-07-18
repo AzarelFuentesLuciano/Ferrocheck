@@ -1,0 +1,1 @@
+<?php $h=static fn($v)=>htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');$allowed=['info','success','warning','error'];$alertType=in_array($alertType??'info',$allowed,true)?$alertType:'info';$alertMessage=$alertMessage??''; ?><div class="vo-alert vo-alert--<?= $h($alertType) ?>" role="<?= $alertType==='error'?'alert':'status' ?>"><div><?= $h($alertMessage) ?></div></div>
