@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\DTO\ControlEscaneres;
 
-use App\Domain\ControlEscaneres\ScannerFolio;
+use App\Domain\ControlEscaneres\{BatteryPercentage, ScannerFolio};
 
 final readonly class ScannerMovementCreateData
 {
