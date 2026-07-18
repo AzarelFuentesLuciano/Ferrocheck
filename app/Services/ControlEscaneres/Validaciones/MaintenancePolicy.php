@@ -1,0 +1,2 @@
+<?php
+declare(strict_types=1);namespace App\Services\ControlEscaneres\Validaciones;use App\Domain\ControlEscaneres\ScannerStatus;use App\Exceptions\ControlEscaneres\MaintenanceNotAllowedException;final class MaintenancePolicy{public function target(string$action,?ScannerStatus$requested):ScannerStatus{if($action==='send')return new ScannerStatus('mantenimiento');if($requested===null||!in_array($requested->value,['disponible','pendiente_reparacion','baja_definitiva'],true))throw new MaintenanceNotAllowedException('Estado final de mantenimiento inválido.');return$requested;}}

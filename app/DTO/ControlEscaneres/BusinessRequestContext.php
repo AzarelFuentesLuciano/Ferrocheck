@@ -1,0 +1,2 @@
+<?php
+declare(strict_types=1);namespace App\DTO\ControlEscaneres;final readonly class BusinessRequestContext{public function __construct(public string$requestId,public?string$ipAddress,public string$sessionFingerprint,public string$source,public?string$correlationId=null){if(trim($requestId)===''||trim($sessionFingerprint)===''||trim($source)==='')throw new \InvalidArgumentException('Contexto inválido.');}}

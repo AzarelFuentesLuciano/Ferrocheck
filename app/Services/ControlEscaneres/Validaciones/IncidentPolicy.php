@@ -1,0 +1,2 @@
+<?php
+declare(strict_types=1);namespace App\Services\ControlEscaneres\Validaciones;use App\Domain\ControlEscaneres\{IncidentSeverity,ScannerStatus};final class IncidentPolicy{public function resultingStatus(string$type,IncidentSeverity$s,ScannerStatus$current):ScannerStatus{if(str_contains(mb_strtolower($type),'extravi'))return new ScannerStatus('extraviado');if(in_array($s->value,['alta','critica'],true))return new ScannerStatus('pendiente_reparacion');return$current;}}
