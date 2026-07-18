@@ -1,7 +1,7 @@
 <?php
 $vistaActual = 'dashboard';
 ob_start();
-$pageTitle = 'Control de Escáneres';
+$pageTitle = 'Estado de la operación';
 $pageDescription = 'Orientación operativa para localizar equipos y continuar con la acción correspondiente.';
 $breadcrumbs = ['Control de Escáneres', 'Inicio'];
 require __DIR__ . '/../components/page-header.php';

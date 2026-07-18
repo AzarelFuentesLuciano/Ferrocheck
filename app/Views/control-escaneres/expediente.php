@@ -7,7 +7,7 @@ $humanize = static function ($value): string {
     return $labels[$key] ?? ucwords(str_replace(['_', '-'], ' ', (string) $value));
 };
 ob_start();
-$pageTitle = 'Expediente del escáner';
+$pageTitle = 'Información integral del equipo';
 $pageDescription = 'Consulta la identidad, el estado y la trazabilidad operativa del equipo en un solo lugar.';
 $breadcrumbs = ['Control de Escáneres', 'Expediente'];
 require __DIR__ . '/../components/page-header.php';
