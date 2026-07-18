@@ -38,8 +38,9 @@ if ($esFerrocheck) {
     <title><?php echo htmlspecialchars($tituloPagina, ENT_QUOTES, 'UTF-8'); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/importador.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-design-system.css">
 </head>
 <body>
     <div class="dashboard-shell">
@@ -79,12 +80,18 @@ if ($esFerrocheck) {
                         <span class="sidebar__text">Dashboard</span>
                     </a>
 
-                    <details class="sidebar-group<?php echo $esFerrocheck ? ' is-open' : ''; ?>" <?php echo $esFerrocheck ? 'open' : ''; ?>>
-                        <summary class="sidebar__item sidebar__item--summary<?php echo $esFerrocheck ? ' active' : ''; ?>" data-label="FerroCheck">
+                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=dashboard" class="sidebar__item sidebar__ferro-desktop<?php echo $esFerrocheck ? ' active' : ''; ?>" data-label="FerroCheck">
+                        <span class="sidebar__icon">🚂</span>
+                        <span class="sidebar__text">FerroCheck</span>
+                    </a>
+
+                    <details class="sidebar-group sidebar__ferro-mobile<?php echo $esFerrocheck ? ' is-open' : ''; ?>" <?php echo $esFerrocheck ? 'open' : ''; ?>>
+                        <summary class="sidebar__item sidebar__item--summary<?php echo $esFerrocheck ? ' active' : ''; ?>" data-label="FerroCheck" aria-controls="ferrocheckMobileSubmenu" aria-expanded="<?php echo $esFerrocheck ? 'true' : 'false'; ?>">
                             <span class="sidebar__icon">🚂</span>
                             <span class="sidebar__text">FerroCheck</span>
                         </summary>
-                        <div class="sidebar-submenu">
+                        <div class="sidebar-submenu" id="ferrocheckMobileSubmenu">
+                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=dashboard" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'dashboard' ? ' active' : ''; ?>">Dashboard</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'consulta-vin' ? ' active' : ''; ?>">Consulta VIN</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=importar-excel" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'importar-excel' ? ' active' : ''; ?>">Importar Excel</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=busqueda-multiple" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'busqueda-multiple' ? ' active' : ''; ?>">Búsqueda múltiple</a>
@@ -190,6 +197,28 @@ if ($esFerrocheck) {
                         </article>
                     </section>
                 <?php elseif ($esFerrocheck): ?>
+                    <section class="vascor-module" aria-label="FerroCheck">
+                        <header class="vascor-module-header">
+                            <div>
+                                <span class="vascor-module-header__category">Operación ferroviaria</span>
+                                <h1>FerroCheck</h1>
+                                <p>Consulta, validación e importación del inventario ferroviario.</p>
+                            </div>
+                            <span class="vascor-module-header__status"><i aria-hidden="true"></i> Operación activa</span>
+                        </header>
+                        <nav class="vascor-module-nav" aria-label="Secciones de FerroCheck">
+                            <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'dashboard' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=dashboard"><span aria-hidden="true">▦</span>Dashboard</a>
+                            <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'consulta-vin' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin"><span aria-hidden="true">⌕</span>Consulta VIN</a>
+                            <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'importar-excel' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=importar-excel"><span aria-hidden="true">⇧</span>Importar Excel</a>
+                            <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'busqueda-multiple' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=busqueda-multiple"><span aria-hidden="true">▤</span>Búsqueda múltiple</a>
+                            <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'configuracion' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=configuracion"><span aria-hidden="true">⚙</span>Configuración</a>
+                        </nav>
+                    </section>
+
+                    <?php if ($ferroSeccion === 'dashboard'): ?>
+                    <div class="vascor-view-heading">
+                        <div><span class="vascor-eyebrow">Dashboard</span><h2>Resumen de la operación ferroviaria</h2><p>Disponibilidad de servicios e indicadores principales del inventario.</p></div>
+                    </div>
                     <section id="estado" class="status-banner panel-card fade-in">
                         <div class="status-banner__head">
                             <div>
@@ -262,6 +291,11 @@ if ($esFerrocheck) {
                         </article>
                     </section>
 
+                    <?php elseif ($ferroSeccion === 'importar-excel'): ?>
+                    <div class="vascor-view-heading">
+                        <div><span class="vascor-eyebrow">Importar Excel</span><h2>Actualización de inventario</h2><p>Carga y valida el archivo operativo de Ferromex.</p></div>
+                    </div>
+
                     <section id="importador" class="panel-card accordion-card fade-in">
                         <button class="accordion-toggle" type="button" aria-expanded="true">
                             <div class="accordion-title-wrap">
@@ -324,6 +358,11 @@ if ($esFerrocheck) {
                             </form>
                         </div>
                     </section>
+
+                    <?php elseif ($ferroSeccion === 'consulta-vin' || $ferroSeccion === 'busqueda-multiple'): ?>
+                    <div class="vascor-view-heading">
+                        <div><span class="vascor-eyebrow"><?php echo $ferroSeccion === 'consulta-vin' ? 'Consulta VIN' : 'Búsqueda múltiple'; ?></span><h2><?php echo $ferroSeccion === 'consulta-vin' ? 'Validación de plataforma' : 'Validación consolidada de plataformas'; ?></h2><p><?php echo $ferroSeccion === 'consulta-vin' ? 'Consulta el estado y ubicación de una plataforma ferroviaria.' : 'Valida varios códigos en una sola operación.'; ?></p></div>
+                    </div>
 
                     <section id="verificacion" class="panel-card verifier-card fade-in">
                         <div class="panel-header">
@@ -401,6 +440,16 @@ if ($esFerrocheck) {
                             </table>
                         </div>
                     </section>
+                    <?php else: ?>
+                    <div class="vascor-view-heading">
+                        <div><span class="vascor-eyebrow">Configuración</span><h2>Preferencias de FerroCheck</h2><p>Parámetros visuales y operativos disponibles para el módulo.</p></div>
+                    </div>
+                    <section class="panel-card vascor-empty-state fade-in" aria-labelledby="ferroConfigTitle">
+                        <div class="vascor-empty-state__icon" aria-hidden="true">⚙</div>
+                        <h3 id="ferroConfigTitle">Configuración del módulo</h3>
+                        <p>Esta sección conserva su estado actual y queda preparada para mostrar opciones autorizadas.</p>
+                    </section>
+                    <?php endif; ?>
                 <?php elseif ($esModulo('inventario-material')): ?>
                     <section class="panel-card fade-in module-page-header">
                         <p class="eyebrow">Inventario de Material</p>
@@ -412,15 +461,7 @@ if ($esFerrocheck) {
                         <p>Sin lógica en Fase 1. Solo estructura visual y navegación.</p>
                     </section>
                 <?php elseif ($esModulo('control-escaneres')): ?>
-                    <section class="panel-card fade-in module-page-header">
-                        <p class="eyebrow">Control de Escáneres</p>
-                        <h2>Vista inicial del módulo</h2>
-                        <p>Esta vista queda preparada para entrega, recepción, daños, inventario e historial de escáneres.</p>
-                    </section>
-                    <section class="panel-card module-empty fade-in">
-                        <h3>Módulo listo para desarrollo</h3>
-                        <p>Sin lógica en Fase 1. Solo estructura visual y navegación.</p>
-                    </section>
+                    <?php require __DIR__ . '/../control-escaneres/plantilla.php'; ?>
                 <?php elseif ($esModulo('reportes')): ?>
                     <section class="panel-card fade-in module-page-header">
                         <p class="eyebrow">Reportes</p>

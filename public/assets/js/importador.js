@@ -635,6 +635,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.sidebar__item').forEach((item) => {
         item.addEventListener('click', () => {
+            if (item.matches('.sidebar__item--summary')) {
+                return;
+            }
+            if (window.matchMedia('(max-width: 920px)').matches) {
+                mobileSidebarOpen = false;
+                updateSidebarState();
+            }
+        });
+    });
+
+    document.querySelectorAll('.sidebar-group').forEach((group) => {
+        const summary = group.querySelector('.sidebar__item--summary');
+        group.addEventListener('toggle', () => {
+            summary?.setAttribute('aria-expanded', String(group.open));
+        });
+    });
+
+    document.querySelectorAll('.sidebar-submenu__item').forEach((item) => {
+        item.addEventListener('click', () => {
             if (window.matchMedia('(max-width: 920px)').matches) {
                 mobileSidebarOpen = false;
                 updateSidebarState();

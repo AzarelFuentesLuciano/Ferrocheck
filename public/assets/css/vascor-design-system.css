@@ -1,0 +1,100 @@
+:root {
+    --vascor-font-family: 'Poppins', Arial, sans-serif;
+    --vascor-primary: #1769aa;
+    --vascor-primary-dark: #102a43;
+    --vascor-primary-light: #eaf4fa;
+    --vascor-accent: #22a6b3;
+    --vascor-success: #159570;
+    --vascor-warning: #d78b18;
+    --vascor-danger: #c44949;
+    --vascor-info: #2f80b7;
+    --vascor-background: #f4f7f9;
+    --vascor-surface: #ffffff;
+    --vascor-border: #dfe7ed;
+    --vascor-text: #172b3a;
+    --vascor-text-muted: #657786;
+    --vascor-radius-sm: 8px;
+    --vascor-radius-md: 14px;
+    --vascor-radius-lg: 18px;
+    --vascor-shadow-sm: 0 5px 18px rgba(16, 42, 67, .06);
+    --vascor-shadow-md: 0 14px 32px rgba(16, 42, 67, .16);
+    --vascor-spacing-xs: 6px;
+    --vascor-spacing-sm: 10px;
+    --vascor-spacing-md: 16px;
+    --vascor-spacing-lg: 22px;
+    --vascor-spacing-xl: 32px;
+}
+
+html { overflow-x: hidden; }
+body, button, input, select, textarea { font-family: var(--vascor-font-family); }
+body { color: var(--vascor-text); }
+.ce-module.ce-module { font-family: var(--vascor-font-family); }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:where(a, button, input, select, textarea):focus-visible {
+    outline: 3px solid rgba(23, 105, 170, .28);
+    outline-offset: 2px;
+}
+
+.vascor-module { display: grid; gap: var(--vascor-spacing-md); min-width: 0; max-width: 100%; }
+.vascor-module-header {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: var(--vascor-spacing-lg);
+    padding: var(--vascor-spacing-lg); color: #fff; border-radius: var(--vascor-radius-lg);
+    background: linear-gradient(125deg, var(--vascor-primary-dark), #164d75);
+    box-shadow: var(--vascor-shadow-md);
+}
+.vascor-module-header__category, .vascor-eyebrow {
+    display: block; font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+}
+.vascor-module-header__category { color: #80e1e8; }
+.vascor-module-header h1 { margin: 5px 0; color: #fff; font-size: clamp(1.5rem, 3vw, 2.15rem); font-weight: 700; }
+.vascor-module-header p { max-width: 700px; margin: 0; color: #d9e8f2; }
+.vascor-module-header__status {
+    white-space: nowrap; padding: 8px 12px; border: 1px solid rgba(255,255,255,.22);
+    border-radius: 999px; font-size: .76rem; font-weight: 600;
+}
+.vascor-module-header__status i { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: #5ee1b3; }
+.vascor-module-nav {
+    display: flex; gap: var(--vascor-spacing-xs); overflow-x: auto; max-width: 100%; padding: var(--vascor-spacing-xs);
+    background: var(--vascor-surface); border: 1px solid var(--vascor-border); border-radius: var(--vascor-radius-md);
+    box-shadow: var(--vascor-shadow-sm); scrollbar-width: thin;
+}
+.vascor-module-nav__item {
+    display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; min-height: 38px; padding: 8px 12px;
+    color: var(--vascor-text-muted); border-radius: 9px; font-size: .82rem; font-weight: 500; text-decoration: none;
+    transition: color .18s ease, background .18s ease;
+}
+.vascor-module-nav__item:hover { color: var(--vascor-primary); background: var(--vascor-primary-light); }
+.vascor-module-nav__item.is-active { color: #fff; background: var(--vascor-primary-dark); }
+.vascor-view-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--vascor-spacing-md); margin-top: 2px; }
+.vascor-view-heading h2 { margin: 4px 0; color: var(--vascor-text); font-size: clamp(1.28rem, 2.4vw, 1.75rem); font-weight: 700; }
+.vascor-view-heading p { max-width: 720px; margin: 0; color: var(--vascor-text-muted); }
+.vascor-eyebrow { color: var(--vascor-primary); }
+
+.vascor-card { background: var(--vascor-surface); border: 1px solid var(--vascor-border); border-radius: var(--vascor-radius-md); box-shadow: var(--vascor-shadow-sm); }
+.vascor-btn { min-height: 40px; padding: 0 14px; border: 1px solid var(--vascor-border); border-radius: 9px; background: #fff; color: var(--vascor-text); font-weight: 600; }
+.vascor-btn--primary { border-color: var(--vascor-primary); background: var(--vascor-primary); color: #fff; }
+.vascor-input { min-height: 42px; border: 1px solid var(--vascor-border); border-radius: 9px; background: #f9fbfc; color: var(--vascor-text); }
+.vascor-badge { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; font-size: .7rem; font-weight: 600; }
+.vascor-status--available, .vascor-status--success { color: #087553; background: #e7f7f1; }
+.vascor-status--assigned, .vascor-status--info { color: #125d93; background: #e8f3fb; }
+.vascor-status--pending, .vascor-status--maintenance { color: #94600d; background: #fff2db; }
+.vascor-status--error, .vascor-status--retired { color: #a23737; background: #fceaea; }
+.vascor-status--inactive { color: #5e6b75; background: #edf1f4; }
+.vascor-alert { padding: 12px 14px; border: 1px solid var(--vascor-border); border-left: 4px solid var(--vascor-info); border-radius: var(--vascor-radius-sm); background: #f4f9fc; }
+.vascor-empty-state { display: grid; place-items: center; min-height: 260px; padding: var(--vascor-spacing-xl); text-align: center; }
+.vascor-empty-state__icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: var(--vascor-primary-light); color: var(--vascor-primary); font-size: 1.35rem; }
+.vascor-empty-state h3 { margin: 12px 0 4px; }
+.vascor-empty-state p { max-width: 540px; margin: 0; color: var(--vascor-text-muted); }
+.vascor-table-wrap { width: 100%; overflow-x: auto; }
+.vascor-modal { border-radius: var(--vascor-radius-lg); background: var(--vascor-surface); box-shadow: var(--vascor-shadow-md); }
+.vascor-timeline { border-left: 2px solid var(--vascor-border); }
+
+@media (max-width: 920px) {
+    .vascor-module-header { align-items: flex-start; flex-direction: column; }
+    .vascor-module-header__status { display: none; }
+}
+@media (max-width: 640px) {
+    .vascor-module-header { padding: 18px; }
+    .vascor-module-nav__item { min-height: 42px; }
+    .vascor-view-heading { align-items: flex-start; flex-direction: column; }
+}

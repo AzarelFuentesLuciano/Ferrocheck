@@ -365,6 +365,10 @@ input {
     border-radius: 14px;
 }
 
+.sidebar__ferro-mobile {
+    display: none;
+}
+
 .sidebar-group summary {
     list-style: none;
 }
@@ -482,6 +486,8 @@ input {
 
 .main-content {
     flex: 1;
+    min-width: 0;
+    max-width: 100%;
     padding: 24px 28px 30px;
     display: flex;
     flex-direction: column;
@@ -1523,8 +1529,27 @@ input {
         display: none;
     }
 
+    .sidebar__ferro-desktop {
+        display: none;
+    }
+
+    .sidebar__ferro-mobile {
+        display: block;
+    }
+
+    .sidebar__ferro-mobile .sidebar__item--summary::after {
+        display: inline-block;
+    }
+
     .sidebar-submenu {
         margin-left: 22px;
+    }
+
+    .sidebar-submenu__item {
+        display: flex;
+        align-items: center;
+        min-height: 42px;
+        padding: 9px 12px;
     }
 
     .stats-grid {
