@@ -482,8 +482,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const formattedTime = now.toLocaleTimeString('es-MX');
 
-        currentDate.textContent = formattedDate;
-        currentTime.textContent = formattedTime;
+        if (currentDate) {
+            currentDate.textContent = formattedDate;
+        }
+
+        if (currentTime) {
+            currentTime.textContent = formattedTime;
+        }
 
         if (tickerDate) {
             tickerDate.textContent = `Fecha completa: ${new Date().toLocaleDateString('es-MX', {
@@ -508,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })}`;
         }
 
-        if (currentTime.textContent !== lastTimeText) {
+        if (currentTime && currentTime.textContent !== lastTimeText) {
             currentTime.animate([
                 { opacity: 0.7, transform: 'translateY(1px)' },
                 { opacity: 1, transform: 'translateY(0)' }
