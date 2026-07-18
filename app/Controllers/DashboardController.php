@@ -154,9 +154,8 @@ class DashboardController
                     'icon' => '🚂',
                     'sections' => [
                         ['id' => 'dashboard', 'label' => 'Dashboard', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=dashboard'],
-                        ['id' => 'consulta-vin', 'label' => 'Consulta VIN', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=consulta-vin'],
+                        ['id' => 'consulta-vin', 'label' => 'Buscar Plataformas', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=consulta-vin'],
                         ['id' => 'importar-excel', 'label' => 'Importar Excel', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=importar-excel'],
-                        ['id' => 'busqueda-multiple', 'label' => 'Búsqueda múltiple', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=busqueda-multiple'],
                         ['id' => 'configuracion', 'label' => 'Configuración', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=configuracion'],
                     ],
                 ],

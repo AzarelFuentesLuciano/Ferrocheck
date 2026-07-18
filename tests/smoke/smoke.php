@@ -15,9 +15,9 @@ $publicBase = str_ends_with($baseUrl, '/index.php') ? substr($baseUrl, 0, -10) :
 $tests = [
     ['Dashboard general', '?modulo=dashboard', 'Resumen general', null, false],
     ['FerroCheck Dashboard', '?modulo=ferrocheck&seccion=dashboard', 'Resumen de la operación ferroviaria', 'dashboard', true],
-    ['FerroCheck Consulta VIN', '?modulo=ferrocheck&seccion=consulta-vin', 'Validación de plataforma', 'consulta-vin', true],
+    ['FerroCheck Buscar Plataformas', '?modulo=ferrocheck&seccion=consulta-vin', 'Buscar Plataformas', 'consulta-vin', true],
     ['FerroCheck Importar Excel', '?modulo=ferrocheck&seccion=importar-excel', 'Importador Ferromex', 'importar-excel', true],
-    ['FerroCheck Búsqueda múltiple', '?modulo=ferrocheck&seccion=busqueda-multiple', 'Validación consolidada', 'busqueda-multiple', true],
+    ['FerroCheck compatibilidad búsqueda múltiple', '?modulo=ferrocheck&seccion=busqueda-multiple', 'Buscar Plataformas', 'consulta-vin', true],
     ['FerroCheck Configuración', '?modulo=ferrocheck&seccion=configuracion', 'Preferencias de FerroCheck', 'configuracion', true],
     ['Escáneres Dashboard', '?modulo=control-escaneres&seccion=dashboard', 'Estado de la operación', 'dashboard', false],
     ['Escáneres Catálogo', '?modulo=control-escaneres&seccion=catalogo', 'Escáneres registrados', 'catalogo', false],

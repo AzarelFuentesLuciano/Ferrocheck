@@ -56,9 +56,8 @@ require_once __DIR__ . '/../../../config/config.php';
                             <span class="sidebar__text">FerroCheck</span>
                         </summary>
                         <div class="sidebar-submenu">
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin" class="sidebar-submenu__item">Consulta VIN</a>
+                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin" class="sidebar-submenu__item">Buscar Plataformas</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=importar-excel" class="sidebar-submenu__item">Importar Excel</a>
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=busqueda-multiple" class="sidebar-submenu__item">Búsqueda múltiple</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=configuracion" class="sidebar-submenu__item">Configuración</a>
                         </div>
                     </details>

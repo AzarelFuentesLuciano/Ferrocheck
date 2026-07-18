@@ -88,9 +88,8 @@ $estadoClass = static function (string $estado): string {
                             <span class="sidebar__text">FerroCheck</span>
                         </summary>
                         <div class="sidebar-submenu">
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin" class="sidebar-submenu__item">Consulta VIN</a>
+                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin" class="sidebar-submenu__item">Buscar Plataformas</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=importar-excel" class="sidebar-submenu__item">Importar Excel</a>
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=busqueda-multiple" class="sidebar-submenu__item">Busqueda multiple</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=configuracion" class="sidebar-submenu__item">Configuracion</a>
                         </div>
                     </details>

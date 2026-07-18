@@ -92,9 +92,8 @@ if ($esFerrocheck) {
                         </summary>
                         <div class="sidebar-submenu" id="ferrocheckMobileSubmenu">
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=dashboard" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'dashboard' ? ' active' : ''; ?>">Dashboard</a>
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'consulta-vin' ? ' active' : ''; ?>">Consulta VIN</a>
+                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin" class="sidebar-submenu__item<?php echo $esFerrocheck && ($ferroSeccion === 'consulta-vin' || $ferroSeccion === 'busqueda-multiple') ? ' active' : ''; ?>">Buscar Plataformas</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=importar-excel" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'importar-excel' ? ' active' : ''; ?>">Importar Excel</a>
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=busqueda-multiple" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'busqueda-multiple' ? ' active' : ''; ?>">Búsqueda múltiple</a>
                             <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=configuracion" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'configuracion' ? ' active' : ''; ?>">Configuración</a>
                         </div>
                     </details>

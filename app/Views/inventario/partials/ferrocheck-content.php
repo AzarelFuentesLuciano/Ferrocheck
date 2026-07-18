@@ -9,9 +9,8 @@
                         </header>
                         <nav class="vascor-module-nav" aria-label="Secciones de FerroCheck">
                             <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'dashboard' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=dashboard"><span aria-hidden="true">▦</span>Dashboard</a>
-                            <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'consulta-vin' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin"><span aria-hidden="true">⌕</span>Consulta VIN</a>
+                            <a class="vascor-module-nav__item<?php echo ($ferroSeccion === 'consulta-vin' || $ferroSeccion === 'busqueda-multiple') ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin"><span aria-hidden="true">⌕</span>Buscar Plataformas</a>
                             <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'importar-excel' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=importar-excel"><span aria-hidden="true">⇧</span>Importar Excel</a>
-                            <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'busqueda-multiple' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=busqueda-multiple"><span aria-hidden="true">▤</span>Búsqueda múltiple</a>
                             <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'configuracion' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=configuracion"><span aria-hidden="true">⚙</span>Configuración</a>
                         </nav>
                     </section>
@@ -162,13 +161,13 @@
 
                     <?php elseif ($ferroSeccion === 'consulta-vin' || $ferroSeccion === 'busqueda-multiple'): ?>
                     <div class="vascor-view-heading">
-                        <div><span class="vascor-eyebrow"><?php echo $ferroSeccion === 'consulta-vin' ? 'Consulta VIN' : 'Búsqueda múltiple'; ?></span><h2><?php echo $ferroSeccion === 'consulta-vin' ? 'Validación de plataforma' : 'Validación consolidada de plataformas'; ?></h2><p><?php echo $ferroSeccion === 'consulta-vin' ? 'Consulta el estado y ubicación de una plataforma ferroviaria.' : 'Valida varios códigos en una sola operación.'; ?></p></div>
+                        <div><span class="vascor-eyebrow">Buscar Plataformas</span><h2>Búsqueda de plataformas</h2><p>Consulta uno o varios códigos de plataformas ferroviarias en una sola operación.</p></div>
                     </div>
 
                     <section id="verificacion" class="panel-card verifier-card fade-in">
                         <div class="panel-header">
                             <div>
-                                <p class="eyebrow">Consulta VIN / Búsqueda múltiple</p>
+                                <p class="eyebrow">Buscar Plataformas</p>
                                 <h2>Verificador de Plataformas</h2>
                                 <p>Pegue uno o varios códigos para validar su ubicación y revisar si cuentan con evidencia.</p>
                             </div>
