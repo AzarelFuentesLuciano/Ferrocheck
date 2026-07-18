@@ -36,3 +36,17 @@ php tests/rendering/legacy-render-bridge-test.php
 ```
 
 La prueba recorre de forma aislada `array legacy → LegacyRenderBridge → RenderContext → RenderAdapter → HTML`. No necesita base de datos, servidor, sesión, rutas, controladores, POST ni Excel. El bridge todavía no está conectado a `DashboardController` y no activa el App Shell en el flujo real.
+
+## Vista de contenido de FerroCheck
+
+`app/Views/inventario/partials/ferrocheck-content.php` contiene únicamente el contenido interior reutilizable del módulo FerroCheck. Requiere la variable `$ferroSeccion` y la constante `BASE_URL`; no contiene documento HTML, shell global ni cargas de assets.
+
+`app/Views/inventario/importar.php` continúa siendo el documento legacy y el flujo activo. Conserva el header, sidebar, footer y la carga de `importador.css` e `importador.js`, e incluye la vista de contenido mediante una ruta estática basada en `__DIR__`. La vista todavía no está conectada al pipeline `app_shell`.
+
+Ejecución:
+
+```bash
+php tests/rendering/ferrocheck-content-view-test.php
+```
+
+La prueba CLI renderiza la vista con variables mínimas, comprueba que no incorpore shell o assets, preserva los contratos estructurales de FerroCheck y verifica que el wrapper legacy genere una sola copia del contenido. Esta separación no modifica lógica de negocio, endpoints, CSS ni JavaScript.

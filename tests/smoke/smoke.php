@@ -128,5 +128,23 @@ $htmlOutput = strpos($controllerSource, 'echo $html;', (int) $renderAssignment);
 report('Fallback previo a salida del HTML nuevo', $renderAssignment !== false && $fallbackCall !== false && $htmlOutput !== false && $fallbackCall < $htmlOutput);
 report('Despacho público permanece en DashboardController', containsAll($entrySource, ['$controller = new DashboardController();', '$controller->index();']));
 
+echo "\nVista reutilizable de FerroCheck\n";
+$ferroContentPath = __DIR__ . '/../../app/Views/inventario/partials/ferrocheck-content.php';
+$ferroContentSource = file_get_contents($ferroContentPath);
+$legacyViewSource = file_get_contents(__DIR__ . '/../../app/Views/inventario/importar.php');
+$ferroContentSource = is_string($ferroContentSource) ? $ferroContentSource : '';
+$legacyViewSource = is_string($legacyViewSource) ? $legacyViewSource : '';
+
+report('Existe ferrocheck-content.php', is_file($ferroContentPath));
+report('importar.php incluye la vista mediante ruta estática', str_contains($legacyViewSource, "require __DIR__ . '/partials/ferrocheck-content.php';"));
+report('Vista FerroCheck sin shell global', !containsAll($ferroContentSource, ['class="topbar"', 'id="sidebarNav"', 'id="footer"']));
+report('Vista FerroCheck sin documento HTML', !preg_match('/<!doctype|<\/?(?:html|head|body)\b/i', $ferroContentSource));
+report('Vista FerroCheck sin assets globales', !preg_match('/<(?:link|script)\b|(?:app-shell|importador)\.(?:css|js)/i', $ferroContentSource));
+report('importar.php conserva shell legacy', containsAll($legacyViewSource, ['<!DOCTYPE html>', 'class="topbar"', 'id="sidebarNav"', 'id="footer"']));
+report('RENDER_MODE permanece en legacy', str_contains($controllerSource, "private const RENDER_MODE = 'legacy';"));
+report('Contenido FerroCheck no está duplicado en importar.php', substr_count($legacyViewSource, 'aria-label="FerroCheck"') === 0);
+report('Vista extraída conserva contrato principal', containsAll($ferroContentSource, ['aria-label="FerroCheck"', 'id="importador"', 'id="verificacion"', 'class="results-table"']));
+report('DashboardController no referencia la vista extraída', !str_contains($controllerSource, 'ferrocheck-content.php'));
+
 echo "\nResumen: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);
