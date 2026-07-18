@@ -13,9 +13,9 @@ use Throwable;
 class DashboardController
 {
     /** Modo local y reversible; producción continúa en legacy por defecto. */
-    private const RENDER_MODE = 'legacy';
+    private const RENDER_MODE = 'app_shell';
     private const ALLOWED_RENDER_MODES = ['legacy', 'app_shell'];
-    private const FERROCHECK_APP_SHELL_ENABLED = false;
+    private const FERROCHECK_APP_SHELL_ENABLED = true;
     private const FERROCHECK_MODULE = 'ferrocheck';
     private const FERROCHECK_SECTIONS = [
         'dashboard',
