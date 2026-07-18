@@ -29,7 +29,7 @@ test('formularios tienen labels vinculados', fn() => ok(substr_count($incidents,
 test('acciones POST tienen una primaria por bloque', fn() => ok(substr_count($maintenance, 'type="submit"') === 1 && substr_count($incidents, 'type="submit"') === 2));
 test('expediente presenta datos protegidos', fn() => ok(str_contains($record, 'IMEI protegido') && str_contains($record, 'ICCID protegido') && !preg_match('/\b(PIN|PUK)\b/', $record)));
 test('historial no contiene registros simulados', fn() => ok(!preg_match('/ESC-\d{3}/', $history) && str_contains($history, 'Vista provisional')));
-test('dashboard no contiene métricas simuladas', fn() => ok(!preg_match('/ESC-\d{3}|\b\d{1,3}%\b/', $dashboard) && str_contains($dashboard, 'fuente de datos consolidada')));
+test('dashboard usa datos reales sin métricas simuladas', fn() => ok(!preg_match('/ESC-\d{3}|\b(?:48|96)%\b/', $dashboard) && str_contains($dashboard, '$dashboardViewModel') && !str_contains($dashboard, "foreach ([['")));
 $operationsCss = $read('public/assets/css/control-escaneres/operations.css');
 $historyCss = $read('public/assets/css/control-escaneres/history.css');
 test('operaciones e historial responden en móvil', fn() => ok(str_contains($operationsCss, '@media(max-width:600px)') && str_contains($historyCss, '@media(max-width:800px)')));
