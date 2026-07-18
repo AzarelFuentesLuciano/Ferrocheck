@@ -44,3 +44,9 @@ La validación se ejecuta sobre SQLite efímero y usa SQL preparado compatible c
 ## Pruebas
 
 `php tests/control-escaneres/run-services.php` valida entrega, folio, inspecciones, recepción con daño y duración, integración del servicio de incidencias con `movementId`, idempotencia de cierre, mantenimiento, auditoría y rollback. `php tests/control-escaneres/run-incident-persistence.php` cubre directamente el adaptador PDO, consultas, valores nulos, actualizaciones y rollback. Ambas suites usan SQLite efímero y no acceden a la base de datos productiva.
+
+## Integración web interna
+
+La composición se realiza en `ControlEscaneresServiceFactory` y la frontera HTTP en `ControlEscaneresWebController`. El catálogo usa una query dedicada y ViewModels; los formularios operativos construyen DTO y aplican CSRF, actor de sesión y POST/Redirect/GET. El expediente transforma historial y auditoría a datos seguros de presentación.
+
+No existe todavía un módulo completo de usuarios. `SessionAuthenticatedActorProvider` exige un `user_id` previamente confiable en sesión y falla si falta; no hay actor de desarrollo activado automáticamente. La interfaz muestra un error amigable cuando el esquema canónico aún no existe y nunca ejecuta migraciones por cuenta propia.
