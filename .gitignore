@@ -1,2 +1,5 @@
 logs/excel_diagnostico.log
 storage/backups/database/
+.env
+.env.*
+!.env.example
