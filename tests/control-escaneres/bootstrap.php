@@ -1,0 +1,3 @@
+<?php
+declare(strict_types=1);require dirname(__DIR__,2).'/vendor/autoload.php';
+$pass=0;$fail=0;function test(string$n,callable$f):void{global$pass,$fail;try{$f();$pass++;echo"[PASS] $n\n";}catch(Throwable$e){$fail++;echo"[FAIL] $n — {$e->getMessage()}\n";}}function same(mixed$a,mixed$b):void{if($a!==$b)throw new RuntimeException('Valores distintos.');}function ok(bool$v):void{if(!$v)throw new RuntimeException('Condición falsa.');}function throws(callable$f):void{try{$f();}catch(Throwable){return;}throw new RuntimeException('No lanzó excepción.');}function finish(string$n):never{global$pass,$fail;echo"Resumen $n: $pass PASS, $fail FAIL\n";exit($fail?1:0);}
