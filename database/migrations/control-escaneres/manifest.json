@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "migrations": [
+    {"order":1,"file":"20260718_001_create_control_escaneres_scanners.sql","sha256":"ae51a15e3d56cbe64430504bdf43364693ed196689560e86307b1966149d6445","type":"schema","depends_on":null,"reversible":true},
+    {"order":2,"file":"20260718_002_create_scanner_movimientos.sql","sha256":"c8093c6ea4f0f993acf45b116893e51e94d6e38a92b84f15b57446226d3b460b","type":"schema","depends_on":1,"reversible":true},
+    {"order":3,"file":"20260718_003_create_scanner_inspecciones.sql","sha256":"83d5deb16915ee40f4025faa36a12773e485c252402e80a47f62a4fcc630227a","type":"schema","depends_on":2,"reversible":true},
+    {"order":4,"file":"20260718_004_create_scanner_inspeccion_detalles.sql","sha256":"4a8f9b8ecc5dfdd9b8c69ecedb9fd54a7f98f379cbe073de1908e45fe1a124e9","type":"schema","depends_on":3,"reversible":true},
+    {"order":5,"file":"20260718_005_create_scanner_incidencias.sql","sha256":"61fd65d36b8d2485f55b414289cf258af24eb12c357a96ade721897dabd3cff8","type":"schema","depends_on":2,"reversible":true},
+    {"order":6,"file":"20260718_006_create_scanner_evidencias.sql","sha256":"a1af56bb8101d2b78aadb2c617a2a7d7d9fa9d96b4302fb4e388ac66e04a3808","type":"schema","depends_on":5,"reversible":true},
+    {"order":7,"file":"20260718_007_create_auditoria_eventos.sql","sha256":"d8dd48de94d3225eb3687a35cca9051cad58bfdf6cb95894f8d9ac25500b061c","type":"schema","depends_on":6,"reversible":true}
+  ]
+}
