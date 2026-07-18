@@ -25,6 +25,7 @@ $navegacion['mantenimiento'] = ['Mantenimiento', 'M'];
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-design-tokens.css">
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-components.css">
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/control-escaneres/operations.css">
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/control-escaneres/history.css">
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/control-escaneres/control-escaneres.css">
 <section class="ce-module" aria-label="Control de Escáneres">
     <header class="ce-hero">

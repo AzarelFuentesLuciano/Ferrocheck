@@ -1,4 +1,20 @@
-<?php $vistaActual='historial'; ob_start(); ?>
-<div class="ce-page-head"><div><span class="ce-eyebrow">Trazabilidad</span><h2>Historial operativo</h2><p>Línea de tiempo consolidada de entregas, recepciones, reparaciones y cambios de estado.</p></div><button class="ce-btn" disabled>Exportar historial</button></div>
-<article class="ce-card"><div class="ce-toolbar"><input class="ce-input" placeholder="Buscar escáner, operador o evento" disabled><select class="ce-select" disabled><option>Todos los movimientos</option></select><select class="ce-select" disabled><option>Últimos 30 días</option></select></div><div class="ce-timeline"><div class="ce-event"><time>17 JUL 2026 · 08:14</time><h4>Recepción · ESC-001</h4><p>María Ríos recibió el equipo de Carlos Méndez. Conservación: 96%. Sin incidencias.</p><span class="ce-badge">Recepción</span></div><div class="ce-event"><time>17 JUL 2026 · 06:12</time><h4>Entrega · ESC-014</h4><p>Equipo asignado a Carlos Méndez para Patio Norte. Conservación inicial: 94%.</p><span class="ce-badge ce-badge--blue">Entrega</span></div><div class="ce-event"><time>16 JUL 2026 · 15:40</time><h4>Cambio de estado · ESC-027</h4><p>Disponible → En mantenimiento. Reporte de falla en batería.</p><span class="ce-badge ce-badge--amber">Estado</span></div><div class="ce-event"><time>15 JUL 2026 · 12:08</time><h4>Reparación · ESC-031</h4><p>Se sustituyó gatillo lector y se realizó limpieza interna.</p><span class="ce-badge ce-badge--red">Reparación</span></div><div class="ce-event"><time>14 JUL 2026 · 18:02</time><h4>Recepción · ESC-008</h4><p>Recepción documentada con fotografías y firmas. Conservación: 92%.</p><span class="ce-badge">Recepción</span></div></div></article>
-<?php $contenidoModulo=ob_get_clean(); require __DIR__.'/plantilla.php'; ?>
+<?php
+$vistaActual = 'historial';
+ob_start();
+$pageTitle = 'Historial operativo';
+$pageDescription = 'Punto de consulta para la actividad consolidada de los escáneres.';
+$breadcrumbs = ['Control de Escáneres', 'Historial'];
+require __DIR__ . '/../components/page-header.php';
+?>
+<div class="ce-operation vo-history">
+    <?php $alertType = 'info'; $alertMessage = 'Vista provisional: el historial general todavía no está conectado a una fuente de datos consolidada.'; require __DIR__ . '/../components/alert.php'; ?>
+    <section class="vo-form-section">
+        <?php $sectionTitle = 'Actividad consolidada'; $sectionDescription = 'Cuando la integración esté disponible, aquí podrás consultar entregas, recepciones, mantenimiento y cambios de estado.'; require __DIR__ . '/../components/section-header.php'; ?>
+        <div class="vo-empty-panel">
+            <h3>Sin actividad disponible</h3>
+            <p>No se muestran registros de ejemplo para evitar confundir información simulada con operaciones reales.</p>
+            <div class="vo-actions"><a class="vo-btn vo-btn--primary" href="<?= htmlspecialchars(($basePath ?? '') . '/control-escaneres/catalogo', ENT_QUOTES, 'UTF-8') ?>">Consultar expediente por escáner</a></div>
+        </div>
+    </section>
+</div>
+<?php $contenidoModulo = ob_get_clean(); require __DIR__ . '/plantilla.php'; ?>
