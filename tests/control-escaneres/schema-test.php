@@ -73,6 +73,12 @@ check('Auditoría se declara append-only', stripos($sqlByTable['auditoria_evento
 check('Auditoría no define UPDATE', !preg_match('/^\s*UPDATE\s+/mi', $sqlByTable['auditoria_eventos']));
 check('Auditoría no define DELETE', !preg_match('/^\s*DELETE\s+/mi', $sqlByTable['auditoria_eventos']));
 check('Actores futuros permanecen nullable', preg_match_all('/(?:created_by|updated_by|registrada_por|usuario_id)\s+BIGINT\s+UNSIGNED\s+NULL/i', $allSql) >= 4);
+check('Compatibilidad MariaDB usa PERSISTENT', stripos($sqlByTable['scanner_movimientos'], 'PERSISTENT') !== false);
+check('Incidencias conservan movement_id', preg_match('/movimiento_id\s+BIGINT\s+UNSIGNED\s+NULL/i', $sqlByTable['scanner_incidencias']) === 1);
+$manifestPath = $root . '/database/migrations/control-escaneres/manifest.json';
+$manifestData = json_decode((string) file_get_contents($manifestPath), true);
+check('Manifest declara siete migraciones', count($manifestData['migrations'] ?? []) === 7);
+check('Manifest sin timestamps dinámicos', !str_contains((string) file_get_contents($manifestPath), 'generated_at'));
 
 $ferrocheckStatus = trim((string) shell_exec('git status --short -- app/Views/inventario public/assets/js/importador.js public/assets/css/importador.css 2>NUL'));
 check('FerroCheck sin modificaciones', $ferrocheckStatus === '');
