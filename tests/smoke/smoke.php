@@ -111,5 +111,22 @@ foreach ($assets as $asset) {
     report($asset, $response['status'] === 200 && $response['body'] !== '', 'HTTP ' . $response['status']);
 }
 
+echo "\nIntegración reversible del App Shell\n";
+$controllerSource = file_get_contents(__DIR__ . '/../../app/Controllers/DashboardController.php');
+$entrySource = file_get_contents(__DIR__ . '/../../public/index.php');
+$controllerSource = is_string($controllerSource) ? $controllerSource : '';
+$entrySource = is_string($entrySource) ? $entrySource : '';
+
+report('Modo predeterminado legacy', str_contains($controllerSource, "private const RENDER_MODE = 'legacy';"));
+report('importar.php continúa como flujo legacy', str_contains($controllerSource, "require __DIR__ . '/../Views/inventario/importar.php';"));
+report('Sin activación del modo mediante parámetros HTTP', !preg_match('/RENDER_MODE[^;]*\$_(?:GET|POST|SESSION|COOKIE)/s', $controllerSource));
+report('importar.php no se usa como contenido del App Shell', !preg_match('/contenidoModulo[^\n]*importar\.php/', $controllerSource));
+report('Pipeline nuevo contenido en DashboardController', containsAll($controllerSource, ['LegacyRenderBridge', 'RenderAdapter', 'RenderException']));
+$renderAssignment = strpos($controllerSource, '$html = $this->renderAppShell();');
+$fallbackCall = strpos($controllerSource, '$this->renderLegacy();', (int) $renderAssignment);
+$htmlOutput = strpos($controllerSource, 'echo $html;', (int) $renderAssignment);
+report('Fallback previo a salida del HTML nuevo', $renderAssignment !== false && $fallbackCall !== false && $htmlOutput !== false && $fallbackCall < $htmlOutput);
+report('Despacho público permanece en DashboardController', containsAll($entrySource, ['$controller = new DashboardController();', '$controller->index();']));
+
 echo "\nResumen: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);
