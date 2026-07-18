@@ -1,0 +1,3 @@
+codigo,marca,modelo,serie,imei,telefono,iccid,estado,activo,observaciones
+SC-9001,Marca Demo,Modelo A,SERIE-DEMO-001,000000000000001,0000000000,0000000000000000001,disponible,1,Fixture sin datos reales
+SC-9002,Marca Demo,Modelo B,SERIE-DEMO-002,,,,mantenimiento,1,Fixture sin carga automática
