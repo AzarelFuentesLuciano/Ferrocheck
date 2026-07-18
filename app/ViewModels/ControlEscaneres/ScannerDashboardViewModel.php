@@ -1,0 +1,3 @@
+<?php
+declare(strict_types=1);namespace App\ViewModels\ControlEscaneres;
+final readonly class ScannerDashboardViewModel{/** @param list<DashboardKpiViewModel> $kpis @param list<DashboardStatusItemViewModel> $statuses @param list<DashboardAlertViewModel> $alerts @param list<DashboardActivityItemViewModel> $activity @param list<DashboardTrendPointViewModel> $trend @param list<DashboardQuickActionViewModel> $quickActions */public function __construct(public string$rangeKey,public string$rangeLabel,public string$updatedAt,public array$kpis,public array$statuses,public array$alerts,public array$activity,public array$trend,public array$quickActions,public int$deliveriesInRange,public int$receptionsInRange,public bool$hasTrend){}}
