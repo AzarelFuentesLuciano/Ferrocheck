@@ -1,0 +1,3 @@
+<?php
+declare(strict_types=1); namespace App\DTO\ControlEscaneres;
+final readonly class ScannerFilterData {public const ORDER_COLUMNS=['codigo','marca','modelo','estado','created_at','updated_at'];public function __construct(public ?string $search=null,public ?string $status=null,public ?bool $active=true,public ?int $areaId=null,public int $page=1,public int $perPage=25,public string $orderBy='codigo',public string $direction='ASC'){if($page<1||$perPage<1||$perPage>100||!in_array($orderBy,self::ORDER_COLUMNS,true)||!in_array($direction,['ASC','DESC'],true))throw new \InvalidArgumentException('Filtro inválido.');}public function offset():int{return($this->page-1)*$this->perPage;}}
