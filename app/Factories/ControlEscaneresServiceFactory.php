@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace App\Factories;
 use App\Core\Database;
-use App\Repositories\ControlEscaneres\Pdo\{PdoAuditQueryRepository,PdoAuditRepository,PdoEvidenceRepository,PdoScannerHistoryQuery,PdoScannerIncidentRepository,PdoScannerInspectionRepository,PdoScannerMovementRepository,PdoScannerRepository};
+use App\Repositories\ControlEscaneres\Pdo\{PdoAuditQueryRepository,PdoAuditRepository,PdoEvidenceRepository,PdoScannerCatalogQuery,PdoScannerHistoryQuery,PdoScannerIncidentRepository,PdoScannerInspectionRepository,PdoScannerMovementRepository,PdoScannerRepository};
 use App\Repositories\ControlEscaneres\TransactionManager;
 use App\Services\ControlEscaneres\Auditoria\ScannerAuditService;
 use App\Services\ControlEscaneres\Entrega\ScannerDeliveryService;
@@ -22,6 +22,7 @@ final class ControlEscaneresServiceFactory
     public function evidence():PdoEvidenceRepository{return new PdoEvidenceRepository($this->pdo());}
     public function history():PdoScannerHistoryQuery{return new PdoScannerHistoryQuery($this->pdo());}
     public function auditQuery():PdoAuditQueryRepository{return new PdoAuditQueryRepository($this->pdo());}
+    public function catalog():PdoScannerCatalogQuery{return new PdoScannerCatalogQuery($this->pdo());}
     private function clock():SystemBusinessClock{return new SystemBusinessClock();}
     private function audit():ScannerAuditService{return new ScannerAuditService(new PdoAuditRepository($this->pdo()),$this->clock());}
     public function delivery():ScannerDeliveryService{$a=new ScannerAvailabilityPolicy();$m=new MovementPolicy();return new ScannerDeliveryService($this->scanners(),$this->movements(),$this->inspections(),$this->evidence(),new TransactionManager($this->pdo()),new ScannerStateMachine(),new UuidOperationalFolioGenerator($this->clock()),$this->audit(),$a,$m);}
