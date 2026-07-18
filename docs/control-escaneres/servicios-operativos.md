@@ -33,8 +33,14 @@ Las operaciones usan `lockScannerForUpdate` y, en recepción, `lockOpenMovementF
 
 ## Deuda compatible conocida
 
-Los DTO heredados incluían folio y actor dentro del comando. Se ampliaron únicamente con parámetros opcionales al final para no romper consumidores existentes. Una fase futura puede separar comandos de aplicación de DTO de persistencia cuando todos los adaptadores hayan migrado. El repositorio PDO de incidencias conserva su SQL previo; el servicio ya transmite `movementId`, pero su persistencia completa debe verificarse en una fase específica de repositorios antes de depender de esa relación en producción.
+Los DTO heredados incluían folio y actor dentro del comando. Se ampliaron únicamente con parámetros opcionales al final para no romper consumidores existentes. Una fase futura puede separar comandos de aplicación de DTO de persistencia cuando todos los adaptadores hayan migrado.
+
+## Validación de persistencia de incidencias
+
+La relación incidencia-movimiento fue corregida en el adaptador PDO: `movimiento_id` se persiste cuando el comando incluye `movementId` y permanece `NULL` cuando no existe. Las consultas por ID, escáner, movimiento y rango, así como los cambios de severidad y resolución, conservan la relación en el mapper.
+
+La validación se ejecuta sobre SQLite efímero y usa SQL preparado compatible con PDO/MariaDB. No fue necesario modificar el esquema ni ejecutar migraciones sobre la base de datos productiva.
 
 ## Pruebas
 
-`php tests/control-escaneres/run-services.php` valida entrega, folio, inspecciones, recepción con daño y duración, incidencias, idempotencia de cierre, mantenimiento, auditoría y rollback sin usar la base de datos productiva.
+`php tests/control-escaneres/run-services.php` valida entrega, folio, inspecciones, recepción con daño y duración, integración del servicio de incidencias con `movementId`, idempotencia de cierre, mantenimiento, auditoría y rollback. `php tests/control-escaneres/run-incident-persistence.php` cubre directamente el adaptador PDO, consultas, valores nulos, actualizaciones y rollback. Ambas suites usan SQLite efímero y no acceden a la base de datos productiva.

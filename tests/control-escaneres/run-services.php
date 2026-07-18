@@ -48,8 +48,9 @@ test('recepcion detecta dano', fn() => same('pendiente_reparacion', $reception->
 test('recepcion cierra movimiento', fn() => same('devuelto', $reception->movement->status->value));
 
 $scanners->changeStatus($scanner->id, new ScannerStatus('disponible'), 7);
-$reported = $incidentService->report(new ScannerIncidentCreateData($scanner->id, 'daño físico', new IncidentSeverity('alta'), 'Golpe', $now, $actor), $actor, $context);
+$reported = $incidentService->report(new ScannerIncidentCreateData($scanner->id, 'daño físico', new IncidentSeverity('alta'), 'Golpe', $now, $actor, $delivery->movement->id), $actor, $context);
 test('incidencia critica cambia estado', fn() => same('pendiente_reparacion', $reported->scannerStatus->value));
+test('servicio conserva movimiento de incidencia', fn() => same($delivery->movement->id, $reported->incident->movementId));
 $resolved = $incidentService->resolve(new IncidentResolutionData($reported->incident->id, 'Reparado', new ScannerStatus('disponible')), $actor, $context);
 test('incidencia resuelta', fn() => same('resuelta', $resolved->incident->status->value));
 test('incidencia no resuelve dos veces', fn() => throws(fn() => $incidentService->resolve(new IncidentResolutionData($reported->incident->id, 'Otra', new ScannerStatus('disponible')), $actor, $context)));
