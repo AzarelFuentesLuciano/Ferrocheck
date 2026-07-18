@@ -5,6 +5,7 @@ use App\Domain\ControlEscaneres\{BatteryPercentage,IncidentSeverity,ScannerFolio
 use App\DTO\ControlEscaneres\{IncidentResolutionData,IncidentSeverityChangeData,MaintenanceCommandData,ScannerIncidentCreateData,ScannerInspectionDetailData,ScannerMovementCreateData,ScannerReceptionData};
 use App\Factories\ControlEscaneresServiceFactory;
 use App\Presentation\ControlEscaneres\SensitiveScannerDataPresenter;
+use App\Presentation\ControlEscaneres\ScannerDashboardViewModelFactory;
 use App\Security\ControlEscaneres\{AuthenticatedActorProviderInterface,CsrfTokenManagerInterface};
 use App\Services\ControlEscaneres\Shared\ScannerStateMachine;
 use App\Support\ControlEscaneres\{BusinessRequestContextFactory,ControlEscaneresErrorMapper,FlashMessageStore};
@@ -17,7 +18,8 @@ final class ControlEscaneresWebController
     private function get(string$section,array$query):void
     {
         try{$messages=$this->flash->consume();$id=max(0,(int)($query['scanner_id']??0));
-            if($section==='catalogo'){$catalogViewModel=(new ScannerCatalogController($this->factory->catalog(),new SensitiveScannerDataPresenter()))->index($query,$messages);}
+            if($section==='dashboard'){$dashboardViewModel=(new ScannerDashboardController($this->factory->dashboard(),$this->factory->businessClock(),new ScannerDashboardViewModelFactory()))->index(isset($query['rango'])?(string)$query['rango']:null,defined('BASE_URL')?BASE_URL:'');}
+            elseif($section==='catalogo'){$catalogViewModel=(new ScannerCatalogController($this->factory->catalog(),new SensitiveScannerDataPresenter()))->index($query,$messages);}
             elseif($section==='entrega'){$s=$id?$this->factory->scanners()->findById($id):null;$deliveryForm=new ScannerDeliveryFormViewModel($s?->id,$s?->code->value,$s?->status->value,$this->csrf->token(),self::COMPONENTS,$messages);}
             elseif($section==='recepcion'){$s=$id?$this->factory->scanners()->findById($id):null;$m=$s?$this->factory->movements()->findOpenByScannerId($s->id):null;$receptionForm=new ScannerReceptionFormViewModel($s?->id,$s?->code->value,$m?->id,$m?->personaEntregaNombre,$m?->entregadoAt->format('Y-m-d H:i:s'),$this->csrf->token(),self::COMPONENTS,$messages);}
             elseif($section==='incidencias'){$s=$id?$this->factory->scanners()->findById($id):null;$m=$s?$this->factory->movements()->findOpenByScannerId($s->id):null;$list=$s?$this->factory->incidents()->listByScannerId($s->id):[];$allowed=$s?array_map(fn($x)=>$x->value,(new ScannerStateMachine())->allowedTransitionsFrom($s->status)):[];$incidentForm=new ScannerIncidentFormViewModel($s?->id,$s?->code->value,$m?->id,$list,$allowed,$this->csrf->token(),$messages);}

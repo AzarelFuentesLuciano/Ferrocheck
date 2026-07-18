@@ -1,0 +1,1 @@
+(function(){'use strict';var range=document.getElementById('dashboard-range');if(!range)return;range.addEventListener('change',function(){var button=range.form&&range.form.querySelector('button[type="submit"]');if(button)button.textContent='Aplicar periodo';});})();

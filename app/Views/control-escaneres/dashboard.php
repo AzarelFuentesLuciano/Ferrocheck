@@ -1,32 +1,20 @@
 <?php
-$vistaActual = 'dashboard';
-ob_start();
-$pageTitle = 'Estado de la operación';
-$pageDescription = 'Orientación operativa para localizar equipos y continuar con la acción correspondiente.';
-$breadcrumbs = ['Control de Escáneres', 'Inicio'];
-require __DIR__ . '/../components/page-header.php';
+$vistaActual='dashboard';$h=static fn($v)=>htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');ob_start();
+$pageTitle='Control de Escáneres';$pageDescription='Consulta la disponibilidad, custodia y condiciones de los equipos utilizados en la operación.';$breadcrumbs=['Control de Escáneres','Inicio'];require __DIR__.'/../components/page-header.php';
 ?>
-<div class="ce-operation">
-    <?php $alertType = 'info'; $alertMessage = 'Los indicadores ejecutivos estarán disponibles cuando exista una fuente de datos consolidada y validada.'; require __DIR__ . '/../components/alert.php'; ?>
-    <section class="vo-form-section" aria-labelledby="dashboard-start">
-        <?php $sectionTitle = '¿Qué necesitas hacer?'; $sectionDescription = 'Comienza por localizar el equipo. Desde su ficha podrás acceder a las operaciones autorizadas.'; require __DIR__ . '/../components/section-header.php'; ?>
-        <div class="ce-grid ce-grid--2">
-            <article class="vo-card">
-                <h3 id="dashboard-start">Consultar un escáner</h3>
-                <p>Busca por código o revisa el catálogo para conocer el estado actual y abrir su expediente.</p>
-                <div class="vo-actions"><a class="vo-btn vo-btn--primary" href="<?= htmlspecialchars(BASE_URL . '/index.php?modulo=control-escaneres&seccion=catalogo', ENT_QUOTES, 'UTF-8') ?>">Abrir catálogo</a></div>
-            </article>
-            <article class="vo-card">
-                <h3>Revisar la operación</h3>
-                <p>Consulta el historial general cuando la integración de actividad consolidada esté disponible.</p>
-                <div class="vo-actions"><a class="vo-btn vo-btn--secondary" href="<?= htmlspecialchars(BASE_URL . '/index.php?modulo=control-escaneres&seccion=historial', ENT_QUOTES, 'UTF-8') ?>">Ver historial provisional</a></div>
-            </article>
-        </div>
-    </section>
-    <section class="vo-form-section">
-        <?php $sectionTitle = 'Flujo recomendado'; $sectionDescription = 'Una secuencia simple para mantener la trazabilidad.'; require __DIR__ . '/../components/section-header.php'; ?>
-        <?php $processSteps = ['Localiza el equipo', 'Revisa su estado', 'Elige la operación', 'Confirma la información']; $currentStep = 1; require __DIR__ . '/../components/process-steps.php'; ?>
-        <p class="vo-muted">Las opciones de entrega, recepción, incidencias y mantenimiento se habilitan según el equipo seleccionado y su estado.</p>
-    </section>
-</div>
-<?php $contenidoModulo = ob_get_clean(); require __DIR__ . '/plantilla.php'; ?>
+<div class="ce-operation vo-dashboard">
+<?php if(isset($integrationError)): ?>
+    <?php $alertType='error';$alertMessage='No fue posible cargar el resumen operativo. Puedes intentar actualizar la página.';require __DIR__.'/../components/alert.php'; ?>
+<?php elseif(!isset($dashboardViewModel)): ?>
+    <?php $alertType='warning';$alertMessage='El módulo aún no cuenta con la estructura de datos necesaria en este entorno. Contacta al administrador del sistema.';require __DIR__.'/../components/alert.php'; ?>
+<?php else:$vm=$dashboardViewModel; ?>
+    <p class="vo-muted">Estado de la operación · información persistida</p>
+    <div class="vo-dashboard-toolbar"><div><small>Última actualización</small><strong><?= $h($vm->updatedAt) ?></strong></div><form method="get"><input type="hidden" name="modulo" value="control-escaneres"><input type="hidden" name="seccion" value="dashboard"><label for="dashboard-range">Periodo</label><select id="dashboard-range" name="rango"><option value="today" <?= $vm->rangeKey==='today'?'selected':'' ?>>Hoy</option><option value="7d" <?= $vm->rangeKey==='7d'?'selected':'' ?>>7 días</option><option value="30d" <?= $vm->rangeKey==='30d'?'selected':'' ?>>30 días</option></select><button class="vo-btn vo-btn--secondary" type="submit">Actualizar resumen</button></form></div>
+    <section aria-labelledby="summary-title"><header class="vo-section-header"><div><h2 id="summary-title">Resumen operativo</h2><p><?= $h($vm->rangeLabel) ?> · <?= $h($vm->deliveriesInRange) ?> entregas y <?= $h($vm->receptionsInRange) ?> recepciones</p></div></header><div class="vo-dashboard-kpis"><?php foreach($vm->kpis as$kpi)require __DIR__.'/../components/dashboard-kpi.php'; ?></div></section>
+    <section class="vo-form-section vo-dashboard-attention" aria-labelledby="attention-title"><?php $sectionTitle='Atención requerida';$sectionDescription='Situaciones reales que requieren seguimiento operativo.';require __DIR__.'/../components/section-header.php'; ?><?php if(!$vm->alerts): ?><p class="vo-dashboard-ok">No hay situaciones críticas que requieran atención en este momento.</p><?php else: ?><div class="vo-dashboard-list"><?php foreach($vm->alerts as$item): ?><article><div><strong><?= $h($item->scannerCode) ?> · <?= $h($item->situation) ?></strong><small><?= $h(ucfirst($item->severity)) ?> · desde <?= $h($item->occurredAt) ?></small></div><a href="<?= $h($item->url) ?>">Abrir expediente</a></article><?php endforeach; ?></div><?php endif; ?></section>
+    <div class="vo-dashboard-columns"><section class="vo-form-section" aria-labelledby="status-title"><?php $sectionTitle='Distribución por estado';$sectionDescription='Porcentaje sobre el inventario total, incluidos equipos inactivos.';require __DIR__.'/../components/section-header.php'; ?><div class="vo-status-bars"><?php foreach($vm->statuses as$item): ?><div><div><span><?= $h($item->label) ?></span><strong><?= $h($item->count) ?> · <?= $h(number_format($item->percentage,1)) ?>%</strong></div><progress max="100" value="<?= $h($item->percentage) ?>" aria-label="<?= $h($item->label) ?>: <?= $h($item->percentage) ?> por ciento"></progress></div><?php endforeach; ?></div></section>
+    <section class="vo-form-section" aria-labelledby="activity-title"><?php $sectionTitle='Actividad reciente';$sectionDescription='Últimos movimientos e incidencias del periodo seleccionado.';require __DIR__.'/../components/section-header.php'; ?><?php if(!$vm->activity): ?><p class="vo-muted">No hay actividad registrada en este periodo.</p><?php else: ?><div class="vo-timeline"><?php foreach($vm->activity as$item): ?><div class="vo-timeline__item"><time><?= $h($item->occurredAt) ?></time><h4><?= $h($item->title) ?> · <?= $h($item->scannerCode) ?></h4><?php if($item->folio): ?><p>Folio <?= $h($item->folio) ?></p><?php endif; ?><a href="<?= $h($item->url) ?>">Abrir expediente</a></div><?php endforeach; ?></div><?php endif; ?></section></div>
+    <section class="vo-form-section" aria-labelledby="trend-title"><?php $sectionTitle='Tendencia operativa';$sectionDescription='Entregas, recepciones e incidencias reportadas por día.';require __DIR__.'/../components/section-header.php'; ?><?php if(!$vm->hasTrend): ?><p class="vo-muted">Aún no hay suficiente actividad para mostrar una tendencia representativa.</p><?php else: ?><div class="vo-trend" role="img" aria-label="Tendencia de entregas, recepciones e incidencias"><table><thead><tr><th scope="col">Fecha</th><th scope="col">Entregas</th><th scope="col">Recepciones</th><th scope="col">Incidencias</th></tr></thead><tbody><?php foreach($vm->trend as$point): ?><tr><th scope="row"><?= $h($point->label) ?></th><td><?= $h($point->deliveries) ?></td><td><?= $h($point->receptions) ?></td><td><?= $h($point->incidents) ?></td></tr><?php endforeach; ?></tbody></table></div><?php endif; ?></section>
+    <section class="vo-form-section" aria-labelledby="quick-title"><?php $sectionTitle='Accesos rápidos';$sectionDescription='Selecciona primero un equipo cuando la operación lo requiera.';require __DIR__.'/../components/section-header.php'; ?><div class="vo-quick-actions"><?php foreach($vm->quickActions as$item): ?><a class="vo-card" href="<?= $h($item->url) ?>"><strong><?= $h($item->label) ?></strong><span><?= $h($item->description) ?></span></a><?php endforeach; ?></div></section>
+<?php endif; ?></div>
+<?php $contenidoModulo=ob_get_clean();require __DIR__.'/plantilla.php'; ?>
