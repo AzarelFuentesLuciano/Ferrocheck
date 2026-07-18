@@ -1,0 +1,1 @@
+<?php $h=static fn($v)=>htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');$timelineEntry=$timelineEntry??[]; ?><div class="vo-timeline__item"><time><?= $h($timelineEntry['at']??'') ?></time><h4><?= $h($timelineEntry['title']??'Actividad operativa') ?></h4><?php if(!empty($timelineEntry['description'])): ?><p><?= $h($timelineEntry['description']) ?></p><?php endif; ?></div>

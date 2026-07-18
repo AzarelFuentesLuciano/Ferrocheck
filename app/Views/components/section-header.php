@@ -1,0 +1,1 @@
+<?php $h=static fn($v)=>htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8'); ?><header class="vo-section-header"><div><h3><?= $h($sectionTitle??'Sección') ?></h3><?php if(!empty($sectionDescription)): ?><p><?= $h($sectionDescription) ?></p><?php endif; ?></div></header>
