@@ -8,6 +8,7 @@ use App\Core\Rendering\Exceptions\RenderException;
 use App\Core\Rendering\LegacyRenderBridge;
 use App\Core\Rendering\RenderAdapter;
 use App\Services\DashboardService;
+use Throwable;
 
 class DashboardController
 {
@@ -31,6 +32,7 @@ class DashboardController
         }
 
         echo $html;
+        return;
     }
 
     public function resumenTarjetas(): void
@@ -68,33 +70,130 @@ class DashboardController
 
     private function renderAppShell(): string
     {
-        $legacy = $this->buildLegacyRenderData();
-
-        // Bloqueo seguro: todavía no existe una vista reutilizable sin shell.
-        if ($legacy['contenidoModulo'] === '') {
-            throw new RenderException('App Shell content is not available.');
-        }
+        $ferroSeccion = trim((string) ($_GET['seccion'] ?? 'consulta-vin'));
+        $contenidoModulo = $this->renderFerroCheckContent($ferroSeccion);
+        $legacy = $this->buildLegacyRenderData($contenidoModulo, $ferroSeccion);
 
         $context = (new LegacyRenderBridge())->createContext($legacy);
 
         return (new RenderAdapter())->render($context);
     }
 
-    private function buildLegacyRenderData(): array
+    private function renderFerroCheckContent(string $ferroSeccion): string
     {
+        $initialLevel = ob_get_level();
+
+        try {
+            ob_start();
+            require __DIR__ . '/../Views/inventario/partials/ferrocheck-content.php';
+            $contenidoModulo = ob_get_clean();
+
+            if (!is_string($contenidoModulo) || trim($contenidoModulo) === '') {
+                throw new RenderException('FerroCheck content could not be rendered.');
+            }
+
+            return $contenidoModulo;
+        } catch (Throwable $exception) {
+            while (ob_get_level() > $initialLevel) {
+                ob_end_clean();
+            }
+
+            if ($exception instanceof RenderException) {
+                throw $exception;
+            }
+
+            throw new RenderException('FerroCheck content could not be rendered.', 0, $exception);
+        }
+    }
+
+    private function buildLegacyRenderData(string $contenidoModulo, string $ferroSeccion): array
+    {
+        $baseUrl = defined('BASE_URL') ? rtrim((string) BASE_URL, '/') : '';
+
         return [
-            'pageTitle' => 'VASCOR OPS',
+            'pageTitle' => 'VASCOR OPS | FerroCheck',
             'documentLanguage' => 'es',
-            'baseUrl' => defined('BASE_URL') ? BASE_URL : '',
-            'modulo' => 'dashboard',
-            'seccion' => '',
-            'modules' => [],
+            'baseUrl' => $baseUrl,
+            'modulo' => 'ferrocheck',
+            'seccion' => $ferroSeccion,
+            'modules' => [
+                [
+                    'id' => 'dashboard',
+                    'label' => 'Dashboard',
+                    'url' => $baseUrl . '/index.php?modulo=dashboard',
+                    'icon' => '🏠',
+                ],
+                [
+                    'id' => 'ferrocheck',
+                    'label' => 'FerroCheck',
+                    'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=dashboard',
+                    'icon' => '🚂',
+                    'sections' => [
+                        ['id' => 'dashboard', 'label' => 'Dashboard', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=dashboard'],
+                        ['id' => 'consulta-vin', 'label' => 'Consulta VIN', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=consulta-vin'],
+                        ['id' => 'importar-excel', 'label' => 'Importar Excel', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=importar-excel'],
+                        ['id' => 'busqueda-multiple', 'label' => 'Búsqueda múltiple', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=busqueda-multiple'],
+                        ['id' => 'configuracion', 'label' => 'Configuración', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=configuracion'],
+                    ],
+                ],
+                [
+                    'id' => 'inventario-material',
+                    'label' => 'Inventario de Material',
+                    'url' => $baseUrl . '/index.php?modulo=inventario-material',
+                    'icon' => '📦',
+                ],
+                [
+                    'id' => 'operaciones-patio',
+                    'label' => 'Inventario de Patio',
+                    'url' => $baseUrl . '/index.php?modulo=operaciones-patio',
+                    'icon' => '🚛',
+                ],
+                [
+                    'id' => 'control-escaneres',
+                    'label' => 'Control de Escáneres',
+                    'url' => $baseUrl . '/index.php?modulo=control-escaneres',
+                    'icon' => '📡',
+                ],
+                [
+                    'id' => 'reportes',
+                    'label' => 'Reportes',
+                    'url' => $baseUrl . '/index.php?modulo=reportes',
+                    'icon' => '📊',
+                ],
+                [
+                    'id' => 'administracion',
+                    'label' => 'Administración',
+                    'url' => $baseUrl . '/index.php?modulo=administracion',
+                    'icon' => '👤',
+                ],
+                [
+                    'id' => 'configuracion-general',
+                    'label' => 'Configuración General',
+                    'url' => $baseUrl . '/index.php?modulo=configuracion-general',
+                    'icon' => '⚙',
+                ],
+            ],
             'moduleNavigation' => '',
-            'contenidoModulo' => '',
-            'additionalStyles' => [],
-            'additionalScripts' => [],
-            'header' => [],
-            'footer' => [],
+            'contenidoModulo' => $contenidoModulo,
+            'additionalStyles' => [
+                $baseUrl . '/assets/css/importador.css',
+            ],
+            'additionalScripts' => [
+                $baseUrl . '/assets/js/importador.js',
+            ],
+            'header' => [
+                'systemName' => 'VASCOR OPS',
+                'systemSubtitle' => 'Plataforma Operativa',
+                'versionLabel' => 'Versión v1.0',
+                'menuLabel' => 'Abrir navegación',
+            ],
+            'footer' => [
+                'title' => 'VASCOR OPS v1.0',
+                'subtitle' => 'Plataforma Operativa',
+                'creditLabel' => 'Desarrollado por',
+                'developer' => 'Ing. Azarel Fuentes Luciano',
+                'year' => '2026',
+            ],
             'sidebarLabel' => 'Módulos principales',
         ];
     }

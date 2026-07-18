@@ -144,7 +144,18 @@ report('importar.php conserva shell legacy', containsAll($legacyViewSource, ['<!
 report('RENDER_MODE permanece en legacy', str_contains($controllerSource, "private const RENDER_MODE = 'legacy';"));
 report('Contenido FerroCheck no está duplicado en importar.php', substr_count($legacyViewSource, 'aria-label="FerroCheck"') === 0);
 report('Vista extraída conserva contrato principal', containsAll($ferroContentSource, ['aria-label="FerroCheck"', 'id="importador"', 'id="verificacion"', 'class="results-table"']));
-report('DashboardController no referencia la vista extraída', !str_contains($controllerSource, 'ferrocheck-content.php'));
+report('DashboardController referencia la vista extraída', str_contains($controllerSource, 'ferrocheck-content.php'));
+
+echo "\nPipeline preparado del App Shell\n";
+report('Ruta de contenido estática en DashboardController', str_contains($controllerSource, "require __DIR__ . '/../Views/inventario/partials/ferrocheck-content.php';"));
+report('Contenido capturado se asigna a contenidoModulo', str_contains($controllerSource, "'contenidoModulo' => \$contenidoModulo"));
+report('Estilos de FerroCheck pasan por el contexto', str_contains($controllerSource, "'additionalStyles' => [") && str_contains($controllerSource, '/assets/css/importador.css'));
+report('Scripts de FerroCheck pasan por el contexto', str_contains($controllerSource, "'additionalScripts' => [") && str_contains($controllerSource, '/assets/js/importador.js'));
+report('importar.php no se usa como contenido nuevo', !preg_match('/contenidoModulo[^\n]*importar\.php/', $controllerSource));
+report('Fallback legacy permanece disponible', str_contains($controllerSource, 'catch (RenderException)') && str_contains($controllerSource, '$this->renderLegacy();'));
+report('Rutas públicas permanecen en el punto de entrada', containsAll($entrySource, ['DetallePlataformaController', 'ExportacionInventarioController', 'InventarioController', 'VerificadorController']));
+report('Sin doble shell evidente en contenidoModulo', !str_contains($ferroContentSource, '<!DOCTYPE html>') && !str_contains($controllerSource, "'contenidoModulo' => \$this->renderLegacy"));
+report('Captura ocurre antes de construir el bridge', strpos($controllerSource, '$contenidoModulo = $this->renderFerroCheckContent($ferroSeccion);') < strpos($controllerSource, 'new LegacyRenderBridge()'));
 
 echo "\nResumen: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);

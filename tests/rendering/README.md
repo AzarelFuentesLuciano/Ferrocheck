@@ -50,3 +50,19 @@ php tests/rendering/ferrocheck-content-view-test.php
 ```
 
 La prueba CLI renderiza la vista con variables mínimas, comprueba que no incorpore shell o assets, preserva los contratos estructurales de FerroCheck y verifica que el wrapper legacy genere una sola copia del contenido. Esta separación no modifica lógica de negocio, endpoints, CSS ni JavaScript.
+
+## Pipeline preparado del Dashboard App Shell
+
+`DashboardController` dispone de un camino `app_shell` completo pero inactivo. Captura `ferrocheck-content.php` con un buffer propio, entrega el HTML como `contenidoModulo` a `LegacyRenderBridge` y renderiza el documento completo mediante `RenderAdapter`. La captura conserva únicamente `$ferroSeccion` y la constante `BASE_URL` requerida por la vista.
+
+El App Shell carga sus assets base desde el layout. `importador.css` e `importador.js` se inyectan mediante `additionalStyles` y `additionalScripts` del `RenderContext`, sin agregar etiquetas de assets al contenido del módulo.
+
+Ante un `RenderException`, el controlador descarta solamente los buffers que abrió y conserva el fallback único hacia `importar.php`. El modo predeterminado continúa siendo `legacy`; no existe activación por parámetros HTTP y el pipeline nuevo aún no se utiliza en producción.
+
+Ejecución aislada:
+
+```bash
+php tests/rendering/dashboard-app-shell-pipeline-test.php
+```
+
+La prueba ejecuta `ferrocheck-content.php → LegacyRenderBridge → RenderContext → RenderAdapter → HTML` sin servidor web, base de datos, sesión, Excel ni solicitudes POST.
