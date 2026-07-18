@@ -25,7 +25,7 @@ $test = static function (string $label, bool $condition) use (&$passed, &$failed
 
 $captureMethod = strpos($source, 'private function renderFerroCheckContent(string $ferroSeccion): string');
 $bridgePosition = strpos($source, 'new LegacyRenderBridge()');
-$renderPosition = strpos($source, '$html = $this->renderAppShell();');
+$renderPosition = strpos($source, '$html = $this->renderAppShell($seccion);');
 $echoPosition = strpos($source, 'echo $html;', (int) $renderPosition);
 
 $test('Existe método de captura de contenido', $captureMethod !== false);
@@ -58,6 +58,11 @@ $test('No existe salida previa al render completo', $renderPosition !== false &&
 $test('RENDER_MODE continúa en legacy', str_contains($source, "private const RENDER_MODE = 'legacy';"));
 $test('No existe activación HTTP del modo', !preg_match('/RENDER_MODE[^;]*\$_(?:GET|POST|SESSION|COOKIE|SERVER)/s', $source));
 $test('Punto de entrada y rutas permanecen estructuralmente presentes', str_contains($entrySource, '$controller = new DashboardController();') && str_contains($entrySource, '$controller->index();'));
+$test('Pipeline está detrás de la compuerta FerroCheck', strpos($source, 'shouldRenderFerroCheckWithAppShell($modulo, $seccion)') < $renderPosition);
+$test('Compuerta verifica la solicitud FerroCheck', str_contains($source, '$this->isFerroCheckRequest($modulo, $seccion)'));
+$test('Bandera FerroCheck permanece apagada', str_contains($source, 'private const FERROCHECK_APP_SHELL_ENABLED = false;'));
+$test('Preparación del pipeline permanece disponible', str_contains($source, 'private function renderAppShell(string $ferroSeccion): string'));
+$test('Fallback permanece sin cambios funcionales', preg_match('/catch \(RenderException\)\s*\{\s*\$this->renderLegacy\(\);\s*return;/s', $source) === 1);
 
 require_once $root . '/config/config.php';
 require_once $root . '/vendor/autoload.php';
@@ -67,7 +72,7 @@ $controller = new App\Controllers\DashboardController();
 $method = new ReflectionMethod($controller, 'renderAppShell');
 $externalLevel = ob_get_level();
 ob_start();
-$html = $method->invoke($controller);
+$html = $method->invoke($controller, 'consulta-vin');
 $lateralOutput = (string) ob_get_clean();
 
 $test('Vista capturada atraviesa bridge y adapter', is_string($html) && $html !== '');

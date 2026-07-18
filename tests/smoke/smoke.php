@@ -122,7 +122,7 @@ report('importar.php continúa como flujo legacy', str_contains($controllerSourc
 report('Sin activación del modo mediante parámetros HTTP', !preg_match('/RENDER_MODE[^;]*\$_(?:GET|POST|SESSION|COOKIE)/s', $controllerSource));
 report('importar.php no se usa como contenido del App Shell', !preg_match('/contenidoModulo[^\n]*importar\.php/', $controllerSource));
 report('Pipeline nuevo contenido en DashboardController', containsAll($controllerSource, ['LegacyRenderBridge', 'RenderAdapter', 'RenderException']));
-$renderAssignment = strpos($controllerSource, '$html = $this->renderAppShell();');
+$renderAssignment = strpos($controllerSource, '$html = $this->renderAppShell($seccion);');
 $fallbackCall = strpos($controllerSource, '$this->renderLegacy();', (int) $renderAssignment);
 $htmlOutput = strpos($controllerSource, 'echo $html;', (int) $renderAssignment);
 report('Fallback previo a salida del HTML nuevo', $renderAssignment !== false && $fallbackCall !== false && $htmlOutput !== false && $fallbackCall < $htmlOutput);
@@ -156,6 +156,20 @@ report('Fallback legacy permanece disponible', str_contains($controllerSource, '
 report('Rutas públicas permanecen en el punto de entrada', containsAll($entrySource, ['DetallePlataformaController', 'ExportacionInventarioController', 'InventarioController', 'VerificadorController']));
 report('Sin doble shell evidente en contenidoModulo', !str_contains($ferroContentSource, '<!DOCTYPE html>') && !str_contains($controllerSource, "'contenidoModulo' => \$this->renderLegacy"));
 report('Captura ocurre antes de construir el bridge', strpos($controllerSource, '$contenidoModulo = $this->renderFerroCheckContent($ferroSeccion);') < strpos($controllerSource, 'new LegacyRenderBridge()'));
+
+echo "\nCompuerta local de FerroCheck\n";
+report('Existe FERROCHECK_APP_SHELL_ENABLED', str_contains($controllerSource, 'private const FERROCHECK_APP_SHELL_ENABLED'));
+report('Bandera FerroCheck está apagada', str_contains($controllerSource, 'private const FERROCHECK_APP_SHELL_ENABLED = false;'));
+report('Existe detección explícita de FerroCheck', str_contains($controllerSource, 'private function isFerroCheckRequest(string $modulo, string $seccion): bool'));
+report('Existe decisión de render por módulo', str_contains($controllerSource, 'private function shouldRenderFerroCheckWithAppShell(string $modulo, string $seccion): bool'));
+report('Dashboard queda excluido por igualdad exacta', str_contains($controllerSource, '$modulo === self::FERROCHECK_MODULE'));
+report('Control de Escáneres queda excluido del App Shell', !preg_match('/renderAppShell[^;]*control-escaneres/s', $controllerSource));
+report('Módulos desconocidos quedan excluidos', str_contains($controllerSource, 'in_array($seccion, self::FERROCHECK_SECTIONS, true)'));
+report('Solicitud no habilitada continúa en legacy', str_contains($controllerSource, 'if (!$this->shouldRenderFerroCheckWithAppShell($modulo, $seccion))'));
+report('Bandera no admite activación HTTP', !preg_match('/FERROCHECK_APP_SHELL_ENABLED[^;]*\$_(?:GET|POST|SESSION|COOKIE|SERVER)/s', $controllerSource));
+report('RENDER_MODE sólo se evalúa dentro de la compuerta', str_contains($controllerSource, "\$this->resolveRenderMode() === 'app_shell'"));
+report('Rutas continúan intactas tras la compuerta', containsAll($entrySource, ['OperacionPatioController', 'DetallePlataformaController', 'InventarioController']));
+report('Pipeline FerroCheck continúa presente', containsAll($controllerSource, ['renderFerroCheckContent', 'LegacyRenderBridge', 'RenderAdapter']));
 
 echo "\nResumen: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);

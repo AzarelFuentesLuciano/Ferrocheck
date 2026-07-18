@@ -20,7 +20,7 @@ $test = static function (string $label, bool $condition) use (&$passed, &$failed
     echo sprintf("[%s] %s\n", $condition ? 'PASS' : 'FAIL', $label);
 };
 
-$renderAssignment = strpos($source, '$html = $this->renderAppShell();');
+$renderAssignment = strpos($source, '$html = $this->renderAppShell($seccion);');
 $fallbackCall = strpos($source, '$this->renderLegacy();', (int) $renderAssignment);
 $htmlOutput = strpos($source, 'echo $html;', (int) $renderAssignment);
 
@@ -50,6 +50,14 @@ $test('Fallback legacy continúa disponible', str_contains($source, 'catch (Rend
 $test('El modo desconocido cae de forma segura a legacy', preg_match("/\? self::RENDER_MODE\s*:\s*'legacy'/s", $source) === 1);
 $test('El punto de entrada conserva DashboardController', str_contains($entrySource, '$controller = new DashboardController();') && str_contains($entrySource, '$controller->index();'));
 $test('No se activa app_shell por defecto', !str_contains($source, "private const RENDER_MODE = 'app_shell';"));
+$test('Existe bandera específica de FerroCheck', str_contains($source, 'private const FERROCHECK_APP_SHELL_ENABLED'));
+$test('Bandera FerroCheck está apagada', str_contains($source, 'private const FERROCHECK_APP_SHELL_ENABLED = false;'));
+$test('Modo no se aplica globalmente', !str_contains($source, "if (\$renderMode === 'legacy')"));
+$test('Dashboard continúa detrás del flujo legacy', str_contains($source, 'if (!$this->shouldRenderFerroCheckWithAppShell($modulo, $seccion))'));
+$test('Control de Escáneres queda fuera de la detección', str_contains($source, '$modulo === self::FERROCHECK_MODULE'));
+$test('FerroCheck continúa legacy con bandera false', str_contains($source, 'return self::FERROCHECK_APP_SHELL_ENABLED'));
+$test('Pipeline preparado continúa disponible', str_contains($source, 'private function renderAppShell(string $ferroSeccion): string'));
+$test('Bandera no se obtiene por HTTP', !preg_match('/FERROCHECK_APP_SHELL_ENABLED[^;]*\$_(?:GET|POST|SESSION|COOKIE|SERVER)/s', $source));
 
 echo "\nResumen Dashboard Render Mode: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);

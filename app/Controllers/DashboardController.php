@@ -15,17 +15,29 @@ class DashboardController
     /** Modo local y reversible; producción continúa en legacy por defecto. */
     private const RENDER_MODE = 'legacy';
     private const ALLOWED_RENDER_MODES = ['legacy', 'app_shell'];
+    private const FERROCHECK_APP_SHELL_ENABLED = false;
+    private const FERROCHECK_MODULE = 'ferrocheck';
+    private const FERROCHECK_SECTIONS = [
+        'dashboard',
+        'consulta-vin',
+        'importar-excel',
+        'busqueda-multiple',
+        'configuracion',
+    ];
 
     public function index(): void
     {
-        $renderMode = $this->resolveRenderMode();
-        if ($renderMode === 'legacy') {
+        $modulo = trim((string) ($_GET['modulo'] ?? 'dashboard'));
+        $modulo = $modulo !== '' ? $modulo : 'dashboard';
+        $seccion = trim((string) ($_GET['seccion'] ?? 'consulta-vin'));
+
+        if (!$this->shouldRenderFerroCheckWithAppShell($modulo, $seccion)) {
             $this->renderLegacy();
             return;
         }
 
         try {
-            $html = $this->renderAppShell();
+            $html = $this->renderAppShell($seccion);
         } catch (RenderException) {
             $this->renderLegacy();
             return;
@@ -63,14 +75,26 @@ class DashboardController
             : 'legacy';
     }
 
+    private function isFerroCheckRequest(string $modulo, string $seccion): bool
+    {
+        return $modulo === self::FERROCHECK_MODULE
+            && in_array($seccion, self::FERROCHECK_SECTIONS, true);
+    }
+
+    private function shouldRenderFerroCheckWithAppShell(string $modulo, string $seccion): bool
+    {
+        return self::FERROCHECK_APP_SHELL_ENABLED
+            && $this->resolveRenderMode() === 'app_shell'
+            && $this->isFerroCheckRequest($modulo, $seccion);
+    }
+
     private function renderLegacy(): void
     {
         require __DIR__ . '/../Views/inventario/importar.php';
     }
 
-    private function renderAppShell(): string
+    private function renderAppShell(string $ferroSeccion): string
     {
-        $ferroSeccion = trim((string) ($_GET['seccion'] ?? 'consulta-vin'));
         $contenidoModulo = $this->renderFerroCheckContent($ferroSeccion);
         $legacy = $this->buildLegacyRenderData($contenidoModulo, $ferroSeccion);
 

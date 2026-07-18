@@ -66,3 +66,17 @@ php tests/rendering/dashboard-app-shell-pipeline-test.php
 ```
 
 La prueba ejecuta `ferrocheck-content.php → LegacyRenderBridge → RenderContext → RenderAdapter → HTML` sin servidor web, base de datos, sesión, Excel ni solicitudes POST.
+
+## Compuerta local de FerroCheck
+
+`DashboardController` incorpora una compuerta específica para el pipeline App Shell de FerroCheck. La constante privada `FERROCHECK_APP_SHELL_ENABLED` permanece en `false`; por ello Dashboard, FerroCheck, Control de Escáneres y módulos desconocidos continúan utilizando el documento legacy.
+
+La decisión exige simultáneamente una solicitud del módulo `ferrocheck` con una sección reconocida, la bandera local habilitada y el modo `app_shell` permitido. No existe activación mediante GET, POST, sesión, cookies, headers, variables de entorno o base de datos, ni se añadió un sistema global de feature flags.
+
+Ejecución:
+
+```bash
+php tests/rendering/ferrocheck-app-shell-gate-test.php
+```
+
+La prueba valida la matriz de decisión con la bandera apagada y confirma que el pipeline preparado y su fallback permanecen disponibles. Todavía no existe corte visible ni activación del App Shell en producción.
