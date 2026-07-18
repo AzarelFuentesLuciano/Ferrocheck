@@ -1,0 +1,2 @@
+<?php
+declare(strict_types=1);namespace App\Repositories\ControlEscaneres\Contracts;interface AuditQueryRepositoryInterface{public function listByEntity(string$entity,int$entityId):array;public function listByScannerId(int$id):array;public function listByMovementId(int$id):array;public function listByActorId(int$id):array;public function listByDateRange(\DateTimeImmutable$from,\DateTimeImmutable$to):array;}

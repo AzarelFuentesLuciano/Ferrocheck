@@ -1,0 +1,2 @@
+<?php
+declare(strict_types=1);namespace App\DTO\ControlEscaneres;use App\Domain\ControlEscaneres\{Scanner,ScannerMovement,ScannerInspection,ScannerStatus};final readonly class ReceptionResult{public function __construct(public Scanner$scanner,public ScannerMovement$movement,public ScannerInspection$deliveryInspection,public ScannerInspection$receptionInspection,public array$differences,public int$durationSeconds,public array$generatedIncidentIds,public ScannerStatus$resultingStatus,public int$auditEventId){}}
