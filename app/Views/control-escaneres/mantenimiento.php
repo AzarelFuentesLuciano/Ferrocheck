@@ -12,7 +12,7 @@ require __DIR__ . '/../components/page-header.php';
         <?php $alertType = 'error'; $alertMessage = $integrationError; require __DIR__ . '/../components/alert.php'; ?>
     <?php elseif (!isset($maintenanceForm) || $maintenanceForm->scannerId === null): ?>
         <?php $alertType = 'info'; $alertMessage = 'Selecciona un escáner desde el catálogo para consultar las acciones de mantenimiento disponibles.'; require __DIR__ . '/../components/alert.php'; ?>
-        <div class="vo-actions"><a class="vo-btn vo-btn--primary" href="<?= $h($basePath ?? '') ?>/control-escaneres/catalogo">Ir al catálogo</a></div>
+        <div class="vo-actions"><a class="vo-btn vo-btn--primary" href="<?= BASE_URL ?>/index.php?modulo=control-escaneres&amp;seccion=catalogo">Ir al catálogo</a></div>
     <?php else: ?>
         <?php
         foreach ($maintenanceForm->messages as $message) {
@@ -29,7 +29,7 @@ require __DIR__ . '/../components/page-header.php';
         require __DIR__ . '/../components/scanner-summary.php';
         ?>
         <div class="vo-operation-layout">
-            <form class="vo-form-section" method="post">
+            <form class="vo-form-section" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="<?= $h($maintenanceForm->csrfToken) ?>">
                 <input type="hidden" name="scanner_id" value="<?= (int) $maintenanceForm->scannerId ?>">
                 <input type="hidden" name="operation" value="<?= $isReturning ? 'return' : 'send' ?>">
@@ -56,6 +56,12 @@ require __DIR__ . '/../components/page-header.php';
                         <textarea id="maintenance-observations" class="ce-textarea" name="observations" rows="4"></textarea>
                         <small>No incluyas contraseñas, PIN, PUK ni otros datos sensibles.</small>
                     </div>
+                    <div class="ce-field"><label for="maintenance-technician">Proveedor o técnico <span>(opcional)</span></label><input id="maintenance-technician" class="ce-input" name="technician" maxlength="160"></div>
+                    <div class="ce-field"><label for="maintenance-diagnosis">Diagnóstico <span>(opcional)</span></label><textarea id="maintenance-diagnosis" class="ce-textarea" name="diagnosis" maxlength="2000"></textarea></div>
+                    <div class="ce-field"><label for="maintenance-cost">Costo <span>(opcional)</span></label><input id="maintenance-cost" class="ce-input" name="cost" type="number" min="0" step="0.01"></div>
+                    <div class="ce-field"><label for="maintenance-estimated">Fecha estimada <span>(opcional)</span></label><input id="maintenance-estimated" class="ce-input" name="estimated_date" type="date"></div>
+                    <?php if ($isReturning): ?><div class="ce-field ce-field--full"><label for="maintenance-result">Resultado final</label><textarea id="maintenance-result" class="ce-textarea" name="result" maxlength="2000" required></textarea></div><?php endif; ?>
+                    <div class="ce-field ce-field--full"><label for="maintenance-photos">Fotografías <span>(opcional)</span></label><input id="maintenance-photos" class="ce-input" type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" capture="environment" multiple><small>JPEG, PNG o WebP; máximo 5 MB por archivo.</small></div>
                 </div>
                 <div class="vo-critical-confirm">
                     <strong>Revisa antes de continuar</strong>
@@ -70,6 +76,7 @@ require __DIR__ . '/../components/page-header.php';
             require __DIR__ . '/../components/operation-summary.php';
             ?>
         </div>
+        <section class="vo-form-section"><h2>Historial de mantenimiento</h2><?php foreach ($maintenanceForm->history as $record): ?><div class="ce-list__item"><div class="ce-list__body"><strong><?= $h(ucwords($record['estado'])) ?> · <?= $h($record['motivo']) ?></strong><small>Proveedor/técnico: <?= $h($record['tecnico_proveedor'] ?? '—') ?> · Diagnóstico: <?= $h($record['diagnostico'] ?? '—') ?> · Inicio: <?= $h($record['iniciado_at']) ?> · Fin: <?= $h($record['finalizado_at'] ?? 'Pendiente') ?> · Resultado: <?= $h($record['resultado'] ?? '—') ?></small></div></div><?php endforeach; ?><?php if ($maintenanceForm->history === []): ?><p>Sin mantenimientos registrados.</p><?php endif; ?></section>
     <?php endif; ?>
 </div>
 <?php $contenidoModulo = ob_get_clean(); require __DIR__ . '/plantilla.php'; ?>

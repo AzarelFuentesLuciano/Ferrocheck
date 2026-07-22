@@ -1726,3 +1726,7 @@ input {
         gap: 4px !important;
     }
 }
+/* Integración mínima de identidad autenticada y datos demostrativos. */
+.topbar-user{display:flex;align-items:center;gap:10px;color:#315064;font-size:.78rem;font-weight:600}.topbar-user form{margin:0}.topbar-user button{padding:7px 10px;border:1px solid #d4e0e7;border-radius:9px;background:#fff;color:#155474;font:inherit;font-weight:600;cursor:pointer}.demo-data-label{display:inline-flex!important;width:max-content;padding:5px 9px;border-radius:999px;background:#fff3cd;color:#765b00;font-size:.72rem;font-weight:700}
+@media(max-width:920px){.topbar-user span{display:none}}
+@media(max-width:640px){.topbar-user button{padding:7px 8px;font-size:.7rem}}

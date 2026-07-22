@@ -52,7 +52,11 @@ final class ScannerDeliveryService
                 $command->observations,
                 $command->details,
                 $command->evidenceReferences,
+                $command->areaName,
+                $command->supervisorName,
+                $command->responsibleName,
             ));
+            $signatures = $this->persistSignatures($command->evidenceReferences, $scanner->id, $movement->id, $actor);
             $inspection = $this->inspections->createInspection(new ScannerInspectionCreateData(
                 $movement->id,
                 $scanner->id,
@@ -62,9 +66,11 @@ final class ScannerDeliveryService
                 $command->battery,
                 $command->rating,
                 $command->observations,
+                $signatures['user'],
+                $signatures['responsible'],
                 details: $command->details,
             ));
-            $this->persistEvidence($command->evidenceReferences, $scanner->id, $movement->id, $inspection->id, $actor);
+            $this->persistPhotos($command->evidenceReferences, $scanner->id, $movement->id, $inspection->id, $actor);
             $this->scanners->changeStatus($scanner->id, $target, $actor->userId);
             $auditId = $this->audit->record('scanner.delivery', 'scanner_movement', $movement->id, ['status' => $scanner->status->value], ['status' => $target->value], $actor, $context, ['folio' => $movement->folio->value]);
             $updated = $this->scanners->findById($scanner->id) ?? throw new ScannerNotFoundException('Scanner no encontrado despues de la entrega.');
@@ -73,12 +79,26 @@ final class ScannerDeliveryService
         });
     }
 
-    private function persistEvidence(array $references, int $scannerId, int $movementId, int $inspectionId, AuthenticatedActorData $actor): void
+    private function persistSignatures(array $references, int $scannerId, int $movementId, AuthenticatedActorData $actor): array
     {
+        $ids = ['user' => null, 'responsible' => null];
         foreach ($references as $reference) {
             if (!$reference instanceof ScannerEvidenceMetadata) {
                 throw new \InvalidArgumentException('Referencia de evidencia invalida.');
             }
+            if (!str_starts_with($reference->type, 'firma_')) continue;
+            $id = $this->evidence->create(new ScannerEvidenceMetadata($scannerId, $reference->type, $reference->storagePath, $reference->mimeType, $reference->sizeBytes, $reference->sha256, $reference->capturedAt, $actor, $movementId));
+            str_starts_with($reference->type, 'firma_usuario_') ? $ids['user'] = $id : $ids['responsible'] = $id;
+        }
+        if ($references !== [] && ($ids['user'] === null || $ids['responsible'] === null)) throw new \InvalidArgumentException('Las dos firmas de entrega son obligatorias.');
+        return $ids;
+    }
+
+    private function persistPhotos(array $references, int $scannerId, int $movementId, int $inspectionId, AuthenticatedActorData $actor): void
+    {
+        foreach ($references as $reference) {
+            if (!$reference instanceof ScannerEvidenceMetadata) throw new \InvalidArgumentException('Referencia de evidencia invalida.');
+            if (str_starts_with($reference->type, 'firma_')) continue;
             $this->evidence->create(new ScannerEvidenceMetadata($scannerId, $reference->type, $reference->storagePath, $reference->mimeType, $reference->sizeBytes, $reference->sha256, $reference->capturedAt, $actor, $movementId, $inspectionId));
         }
     }

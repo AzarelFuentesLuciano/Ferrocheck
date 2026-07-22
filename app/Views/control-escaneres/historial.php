@@ -13,7 +13,7 @@ require __DIR__ . '/../components/page-header.php';
         <div class="vo-empty-panel">
             <h3>Sin actividad disponible</h3>
             <p>No se muestran registros de ejemplo para evitar confundir información simulada con operaciones reales.</p>
-            <div class="vo-actions"><a class="vo-btn vo-btn--primary" href="<?= htmlspecialchars(($basePath ?? '') . '/control-escaneres/catalogo', ENT_QUOTES, 'UTF-8') ?>">Consultar expediente por escáner</a></div>
+            <div class="vo-actions"><a class="vo-btn vo-btn--primary" href="<?= BASE_URL ?>/index.php?modulo=control-escaneres&amp;seccion=catalogo">Consultar expediente por escáner</a></div>
         </div>
     </section>
 </div>

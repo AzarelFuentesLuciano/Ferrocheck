@@ -6,19 +6,20 @@ use App\Repositories\ControlEscaneres\Contracts\ScannerDashboardQueryInterface;
 final class PdoScannerDashboardQuery extends AbstractPdoRepository
 implements ScannerDashboardQueryInterface
 {
-    private const OPEN="estado NOT IN ('resuelta','descartada')";
+    private const OPEN="estado NOT IN ('resuelta','cancelada')";
     public function fetch(DashboardRange$r):ScannerDashboardResult
     {
         $a=$this->stmt("SELECT COUNT(*) total,SUM(CASE WHEN activo=1 THEN 1 ELSE 0 END) active,SUM(CASE WHEN activo=0 THEN 1 ELSE 0 END) inactive,SUM(CASE WHEN activo=1 AND estado='disponible' AND NOT EXISTS(SELECT 1 FROM scanner_movimientos m WHERE m.scanner_id=scanners.id AND m.estado IN('abierto','vencido','con_incidencia')) THEN 1 ELSE 0 END) available,SUM(CASE WHEN estado='entregado' THEN 1 ELSE 0 END) delivered,SUM(CASE WHEN estado='mantenimiento' THEN 1 ELSE 0 END) maintenance FROM scanners")->fetch(\PDO::FETCH_ASSOC)?:[];
         $i=$this->stmt("SELECT COUNT(*) open_count,COUNT(DISTINCT scanner_id) affected,SUM(CASE WHEN severidad='critica' THEN 1 ELSE 0 END) critical FROM scanner_incidencias WHERE ".self::OPEN)->fetch(\PDO::FETCH_ASSOC)?:[];
         $statuses=array_map(fn($x)=>new ScannerStatusSummary($x['estado'],(int)$x['total']),$this->stmt('SELECT estado,COUNT(*) total FROM scanners GROUP BY estado ORDER BY estado')->fetchAll(\PDO::FETCH_ASSOC));
         $p=$this->params($r);$deliveries=(int)$this->stmt('SELECT COUNT(*) FROM scanner_movimientos WHERE entregado_at>=:from AND entregado_at<=:to',$p)->fetchColumn();$receptions=(int)$this->stmt('SELECT COUNT(*) FROM scanner_movimientos WHERE recibido_at>=:from AND recibido_at<=:to',$p)->fetchColumn();
-        return new ScannerDashboardResult($r,new ScannerInventorySummary((int)($a['total']??0),(int)($a['active']??0),(int)($a['inactive']??0),(int)($a['available']??0),(int)($a['delivered']??0),(int)($a['maintenance']??0)),new ScannerIncidentSummary((int)($i['open_count']??0),(int)($i['affected']??0),(int)($i['critical']??0)),$statuses,$this->attention(),$this->activity($r),$this->trend($r),$deliveries,$receptions);
+        $metrics=['pending_return'=>(int)$this->stmt("SELECT COUNT(*) FROM scanner_movimientos WHERE estado IN('abierto','vencido','con_incidencia')")->fetchColumn(),'without_photo'=>(int)$this->stmt("SELECT COUNT(*) FROM scanners WHERE activo=1 AND (fotografia_principal IS NULL OR fotografia_principal='')")->fetchColumn(),'without_qr'=>(int)$this->stmt("SELECT COUNT(*) FROM scanners WHERE codigo_qr IS NULL OR codigo_qr=''")->fetchColumn(),'pending_repair'=>(int)$this->stmt("SELECT COUNT(*) FROM scanners WHERE activo=1 AND estado='pendiente_reparacion'")->fetchColumn(),'lost'=>(int)$this->stmt("SELECT COUNT(*) FROM scanners WHERE activo=1 AND estado='extraviado'")->fetchColumn(),'retired'=>(int)$this->stmt("SELECT COUNT(*) FROM scanners WHERE estado='baja_definitiva' OR activo=0")->fetchColumn()];
+        return new ScannerDashboardResult($r,new ScannerInventorySummary((int)($a['total']??0),(int)($a['active']??0),(int)($a['inactive']??0),(int)($a['available']??0),(int)($a['delivered']??0),(int)($a['maintenance']??0)),new ScannerIncidentSummary((int)($i['open_count']??0),(int)($i['affected']??0),(int)($i['critical']??0)),$statuses,$this->attention(),$this->activity($r),$this->trend($r),$deliveries,$receptions,$metrics,$this->analytics($r));
     }
     private function params(DashboardRange$r):array{return['from'=>$r->from->format('Y-m-d H:i:s.u'),'to'=>$r->to->format('Y-m-d H:i:s.u')];}
     private function attention():array
     {
-        $sql="SELECT s.id,s.codigo,s.estado,s.updated_at,MAX(CASE WHEN i.severidad='critica' AND i.estado NOT IN('resuelta','descartada') THEN i.reportada_at END) critical_at FROM scanners s LEFT JOIN scanner_incidencias i ON i.scanner_id=s.id WHERE s.estado IN('extraviado','pendiente_reparacion') OR EXISTS(SELECT 1 FROM scanner_incidencias x WHERE x.scanner_id=s.id AND x.severidad='critica' AND x.estado NOT IN('resuelta','descartada')) GROUP BY s.id,s.codigo,s.estado,s.updated_at LIMIT 10";
+        $sql="SELECT s.id,s.codigo,s.estado,s.updated_at,MAX(CASE WHEN i.severidad='critica' AND i.estado NOT IN('resuelta','cancelada') THEN i.reportada_at END) critical_at FROM scanners s LEFT JOIN scanner_incidencias i ON i.scanner_id=s.id WHERE s.estado IN('extraviado','pendiente_reparacion') OR EXISTS(SELECT 1 FROM scanner_incidencias x WHERE x.scanner_id=s.id AND x.severidad='critica' AND x.estado NOT IN('resuelta','cancelada')) GROUP BY s.id,s.codigo,s.estado,s.updated_at LIMIT 10";
         $out=[];foreach($this->stmt($sql)->fetchAll(\PDO::FETCH_ASSOC)as$x){$critical=$x['critical_at']!==null;$out[]=new ScannerAttentionItem((int)$x['id'],$x['codigo'],$critical?'incidencia_critica':$x['estado'],$critical?'critica':($x['estado']==='extraviado'?'alta':'media'),new \DateTimeImmutable($critical?$x['critical_at']:$x['updated_at']));}usort($out,fn($x,$y)=>['critica'=>1,'alta'=>2,'media'=>3][$x->severity]<=>['critica'=>1,'alta'=>2,'media'=>3][$y->severity]);return$out;
     }
     private function activity(DashboardRange$r):array
@@ -32,5 +33,14 @@ implements ScannerDashboardQueryInterface
         $points=[];for($d=$r->from->setTime(0,0);$d<=$r->to;$d=$d->modify('+1 day'))$points[$d->format('Y-m-d')]=[0,0,0];$p=$this->params($r);
         $movementParams=$p+['from_received'=>$p['from'],'to_received'=>$p['to']];foreach($this->stmt('SELECT entregado_at,recibido_at FROM scanner_movimientos WHERE (entregado_at>=:from AND entregado_at<=:to) OR (recibido_at>=:from_received AND recibido_at<=:to_received)',$movementParams)->fetchAll(\PDO::FETCH_ASSOC)as$x){$day=substr($x['entregado_at'],0,10);if(isset($points[$day]))$points[$day][0]++;if($x['recibido_at']!==null){$day=substr($x['recibido_at'],0,10);if(isset($points[$day]))$points[$day][1]++;}}
         foreach($this->stmt('SELECT reportada_at FROM scanner_incidencias WHERE reportada_at>=:from AND reportada_at<=:to',$p)->fetchAll(\PDO::FETCH_ASSOC)as$x){$day=substr($x['reportada_at'],0,10);if(isset($points[$day]))$points[$day][2]++;}return array_map(fn($date,$x)=>new ScannerTrendPoint($date,$x[0],$x[1],$x[2]),array_keys($points),$points);
+    }
+    private function analytics(DashboardRange$r):array
+    {
+        $p=$this->params($r);
+        $incidentsByArea=$this->stmt("SELECT COALESCE(NULLIF(s.area_habitual,''),'Sin área') label,COUNT(i.id) total FROM scanner_incidencias i JOIN scanners s ON s.id=i.scanner_id WHERE i.reportada_at BETWEEN :from AND :to GROUP BY label ORDER BY total DESC LIMIT 10",$p)->fetchAll(\PDO::FETCH_ASSOC);
+        $ratingsByArea=$this->stmt("SELECT COALESCE(NULLIF(s.area_habitual,''),'Sin área') label,ROUND(AVG(ins.calificacion)/10,2) average,COUNT(ins.id) total FROM scanner_inspecciones ins JOIN scanners s ON s.id=ins.scanner_id WHERE ins.inspeccionada_at BETWEEN :from AND :to AND ins.calificacion IS NOT NULL GROUP BY label ORDER BY average DESC",$p)->fetchAll(\PDO::FETCH_ASSOC);
+        $deterioration=$this->stmt("SELECT DATE(created_at) label,COUNT(*) total FROM scanner_inspeccion_diferencias WHERE created_at BETWEEN :from AND :to AND clasificacion IN('deterioro_menor','deterioro_importante','daño_critico','faltante') GROUP BY DATE(created_at) ORDER BY label",$p)->fetchAll(\PDO::FETCH_ASSOC);
+        $mostIncidents=$this->stmt("SELECT s.id,s.codigo label,COUNT(i.id) total FROM scanner_incidencias i JOIN scanners s ON s.id=i.scanner_id WHERE i.reportada_at BETWEEN :from AND :to GROUP BY s.id,s.codigo ORDER BY total DESC LIMIT 10",$p)->fetchAll(\PDO::FETCH_ASSOC);
+        return['incidents_by_area'=>$incidentsByArea,'ratings_by_area'=>$ratingsByArea,'deterioration'=>$deterioration,'most_incidents'=>$mostIncidents];
     }
 }

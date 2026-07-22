@@ -1,0 +1,13 @@
+.admin-module-hero{max-width:1500px;margin:0 auto 20px;padding:22px;border-radius:18px;background:linear-gradient(125deg,#102a43,#164d75);color:#fff;box-shadow:0 14px 32px rgba(16,42,67,.18)}
+.admin-module-hero h1{margin:4px 0;font-size:clamp(1.5rem,3vw,2.15rem)}
+.admin-module-hero>p:not(.eyebrow){margin:0;color:#d9e8f2}
+.admin-module-hero .eyebrow{color:#80e1e8!important}
+.admin-tabs{display:flex;gap:6px;margin-top:18px;overflow-x:auto}
+.admin-tabs a{padding:8px 12px;border:1px solid rgba(255,255,255,.24);border-radius:9px;color:#e8f3fa;font-size:.8rem;font-weight:700;text-decoration:none;white-space:nowrap}
+.admin-tabs a:hover,.admin-tabs a.is-active{background:#fff;color:#155474}
+.retention-note{display:block;max-width:680px;margin-top:7px;color:#657786}
+.actions{flex-wrap:wrap}
+.actions form{display:flex}
+.actions a,.actions .link-button{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:6px 9px;border:1px solid #cbd8e1;border-radius:8px;background:#fff;color:#155474;font:inherit;font-size:.72rem;font-weight:650;text-decoration:none;cursor:pointer}
+.actions a:hover,.actions .link-button:hover{border-color:#1769aa;background:#edf6fa}
+@media(max-width:720px){.admin-module-hero{padding:18px}.admin-tabs a{flex:1;justify-content:center;text-align:center}.actions{min-width:220px}}

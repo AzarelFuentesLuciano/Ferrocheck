@@ -37,7 +37,7 @@ $incidentService = new ScannerIncidentService($scanners, $incidents, $evidence, 
 $maintenanceService = new ScannerMaintenanceService($scanners, $movements, $evidence, $transactions, $stateMachine, $audit, $availability, $movementPolicy, new MaintenancePolicy());
 
 $scanner = $scanners->create(new ScannerCreateData(new ScannerCode('SC-1001'), 'Q1', 'Zebra', 'TC22', new ScannerStatus('disponible')), 7);
-$delivery = $deliveryService->deliver(new ScannerMovementCreateData($scanner->id, new ScannerFolio('MOV-20260718-LEGACY'), 'Operador', 'E-1', 'A', new DateTimeImmutable('2026-07-18 08:00:00'), $actor, new BatteryPercentage(90), 5, 'OK', [new ScannerInspectionDetailData('pantalla', 'excelente')]), $actor, $context);
+$delivery = $deliveryService->deliver(new ScannerMovementCreateData($scanner->id, new ScannerFolio('MOV-20260718-LEGACY'), 'Operador', 'E-1', 'A', new DateTimeImmutable('2026-07-18 08:00:00'), $actor, new BatteryPercentage(90), 100, 'OK', [new ScannerInspectionDetailData('pantalla', 'excelente')]), $actor, $context);
 test('entrega cambia estado', fn() => same('entregado', $delivery->scanner->status->value));
 test('folio operativo generado', fn() => ok((bool) preg_match('/^MOV-20260718-[A-F0-9]{16}$/', $delivery->movement->folio->value)));
 test('entrega crea inspeccion', fn() => same(1, count($inspections->listDetailsByInspectionId($delivery->inspection->id))));

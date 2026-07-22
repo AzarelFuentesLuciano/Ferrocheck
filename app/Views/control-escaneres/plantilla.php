@@ -5,7 +5,7 @@ if (!isset($contenidoModulo)) {
         'dashboard' => 'dashboard.php', 'catalogo' => 'catalogo.php', 'expediente' => 'expediente.php',
         'entrega' => 'entrega.php', 'recepcion' => 'recepcion.php', 'incidencias' => 'incidencias.php',
         'mantenimiento' => 'mantenimiento.php', 'historial' => 'historial.php',
-        'reportes' => 'reporte.php', 'reporte' => 'reporte.php',
+        'reportes' => 'reporte.php', 'reporte' => 'reporte.php', 'areas' => 'areas.php', 'importar-inventario' => 'importacion.php', 'registrar' => 'registrar.php', 'editar' => 'editar.php', 'baja' => 'estado-activo.php', 'reactivar' => 'estado-activo.php',
     ];
     require __DIR__ . '/' . ($vistas[$seccion] ?? $vistas['dashboard']);
     return;
@@ -21,6 +21,7 @@ $navegacion = [
 ];
 $navegacion['incidencias'] = ['Incidencias', '!'];
 $navegacion['mantenimiento'] = ['Mantenimiento', 'M'];
+$navegacion['areas'] = ['Áreas', 'A'];
 ?>
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-design-tokens.css">
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-components.css">
@@ -28,6 +29,7 @@ $navegacion['mantenimiento'] = ['Mantenimiento', 'M'];
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/control-escaneres/history.css">
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/control-escaneres/dashboard.css">
 <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/control-escaneres/control-escaneres.css">
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/control-escaneres/media-fields.css">
 <section class="ce-module" aria-label="Control de Escáneres">
     <header class="ce-hero">
         <div>
@@ -47,4 +49,5 @@ $navegacion['mantenimiento'] = ['Mantenimiento', 'M'];
     <div class="ce-content"><?php echo $contenidoModulo; ?></div>
 </section>
 <script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/operations-ui.js" defer></script>
+<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/signatures.js" defer></script>
 <?php if ($vistaActual === 'dashboard'): ?><script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/dashboard.js" defer></script><?php endif; ?>

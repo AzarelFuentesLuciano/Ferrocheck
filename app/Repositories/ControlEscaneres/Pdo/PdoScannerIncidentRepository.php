@@ -102,7 +102,7 @@ final class PdoScannerIncidentRepository extends AbstractPdoRepository implement
     public function listOpen(): array
     {
         return $this->many(
-            "SELECT ".self::COLUMNS." FROM scanner_incidencias WHERE estado NOT IN ('resuelta', 'descartada')",
+            "SELECT ".self::COLUMNS." FROM scanner_incidencias WHERE estado NOT IN ('resuelta', 'cancelada')",
         );
     }
 
@@ -116,6 +116,19 @@ final class PdoScannerIncidentRepository extends AbstractPdoRepository implement
         $this->stmt('UPDATE scanner_incidencias SET severidad = :severity WHERE id = :id', ['severity' => $severity->value, 'id' => $id]);
     }
 
+    public function addFollowUp(int $id, ?string $previousStatus, string $newStatus, string $comment, int $actor): void
+    {
+        $this->stmt(
+            'INSERT INTO scanner_incidencia_seguimientos(incidencia_id,estado_anterior,estado_nuevo,comentario,registrado_por) VALUES(:incident,:previous,:new_status,:comment,:actor)',
+            ['incident' => $id, 'previous' => $previousStatus, 'new_status' => $newStatus, 'comment' => $comment, 'actor' => $actor],
+        );
+    }
+
+    public function listFollowUps(int $id): array
+    {
+        return $this->stmt('SELECT estado_anterior,estado_nuevo,comentario,registrado_por,created_at FROM scanner_incidencia_seguimientos WHERE incidencia_id=:id ORDER BY created_at DESC,id DESC', ['id' => $id])->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function resolve(int $id, string $resolution, int $actor, \DateTimeImmutable $at): void
     {
         $this->stmt(
@@ -126,10 +139,18 @@ final class PdoScannerIncidentRepository extends AbstractPdoRepository implement
         );
     }
 
+    public function cancel(int $id, string $reason, int $actor, \DateTimeImmutable $at): void
+    {
+        $this->stmt(
+            "UPDATE scanner_incidencias SET estado='cancelada',resolucion=:reason,resuelta_por=:actor,resuelta_at=:at WHERE id=:id",
+            ['reason' => $reason, 'actor' => $actor, 'at' => $at->format('Y-m-d H:i:s.u'), 'id' => $id],
+        );
+    }
+
     public function countOpenBySeverity(IncidentSeverity $severity): int
     {
         return (int) $this->stmt(
-            "SELECT COUNT(*) FROM scanner_incidencias WHERE severidad = :severity AND estado NOT IN ('resuelta', 'descartada')",
+            "SELECT COUNT(*) FROM scanner_incidencias WHERE severidad = :severity AND estado NOT IN ('resuelta', 'cancelada')",
             ['severity' => $severity->value],
         )->fetchColumn();
     }

@@ -20,8 +20,11 @@ final readonly class ScannerMovementCreateData
         public ?string $observations = null,
         public array $details = [],
         public array $evidenceReferences = [],
+        public ?string $areaName = null,
+        public ?string $supervisorName = null,
+        public ?string $responsibleName = null,
     ) {
-        if ($rating !== null && ($rating < 1 || $rating > 5)) {
+        if ($rating !== null && ($rating < 0 || $rating > 100)) {
             throw new \InvalidArgumentException('Calificacion invalida.');
         }
     }

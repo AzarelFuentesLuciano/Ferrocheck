@@ -1,3 +1,35 @@
 <?php
-declare(strict_types=1);namespace App\Domain\ControlEscaneres;
-final readonly class ScannerMovement{public function __construct(public int$id,public int$scannerId,public ScannerFolio$folio,public MovementStatus$status,public string$personaEntregaNombre,public string$numeroEmpleado,public?int$areaId,public string$turno,public \DateTimeImmutable$entregadoAt,public?\DateTimeImmutable$recibidoAt,public?\DateTimeImmutable$venceAt,public?int$entregaRegistradaPor,public?int$recepcionRegistradaPor,public?string$devolucionRecibidaPorNombre,public?int$duracionSegundos,public?string$observaciones,public?int$canceladoPor,public?\DateTimeImmutable$canceladoAt,public?string$motivoCancelacion,public \DateTimeImmutable$createdAt,public \DateTimeImmutable$updatedAt){}}
+declare(strict_types=1);
+
+namespace App\Domain\ControlEscaneres;
+
+final readonly class ScannerMovement
+{
+    public function __construct(
+        public int $id,
+        public int $scannerId,
+        public ScannerFolio $folio,
+        public MovementStatus $status,
+        public string $personaEntregaNombre,
+        public string $numeroEmpleado,
+        public ?int $areaId,
+        public string $turno,
+        public \DateTimeImmutable $entregadoAt,
+        public ?\DateTimeImmutable $recibidoAt,
+        public ?\DateTimeImmutable $venceAt,
+        public ?int $entregaRegistradaPor,
+        public ?int $recepcionRegistradaPor,
+        public ?string $devolucionRecibidaPorNombre,
+        public ?int $duracionSegundos,
+        public ?string $observaciones,
+        public ?int $canceladoPor,
+        public ?\DateTimeImmutable $canceladoAt,
+        public ?string $motivoCancelacion,
+        public \DateTimeImmutable $createdAt,
+        public \DateTimeImmutable $updatedAt,
+        public ?string $areaNombre = null,
+        public ?string $supervisorNombre = null,
+        public ?string $responsableEntregaNombre = null,
+        public ?string $responsableRecepcionNombre = null,
+    ) {}
+}

@@ -233,3 +233,107 @@
         grid-template-columns: 1fr;
     }
 }
+/* Encabezado y botones principales del catálogo */
+.ce-catalog__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--vo-space-md);
+    width: 100%;
+    overflow: visible;
+}
+
+.ce-catalog__heading > .vo-actions {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--vo-space-sm);
+    position: static !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: auto;
+}
+
+.ce-catalog__heading > .vo-actions .vo-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+@media (max-width: 767px) {
+    .ce-catalog__heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .ce-catalog__heading > .vo-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ce-catalog__heading > .vo-actions .vo-btn {
+        width: 100%;
+    }
+}
+/* Evitar que la tabla del catálogo quede cortada */
+.ce-catalog {
+    min-width: 0;
+    width: 100%;
+}
+
+.ce-catalog section {
+    min-width: 0;
+}
+
+.ce-catalog .vo-table-wrap {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+}
+
+.ce-catalog .vo-table {
+    width: 100%;
+    min-width: 76rem;
+}
+
+/* Encabezado de resultados y botones */
+.ce-catalog__heading {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--vo-space-md);
+}
+
+.ce-catalog__heading > .vo-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vo-space-sm);
+}
+
+@media (max-width: 767px) {
+    .ce-catalog__heading {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ce-catalog__heading > .vo-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .ce-catalog__heading > .vo-actions .vo-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

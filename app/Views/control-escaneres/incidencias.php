@@ -13,7 +13,7 @@ require __DIR__ . '/../components/page-header.php';
         <?php $alertType = 'error'; $alertMessage = $integrationError; require __DIR__ . '/../components/alert.php'; ?>
     <?php elseif (!isset($incidentForm) || $incidentForm->scannerId === null): ?>
         <?php $alertType = 'info'; $alertMessage = 'Selecciona un escáner desde el catálogo para consultar o registrar incidencias.'; require __DIR__ . '/../components/alert.php'; ?>
-        <div class="vo-actions"><a class="vo-btn vo-btn--primary" href="<?= $h($basePath ?? '') ?>/control-escaneres/catalogo">Ir al catálogo</a></div>
+        <div class="vo-actions"><a class="vo-btn vo-btn--primary" href="<?= BASE_URL ?>/index.php?modulo=control-escaneres&amp;seccion=catalogo">Ir al catálogo</a></div>
     <?php else: ?>
         <?php
         foreach ($incidentForm->messages as $message) {
@@ -26,7 +26,7 @@ require __DIR__ . '/../components/page-header.php';
             'description' => 'Las incidencias quedan asociadas a este equipo y, cuando corresponde, a su movimiento vigente.',
         ];
         require __DIR__ . '/../components/scanner-summary.php';
-        $openIncidents = array_filter($incidentForm->incidents, static fn($incident) => !in_array($incident->status->value, ['resuelta', 'descartada'], true));
+        $openIncidents = array_filter($incidentForm->incidents, static fn($incident) => !in_array($incident->status->value, ['resuelta', 'cancelada'], true));
         ?>
 
         <nav class="vo-operation-tabs" aria-label="Secciones de incidencias">
@@ -35,7 +35,7 @@ require __DIR__ . '/../components/page-header.php';
         </nav>
 
         <div class="vo-operation-layout">
-            <form id="reportar-incidencia" class="vo-form-section" method="post">
+            <form id="reportar-incidencia" class="vo-form-section" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="<?= $h($incidentForm->csrfToken) ?>">
                 <input type="hidden" name="scanner_id" value="<?= (int) $incidentForm->scannerId ?>">
                 <input type="hidden" name="movement_id" value="<?= (int) $incidentForm->movementId ?>">
@@ -59,6 +59,7 @@ require __DIR__ . '/../components/page-header.php';
                         <textarea id="incident-description" class="ce-textarea" name="description" required rows="5" aria-describedby="incident-description-help"></textarea>
                         <small id="incident-description-help">No incluyas contraseñas, PIN, PUK ni otros datos sensibles.</small>
                     </div>
+                    <div class="ce-field ce-field--full"><label for="incident-photos">Fotografías <span>(opcional)</span></label><input id="incident-photos" class="ce-input" type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" capture="environment" multiple><small>JPEG, PNG o WebP; máximo 5 MB por archivo.</small></div>
                 </div>
                 <div class="vo-actions"><button class="ce-btn ce-btn--primary" type="submit">Reportar incidencia</button></div>
             </form>
@@ -76,16 +77,22 @@ require __DIR__ . '/../components/page-header.php';
                 <?php $alertType = 'info'; $alertMessage = 'Este escáner no tiene incidencias registradas.'; require __DIR__ . '/../components/alert.php'; ?>
             <?php endif; ?>
             <?php foreach ($incidentForm->incidents as $incident): ?>
-                <?php $isClosed = in_array($incident->status->value, ['resuelta', 'descartada'], true); ?>
+                <?php $isClosed = in_array($incident->status->value, ['resuelta', 'cancelada'], true); ?>
                 <article class="ce-list__item">
                     <div class="ce-list__body">
                         <strong>#<?= (int) $incident->id ?> · <?= $h($incident->type) ?></strong>
                         <small>Severidad: <?= $h(ucfirst($incident->severity->value)) ?> · Estado: <?= $h(ucfirst($incident->status->value)) ?></small>
+                        <?php foreach ($incidentForm->followUps[$incident->id] ?? [] as $followUp): ?><p><small><?= $h($followUp['created_at']) ?> · <?= $h(str_replace('_', ' ', $followUp['estado_nuevo'])) ?>: <?= $h($followUp['comentario']) ?></small></p><?php endforeach; ?>
                     </div>
                     <?php if (!$isClosed): ?>
+                        <details><summary class="vo-btn vo-btn--secondary">Seguimiento y severidad</summary><div class="ce-form vo-critical-confirm">
+                            <form class="ce-form" method="post"><input type="hidden" name="_csrf" value="<?= $h($incidentForm->csrfToken) ?>"><input type="hidden" name="scanner_id" value="<?= (int) $incidentForm->scannerId ?>"><input type="hidden" name="incident_id" value="<?= (int) $incident->id ?>"><input type="hidden" name="operation" value="follow_up"><label>Nota de seguimiento<textarea class="ce-textarea" name="comment" maxlength="2000" required></textarea></label><button class="ce-btn ce-btn--primary" type="submit">Guardar seguimiento</button></form>
+                            <form class="ce-form" method="post"><input type="hidden" name="_csrf" value="<?= $h($incidentForm->csrfToken) ?>"><input type="hidden" name="scanner_id" value="<?= (int) $incidentForm->scannerId ?>"><input type="hidden" name="incident_id" value="<?= (int) $incident->id ?>"><input type="hidden" name="operation" value="severity"><label>Nueva severidad<select class="ce-select" name="severity" required><?php foreach (['baja','media','alta','critica'] as $severity): ?><option value="<?= $severity ?>"<?= $severity === $incident->severity->value ? ' selected' : '' ?>><?= $h(ucfirst($severity)) ?></option><?php endforeach; ?></select></label><label>Motivo<textarea class="ce-textarea" name="reason" maxlength="2000" required></textarea></label><button class="ce-btn ce-btn--primary" type="submit">Cambiar severidad</button></form>
+                            <form class="ce-form" method="post"><input type="hidden" name="_csrf" value="<?= $h($incidentForm->csrfToken) ?>"><input type="hidden" name="scanner_id" value="<?= (int) $incidentForm->scannerId ?>"><input type="hidden" name="incident_id" value="<?= (int) $incident->id ?>"><input type="hidden" name="operation" value="cancel"><label>Motivo de cancelación<textarea class="ce-textarea" name="reason" maxlength="2000" required></textarea></label><button class="ce-btn" type="submit">Cancelar incidencia</button></form>
+                        </div></details>
                         <details>
                             <summary class="vo-btn vo-btn--secondary">Documentar resolución</summary>
-                            <form class="ce-form vo-critical-confirm" method="post">
+                            <form class="ce-form vo-critical-confirm" method="post" enctype="multipart/form-data">
                                 <input type="hidden" name="_csrf" value="<?= $h($incidentForm->csrfToken) ?>">
                                 <input type="hidden" name="scanner_id" value="<?= (int) $incidentForm->scannerId ?>">
                                 <input type="hidden" name="incident_id" value="<?= (int) $incident->id ?>">
@@ -101,6 +108,7 @@ require __DIR__ . '/../components/page-header.php';
                                     </select>
                                 </div>
                                 <p>Esta acción cerrará la incidencia y registrará el estado seleccionado.</p>
+                                <div class="ce-field"><label for="resolution-photos-<?= (int) $incident->id ?>">Evidencias de resolución <span>(opcional)</span></label><input id="resolution-photos-<?= (int) $incident->id ?>" class="ce-input" type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" capture="environment" multiple></div>
                                 <button class="ce-btn ce-btn--primary" type="submit">Confirmar resolución</button>
                             </form>
                         </details>

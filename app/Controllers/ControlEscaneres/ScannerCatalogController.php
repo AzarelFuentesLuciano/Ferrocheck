@@ -1,12 +1,18 @@
 <?php
-declare(strict_types=1);namespace App\Controllers\ControlEscaneres;
+declare(strict_types=1);
+namespace App\Controllers\ControlEscaneres;
 use App\DTO\ControlEscaneres\ScannerCatalogFilter;use App\Presentation\ControlEscaneres\SensitiveScannerDataPresenter;use App\Repositories\ControlEscaneres\Contracts\ScannerCatalogQueryInterface;use App\ViewModels\ControlEscaneres\{ScannerCatalogItemViewModel,ScannerCatalogViewModel};
 final class ScannerCatalogController
 {
     public function __construct(private ScannerCatalogQueryInterface$query,private SensitiveScannerDataPresenter$presenter){}
-    public function index(array$input,array$flash=[]):ScannerCatalogViewModel{$filter=$this->filter($input);$rows=$this->query->search($filter);$total=$this->query->count($filter);$items=array_map(fn($r)=>new ScannerCatalogItemViewModel((int)$r['id'],$r['codigo'],$r['marca'],$r['modelo'],$r['numero_serie']?:'—',$this->presenter->imei($r['imei']),$this->presenter->phone($r['telefono']),$this->presenter->iccid($r['iccid']),$r['estado'],(bool)$r['activo'],$r['ultima_entrega'],(bool)$r['incidencia_abierta'],$this->actions((int)$r['id'],$r['estado'],(bool)$r['activo'])),$rows);return new ScannerCatalogViewModel($items,$total,$filter->page,$filter->perPage,max(1,(int)ceil($total/$filter->perPage)),['search'=>$filter->search,'brand'=>$filter->brand,'model'=>$filter->model,'status'=>$filter->status,'active'=>$filter->active,'withIncident'=>$filter->withIncident,'orderBy'=>$filter->orderBy,'direction'=>$filter->direction],$flash);}
-    private function filter(array$i):ScannerCatalogFilter{return new ScannerCatalogFilter($this->text($i,'q'),$this->text($i,'marca'),$this->text($i,'modelo'),$this->text($i,'estado'),$this->bool($i['activo']??null),$this->bool($i['incidencia']??null),max(1,(int)($i['pagina']??1)),min(100,max(1,(int)($i['por_pagina']??25))),isset($i['orden'])?(string)$i['orden']:'codigo',strtoupper((string)($i['direccion']??'ASC')));}
+    public function index(array$input,array$flash=[]):ScannerCatalogViewModel
+    {
+        $f=$this->filter($input);$rows=$this->query->search($f);$total=$this->query->count($f);
+        $items=array_map(fn($r)=>new ScannerCatalogItemViewModel((int)$r['id'],$r['codigo'],$r['marca'],$r['modelo'],$r['numero_serie']?:'—',$this->presenter->imei($r['imei']),$this->presenter->phone($r['telefono']),$this->presenter->iccid($r['iccid']),$r['estado'],(bool)$r['activo'],$r['ultima_entrega'],(bool)$r['incidencia_abierta'],$this->actions($r['estado'],(bool)$r['activo']),$r['tag_original'],$r['area_habitual'],$r['indice_conservacion']===null?null:(int)$r['indice_conservacion'],$r['responsable_actual'],$r['area_organizacional']),$rows);
+        return new ScannerCatalogViewModel($items,$total,$f->page,$f->perPage,max(1,(int)ceil($total/$f->perPage)),['search'=>$f->search,'brand'=>$f->brand,'model'=>$f->model,'area'=>$f->area,'organizationalArea'=>$f->organizationalArea,'status'=>$f->status,'active'=>$f->active,'withIncident'=>$f->withIncident,'orderBy'=>$f->orderBy,'direction'=>$f->direction],$flash);
+    }
+    private function filter(array$i):ScannerCatalogFilter{return new ScannerCatalogFilter($this->text($i,'q'),$this->text($i,'marca'),$this->text($i,'modelo'),$this->text($i,'estado'),$this->bool($i['activo']??null),$this->bool($i['incidencia']??null),max(1,(int)($i['pagina']??1)),min(100,max(1,(int)($i['por_pagina']??25))),isset($i['orden'])?(string)$i['orden']:'codigo',strtoupper((string)($i['direccion']??'ASC')),$this->text($i,'area'),$this->text($i,'area_propietaria'));}
     private function text(array$i,string$k):?string{$v=trim((string)($i[$k]??''));return$v===''?null:$v;}
     private function bool(mixed$v):?bool{return match($v){'1',1,true=>true,'0',0,false=>false,default=>null};}
-    private function actions(int$id,string$status,bool$active):array{$a=['expediente'];if($active&&$status==='disponible')$a[]='entrega';if($active&&$status==='entregado')$a[]='recepcion';if($active)$a[]='incidencias';if($active&&in_array($status,['disponible','pendiente_reparacion','mantenimiento'],true))$a[]='mantenimiento';return$a;}
+    private function actions(string$status,bool$active):array{$a=['expediente','editar'];if($active&&$status==='disponible')$a[]='entrega';if($active&&$status==='entregado')$a[]='recepcion';if($active)$a[]='incidencias';if($active&&in_array($status,['disponible','pendiente_reparacion','mantenimiento'],true))$a[]='mantenimiento';$a[]=$active?'baja':'reactivar';return$a;}
 }

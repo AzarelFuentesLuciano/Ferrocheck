@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('America/Mexico_City');
+
 if (!defined('BASE_URL')) {
     $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
     $host = explode(':', $host)[0] ?? $host;

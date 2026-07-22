@@ -1,3 +1,17 @@
-.ce-catalog{display:grid;gap:var(--vo-space-lg)}.ce-catalog .vo-alert+.vo-alert{margin-top:calc(var(--vo-space-sm)*-1)}.ce-catalog .vo-filter summary{display:none}.ce-catalog small{color:var(--vo-color-text-muted)}.ce-catalog .vo-table td:last-child{min-width:13rem}.ce-catalog .vo-table td:last-child .vo-actions{flex-wrap:nowrap}.ce-catalog .vo-table td:last-child .vo-btn{min-height:2.5rem;padding:.45rem .7rem;font-size:var(--vo-font-sm)}
-@media(max-width:767px){.ce-catalog .vo-filter summary{display:flex}.ce-catalog .vo-filter:not([open]) form{display:none}.ce-catalog .vo-table{min-width:62rem}.ce-catalog .vo-table td:last-child .vo-actions{flex-wrap:wrap}}
+ .ce-catalog{display:grid;gap:var(--vo-space-lg)}.ce-catalog .vo-alert+.vo-alert{margin-top:calc(var(--vo-space-sm)*-1)}.ce-catalog .vo-filter summary{display:none}.ce-catalog .vo-filter .vo-actions{margin-top:var(--vo-space-md)}.ce-catalog small,.ce-catalog td>a{display:block;color:var(--vo-color-text-muted)}.ce-catalog dialog video{width:min(100%,32rem);background:#111}.ce-catalog__heading{display:flex;align-items:center;justify-content:space-between;gap:var(--vo-space-md);margin-block:var(--vo-space-lg) var(--vo-space-sm)}.ce-catalog__heading h3{margin:0}.ce-catalog .vo-table td:last-child{min-width:13rem}.ce-catalog .vo-table td:last-child .vo-actions{flex-wrap:nowrap}.ce-catalog .vo-table td:last-child .vo-btn{min-height:2.5rem;padding:.45rem .7rem;font-size:var(--vo-font-sm)}
+@media(max-width:767px){.ce-catalog .vo-filter summary{display:flex}.ce-catalog .vo-filter:not([open]) form{display:none}.ce-catalog__heading{align-items:stretch;flex-direction:column}.ce-catalog .vo-table{min-width:76rem}.ce-catalog .vo-table td:last-child .vo-actions{flex-wrap:wrap}}
 @media(min-width:1441px){.ce-catalog{padding-inline:var(--vo-space-md)}}
+
+/* Keep wide catalog content contained by the application shell. */
+.ce-catalog{min-width:0}
+.ce-catalog>*,.ce-catalog section{min-width:0}
+.ce-catalog .vo-table-wrap{width:100%;min-width:0}
+@media(max-width:1100px) and (min-width:768px){.ce-catalog .vo-filter__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Catalog layout contract: only the table viewport may scroll horizontally. */
+.ce-catalog{width:100%;max-width:100%}
+.ce-catalog__heading h3{min-width:0}
+.ce-catalog .vo-table-wrap{max-width:100%;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+.ce-catalog .vo-table{min-width:76rem}
+@media(max-width:900px){.ce-catalog__heading{align-items:stretch;flex-direction:column}.ce-catalog__heading>.vo-actions{align-items:stretch}}
+@media(max-width:767px){.ce-catalog__heading>.vo-actions{display:grid;grid-template-columns:1fr}.ce-catalog__heading .vo-btn{width:100%}}

@@ -5,6 +5,7 @@ namespace App\Services\ControlEscaneres\Incidencias;
 
 use App\DTO\ControlEscaneres\{AuthenticatedActorData, BusinessRequestContext, IncidentResolutionData, IncidentResult, IncidentSeverityChangeData, ScannerEvidenceMetadata, ScannerIncidentCreateData};
 use App\Exceptions\ControlEscaneres\{IncidentAlreadyResolvedException, ScannerNotFoundException};
+use App\Domain\ControlEscaneres\IncidentStatus;
 use App\Repositories\ControlEscaneres\Contracts\{EvidenceRepositoryInterface, ScannerIncidentRepositoryInterface, ScannerRepositoryInterface, TransactionManagerInterface};
 use App\Services\ControlEscaneres\Auditoria\ScannerAuditService;
 use App\Services\ControlEscaneres\Shared\{BusinessClockInterface, ScannerStateMachineInterface};
@@ -73,6 +74,7 @@ final class ScannerIncidentService
             $scanner = $this->scanners->lockScannerForUpdate($incident->scannerId) ?? throw new ScannerNotFoundException('Scanner no encontrado.');
             $resolvedAt = $command->resolvedAt ?? $this->clock->now();
             $this->incidents->resolve($incident->id, $command->resolution, $actor->userId, $resolvedAt);
+            $this->incidents->addFollowUp($incident->id, $incident->status->value, 'resuelta', $command->resolution, $actor->userId);
             if ($command->resultingScannerStatus->value !== $scanner->status->value) {
                 $this->stateMachine->assertTransition($scanner->status, $command->resultingScannerStatus);
                 $this->scanners->changeStatus($scanner->id, $command->resultingScannerStatus, $actor->userId);
@@ -84,6 +86,37 @@ final class ScannerIncidentService
         });
     }
 
+    public function followUp(int $incidentId, string $comment, AuthenticatedActorData $actor, BusinessRequestContext $context): void
+    {
+        $comment = trim($comment);
+        if ($comment === '' || mb_strlen($comment) > 2000) {
+            throw new \InvalidArgumentException('El seguimiento es obligatorio y admite hasta 2000 caracteres.');
+        }
+        $this->transactions->transactional(function () use ($incidentId, $comment, $actor, $context): void {
+            $incident = $this->requireIncident($incidentId);
+            $this->assertOpen($incident->status->value);
+            $this->incidents->changeStatus($incidentId, new IncidentStatus('en_seguimiento'), $actor->userId);
+            $this->incidents->addFollowUp($incidentId, $incident->status->value, 'en_seguimiento', $comment, $actor->userId);
+            $this->audit->record('scanner.incident.follow_up', 'scanner_incident', $incidentId, ['status' => $incident->status->value], ['status' => 'en_seguimiento'], $actor, $context, ['comment' => $comment]);
+        });
+    }
+
+    public function cancel(int $incidentId, string $reason, AuthenticatedActorData $actor, BusinessRequestContext $context): void
+    {
+        $reason = trim($reason);
+        if ($reason === '' || mb_strlen($reason) > 2000) {
+            throw new \InvalidArgumentException('El motivo de cancelación es obligatorio y admite hasta 2000 caracteres.');
+        }
+        $this->transactions->transactional(function () use ($incidentId, $reason, $actor, $context): void {
+            $incident = $this->requireIncident($incidentId);
+            $this->assertOpen($incident->status->value);
+            $at = $this->clock->now();
+            $this->incidents->cancel($incidentId, $reason, $actor->userId, $at);
+            $this->incidents->addFollowUp($incidentId, $incident->status->value, 'cancelada', $reason, $actor->userId);
+            $this->audit->record('scanner.incident.cancel', 'scanner_incident', $incidentId, ['status' => $incident->status->value], ['status' => 'cancelada'], $actor, $context, ['reason' => $reason]);
+        });
+    }
+
     private function requireIncident(int $id): \App\Domain\ControlEscaneres\ScannerIncident
     {
         return $this->incidents->findById($id) ?? throw new \DomainException('Incidencia no encontrada.');
@@ -91,7 +124,7 @@ final class ScannerIncidentService
 
     private function assertOpen(string $status): void
     {
-        if (in_array($status, ['resuelta', 'descartada'], true)) {
+        if (in_array($status, ['resuelta', 'cancelada'], true)) {
             throw new IncidentAlreadyResolvedException('La incidencia ya esta cerrada.');
         }
     }

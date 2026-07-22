@@ -7,6 +7,10 @@
     {"order":4,"file":"20260718_004_create_scanner_inspeccion_detalles.sql","sha256":"4a8f9b8ecc5dfdd9b8c69ecedb9fd54a7f98f379cbe073de1908e45fe1a124e9","type":"schema","depends_on":3,"reversible":true},
     {"order":5,"file":"20260718_005_create_scanner_incidencias.sql","sha256":"61fd65d36b8d2485f55b414289cf258af24eb12c357a96ade721897dabd3cff8","type":"schema","depends_on":2,"reversible":true},
     {"order":6,"file":"20260718_006_create_scanner_evidencias.sql","sha256":"a1af56bb8101d2b78aadb2c617a2a7d7d9fa9d96b4302fb4e388ac66e04a3808","type":"schema","depends_on":5,"reversible":true},
-    {"order":7,"file":"20260718_007_create_auditoria_eventos.sql","sha256":"d8dd48de94d3225eb3687a35cca9051cad58bfdf6cb95894f8d9ac25500b061c","type":"schema","depends_on":6,"reversible":true}
+    {"order":7,"file":"20260718_007_create_auditoria_eventos.sql","sha256":"d8dd48de94d3225eb3687a35cca9051cad58bfdf6cb95894f8d9ac25500b061c","type":"schema","depends_on":6,"reversible":true},
+    {"order":8,"file":"20260718_008_extend_control_escaneres_operations.sql","sha256":"de4865fb0dadb6ba7f463234bebb13f71b75f3fb657179875be302bf398f6a85","type":"schema","depends_on":7,"reversible":true},
+    {"order":9,"file":"20260718_009_complete_control_escaneres_workflows.sql","sha256":"904874a3e8ce96987e2344467a424cc173032b8dd535d462593bd54e25535717","type":"schema","depends_on":8,"reversible":true},
+    {"order":10,"file":"20260718_010_normalize_scanner_ratings.sql","sha256":"f10a506ba1c1c31a20784058aa0362e4e2e71ec1b7777b2da11a7bb2a6ea3a5e","type":"data","depends_on":9,"reversible":true},
+    {"order":11,"file":"20260718_011_normalize_incident_statuses.sql","sha256":"54fe4c23bf63216eaa4a9512562a18a1723c2ec8514c29b5205749e440bb77c1","type":"data","depends_on":10,"reversible":true}
   ]
 }

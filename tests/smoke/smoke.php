@@ -19,13 +19,13 @@ $tests = [
     ['FerroCheck Importar Excel', '?modulo=ferrocheck&seccion=importar-excel', 'Importador Ferromex', 'importar-excel', true],
     ['FerroCheck compatibilidad búsqueda múltiple', '?modulo=ferrocheck&seccion=busqueda-multiple', 'Buscar Plataformas', 'consulta-vin', true],
     ['FerroCheck Configuración', '?modulo=ferrocheck&seccion=configuracion', 'Preferencias de FerroCheck', 'configuracion', true],
-    ['Escáneres Dashboard', '?modulo=control-escaneres&seccion=dashboard', 'Estado de la operación', 'dashboard', false],
+    ['Escáneres Dashboard', '?modulo=control-escaneres&seccion=dashboard', 'Resumen operativo', 'dashboard', false],
     ['Escáneres Catálogo', '?modulo=control-escaneres&seccion=catalogo', 'Escáneres registrados', 'catalogo', false],
-    ['Escáneres Expediente', '?modulo=control-escaneres&seccion=expediente', 'Información integral del equipo', 'expediente', false],
+    ['Escáneres Expediente', '?modulo=control-escaneres&seccion=expediente', 'Expediente integral del equipo', 'expediente', false],
     ['Escáneres Entrega', '?modulo=control-escaneres&seccion=entrega', 'Nueva entrega', 'entrega', false],
     ['Escáneres Recepción', '?modulo=control-escaneres&seccion=recepcion', 'Recepción de escáner', 'recepcion', false],
     ['Escáneres Historial', '?modulo=control-escaneres&seccion=historial', 'Historial operativo', 'historial', false],
-    ['Escáneres Reportes', '?modulo=control-escaneres&seccion=reportes', 'Consulta y análisis', 'reporte', false],
+    ['Escáneres Reportes', '?modulo=control-escaneres&seccion=reportes', 'Reportes operativos', 'reporte', false],
 ];
 
 $passed = 0;
@@ -77,7 +77,9 @@ foreach ($tests as [$name, $query, $pageMarker, $section, $isFerrocheck]) {
 
     report($name . ': HTTP 200', $response['status'] === 200, $response['error']);
     report($name . ': sin error PHP visible', !preg_match('/(?:Fatal error|Parse error|Warning|Notice):/i', $html));
-    report($name . ': shell global', containsAll($html, ['class="topbar"', 'id="sidebarNav"', 'id="footer"']));
+    report($name . ': shell global', $isFerrocheck
+        ? containsAll($html, ['class="app-header"', 'id="appShellSidebar"', 'class="app-footer"'])
+        : containsAll($html, ['class="topbar"', 'id="sidebarNav"', 'id="footer"']));
     report($name . ': contenido clave', str_contains($html, $pageMarker), $pageMarker);
     report($name . ': estilos globales', containsAll($html, ['assets/css/importador.css', 'assets/css/vascor-design-system.css', 'family=Poppins']));
 
@@ -117,7 +119,7 @@ $entrySource = file_get_contents(__DIR__ . '/../../public/index.php');
 $controllerSource = is_string($controllerSource) ? $controllerSource : '';
 $entrySource = is_string($entrySource) ? $entrySource : '';
 
-report('Modo predeterminado legacy', str_contains($controllerSource, "private const RENDER_MODE = 'legacy';"));
+report('Modo predeterminado App Shell', str_contains($controllerSource, "private const RENDER_MODE = 'app_shell';"));
 report('importar.php continúa como flujo legacy', str_contains($controllerSource, "require __DIR__ . '/../Views/inventario/importar.php';"));
 report('Sin activación del modo mediante parámetros HTTP', !preg_match('/RENDER_MODE[^;]*\$_(?:GET|POST|SESSION|COOKIE)/s', $controllerSource));
 report('importar.php no se usa como contenido del App Shell', !preg_match('/contenidoModulo[^\n]*importar\.php/', $controllerSource));
@@ -141,7 +143,7 @@ report('Vista FerroCheck sin shell global', !containsAll($ferroContentSource, ['
 report('Vista FerroCheck sin documento HTML', !preg_match('/<!doctype|<\/?(?:html|head|body)\b/i', $ferroContentSource));
 report('Vista FerroCheck sin assets globales', !preg_match('/<(?:link|script)\b|(?:app-shell|importador)\.(?:css|js)/i', $ferroContentSource));
 report('importar.php conserva shell legacy', containsAll($legacyViewSource, ['<!DOCTYPE html>', 'class="topbar"', 'id="sidebarNav"', 'id="footer"']));
-report('RENDER_MODE permanece en legacy', str_contains($controllerSource, "private const RENDER_MODE = 'legacy';"));
+report('RENDER_MODE permanece en App Shell', str_contains($controllerSource, "private const RENDER_MODE = 'app_shell';"));
 report('Contenido FerroCheck no está duplicado en importar.php', substr_count($legacyViewSource, 'aria-label="FerroCheck"') === 0);
 report('Vista extraída conserva contrato principal', containsAll($ferroContentSource, ['aria-label="FerroCheck"', 'id="importador"', 'id="verificacion"', 'class="results-table"']));
 report('DashboardController referencia la vista extraída', str_contains($controllerSource, 'ferrocheck-content.php'));
@@ -159,7 +161,7 @@ report('Captura ocurre antes de construir el bridge', strpos($controllerSource, 
 
 echo "\nCompuerta local de FerroCheck\n";
 report('Existe FERROCHECK_APP_SHELL_ENABLED', str_contains($controllerSource, 'private const FERROCHECK_APP_SHELL_ENABLED'));
-report('Bandera FerroCheck está apagada', str_contains($controllerSource, 'private const FERROCHECK_APP_SHELL_ENABLED = false;'));
+report('Bandera FerroCheck está encendida', str_contains($controllerSource, 'private const FERROCHECK_APP_SHELL_ENABLED = true;'));
 report('Existe detección explícita de FerroCheck', str_contains($controllerSource, 'private function isFerroCheckRequest(string $modulo, string $seccion): bool'));
 report('Existe decisión de render por módulo', str_contains($controllerSource, 'private function shouldRenderFerroCheckWithAppShell(string $modulo, string $seccion): bool'));
 report('Dashboard queda excluido por igualdad exacta', str_contains($controllerSource, '$modulo === self::FERROCHECK_MODULE'));
