@@ -1,7 +1,5 @@
 <?php
 
-date_default_timezone_set('America/Mexico_City');
-
 if (!defined('BASE_URL')) {
     $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
     $host = explode(':', $host)[0] ?? $host;
@@ -11,27 +9,33 @@ if (!defined('BASE_URL')) {
 }
 
 if (!defined('DB_HOST')) {
-    define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+    define('DB_HOST', 'vascor-db');
 }
 
 if (!defined('DB_PORT')) {
-    define('DB_PORT', (int) (getenv('DB_PORT') ?: 3306));
+    define('DB_PORT', 3306);
 }
 
 if (!defined('DB_NAME')) {
-    define('DB_NAME', getenv('DB_NAME') ?: 'ferrocheck');
+    define('DB_NAME', 'vascor');
 }
 
 if (!defined('DB_USER')) {
-    define('DB_USER', getenv('DB_USER') ?: 'root');
+    define('DB_USER', 'vascor');
 }
 
 if (!defined('DB_PASSWORD')) {
-    define('DB_PASSWORD', getenv('DB_PASSWORD') !== false ? (string) getenv('DB_PASSWORD') : '');
+    define('DB_PASSWORD', 'vascor123');
 }
 
 if (!defined('DB_DSN')) {
-    define('DB_DSN', 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=utf8mb4');
+    define(
+        'DB_DSN',
+        'mysql:host=' . DB_HOST .
+        ';port=' . DB_PORT .
+        ';dbname=' . DB_NAME .
+        ';charset=utf8mb4'
+    );
 }
 
 return [
@@ -39,12 +43,12 @@ return [
     "version" => "1.0.0",
     "timezone" => "America/Mexico_City",
     "database" => [
-        "driver" => "mysql",
-        "host" => DB_HOST,
-        "port" => DB_PORT,
+        "driver"   => "mysql",
+        "host"     => DB_HOST,
+        "port"     => DB_PORT,
         "database" => DB_NAME,
         "username" => DB_USER,
         "password" => DB_PASSWORD,
-        "charset" => "utf8mb4"
+        "charset"  => "utf8mb4"
     ]
 ];
