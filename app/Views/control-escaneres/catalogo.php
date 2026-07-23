@@ -54,25 +54,7 @@ ob_start();
         ?>
     <?php endforeach; ?>
 
-    <div class="vo-actions">
-        <button class="vo-btn vo-btn--subtle" type="button" data-qr-scanner-open>Escanear QR</button>
-    </div>
-
-    <dialog class="vo-card" data-qr-scanner aria-labelledby="qr-scanner-title">
-        <h2 id="qr-scanner-title">Escanear QR</h2>
-        <p data-qr-scanner-status>La cámara requiere permiso y puede requerir HTTPS fuera de localhost.</p>
-        <video data-qr-scanner-video playsinline muted></video>
-        <form data-qr-manual-form>
-            <div class="vo-field">
-                <label for="qr-manual-code">Código manual</label>
-                <input class="vo-input" id="qr-manual-code" name="code" pattern="(?:SC-)?[0-9]{4,}" placeholder="SC-5537" required>
-            </div>
-            <div class="vo-actions">
-                <button class="vo-btn vo-btn--primary" type="submit">Buscar equipo</button>
-                <button class="vo-btn vo-btn--subtle" type="button" data-qr-scanner-close>Cerrar</button>
-            </div>
-        </form>
-    </dialog>
+    <?php $finderMode='automatico';$finderButtonLabel='Escanear QR';$finderTitle='Localizar escáner';require __DIR__.'/partials/equipment-finder.php'; ?>
 
     <details class="vo-filter" open>
         <summary>Filtrar catálogo</summary>
@@ -191,4 +173,3 @@ ob_start();
     </section>
 </div>
 <?php $contenidoModulo = ob_get_clean(); require __DIR__ . '/plantilla.php'; ?>
-<script src="<?= BASE_URL ?>/assets/js/control-escaneres/qr-scanner.js" defer></script>

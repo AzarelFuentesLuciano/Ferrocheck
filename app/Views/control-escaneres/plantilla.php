@@ -49,5 +49,7 @@ $navegacion['areas'] = ['Áreas', 'A'];
     <div class="ce-content"><?php echo $contenidoModulo; ?></div>
 </section>
 <script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/operations-ui.js" defer></script>
+<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/equipment-finder.js" defer></script>
+<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/qr-scanner.js" defer></script>
 <script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/signatures.js" defer></script>
 <?php if ($vistaActual === 'dashboard'): ?><script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/dashboard.js" defer></script><?php endif; ?>

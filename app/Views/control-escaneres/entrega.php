@@ -5,6 +5,7 @@ ob_start();
 ?>
 <div class="vascor-ui ce-operation">
 <?php $pageTitle = 'Nueva entrega'; $pageDescription = 'Asigna el equipo y documenta sus condiciones de salida.'; $breadcrumbs = ['Control de Escáneres', 'Entrega']; require dirname(__DIR__) . '/components/page-header.php'; ?>
+<?php $finderMode='entrega';$finderButtonLabel='Escanear QR para entregar';$finderTitle='Localizar equipo para entrega';require __DIR__.'/partials/equipment-finder.php'; ?>
 <?php if (isset($integrationError)): $alertType = 'error'; $alertMessage = $integrationError; require dirname(__DIR__) . '/components/alert.php'; ?>
 <?php elseif (!isset($deliveryForm) || $deliveryForm->scannerId === null): $emptyTitle = 'Selecciona un escáner disponible'; $emptyDescription = 'Vuelve al catálogo y elige Entrega.'; $emptyActionUrl = BASE_URL . '/index.php?modulo=control-escaneres&seccion=catalogo'; $emptyActionLabel = 'Volver al catálogo'; require dirname(__DIR__) . '/components/empty-state.php'; ?>
 <?php else: foreach ($deliveryForm->messages as $message) { $alertType = $message['type'] ?? 'info'; $alertMessage = $message['message'] ?? ''; require dirname(__DIR__) . '/components/alert.php'; } ?>

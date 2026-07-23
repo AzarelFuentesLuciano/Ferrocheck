@@ -5,6 +5,7 @@ $vistaActual='recepcion';$h=static fn(mixed$value):string=>htmlspecialchars((str
 ?>
 <div class="vascor-ui ce-operation">
 <?php $pageTitle='Recepción de escáner';$pageDescription='Compara y documenta las condiciones de regreso.';$breadcrumbs=['Control de Escáneres','Recepción'];require dirname(__DIR__).'/components/page-header.php'; ?>
+<?php $finderMode='recepcion';$finderButtonLabel='Escanear QR para recibir';$finderTitle='Localizar equipo para recepción';require __DIR__.'/partials/equipment-finder.php'; ?>
 <?php if(isset($integrationError)): $alertType='error';$alertMessage=$integrationError;require dirname(__DIR__).'/components/alert.php'; ?>
 <?php elseif(!isset($receptionForm)||$receptionForm->movementId===null): ?>
     <?php foreach(($receptionForm->messages??[])as$message){$alertType=$message['type']??'info';$alertMessage=$message['message']??'';require dirname(__DIR__).'/components/alert.php';} ?>

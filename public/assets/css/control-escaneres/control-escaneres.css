@@ -3,3 +3,6 @@
 
 /* Grid children must be allowed to shrink so scrollable tables do not widen the page. */
 .ce-module,.ce-content{min-width:0}
+.ce-equipment-finder{margin:0 0 1rem}.ce-equipment-finder__dialog{width:min(92vw,34rem);max-width:34rem;border:0}.ce-equipment-finder__dialog::backdrop{background:rgb(15 23 42/.55)}.ce-equipment-finder__message{min-height:2.75rem;margin:.75rem 0;padding:.65rem;border-radius:.5rem;background:#f3f6f8;overflow-wrap:anywhere}.ce-equipment-finder__dialog .vo-actions{display:flex;flex-wrap:wrap;gap:.5rem}.ce-equipment-finder__dialog .vo-btn{max-width:100%}
+.ce-equipment-finder video{display:block;width:100%;max-height:48vh;margin:.75rem 0;border-radius:.5rem;background:#111;object-fit:cover}.ce-equipment-finder video[hidden]{display:none}
+@media(max-width:360px){.ce-equipment-finder__dialog{width:calc(100vw - 1rem);padding:1rem}.ce-equipment-finder__dialog .vo-actions{align-items:stretch;flex-direction:column}.ce-equipment-finder__dialog .vo-btn{width:100%}}
