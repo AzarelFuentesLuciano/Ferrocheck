@@ -48,16 +48,25 @@ final class AuthService
     {
         $id=(int)($this->session['user_id']??0);$hash=$this->session['auth_session_hash']??null;
         if($id>0&&is_string($hash))$this->repository->revokeSession($hash,$id,'logout');
-        foreach(['user_id','auth_session_hash','auth_roles','auth_permissions','auth_name','auth_username','auth_module_keys']as$key)unset($this->session[$key]);
-        session_regenerate_id(true);
+        $this->session=[];
+        if(session_status()===PHP_SESSION_ACTIVE){
+            $params=session_get_cookie_params();session_destroy();
+            setcookie(session_name(),'',[
+                'expires'=>time()-42000,'path'=>$params['path']?:'/','domain'=>$params['domain']??'',
+                'secure'=>(bool)($params['secure']??false),'httponly'=>(bool)($params['httponly']??true),
+                'samesite'=>$params['samesite']??'Lax',
+            ]);
+        }
     }
 
     public function safeReturn(?string $url): string
     {
         $fallback=(defined('BASE_URL')?BASE_URL:'').'/index.php?modulo=dashboard';
-        if(!is_string($url)||$url===''||str_starts_with($url,'//'))return$fallback;
-        $parts=parse_url($url);if($parts===false||isset($parts['scheme'])||isset($parts['host']))return$fallback;
-        $base=defined('BASE_URL')?BASE_URL:'';return str_starts_with($url,$base.'/')?$url:$fallback;
+        if(!is_string($url)||$url===''||preg_match('/[\r\n\x00]/',$url)||str_starts_with($url,'//'))return$fallback;
+        $parts=parse_url($url);if($parts===false||isset($parts['scheme'])||isset($parts['host'])||isset($parts['user'])||isset($parts['pass']))return$fallback;
+        $path=(string)($parts['path']??'');
+        if(!in_array($path,['/index.php','/Ferrocheck/public/index.php'],true))return$fallback;
+        return$url;
     }
     private function ip(array$server):?string{$ip=$server['REMOTE_ADDR']??null;return is_string($ip)&&filter_var($ip,FILTER_VALIDATE_IP)?$ip:null;}
     private function userAgentHash(array$server):?string{$ua=$server['HTTP_USER_AGENT']??null;return is_string($ua)&&$ua!==''?hash('sha256',$ua):null;}

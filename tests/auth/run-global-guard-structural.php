@@ -1,0 +1,21 @@
+<?php
+declare(strict_types=1);
+require dirname(__DIR__).'/control-escaneres/bootstrap.php';
+$root=dirname(__DIR__,2);
+$front=file_get_contents($root.'/public/index.php');
+$controller=file_get_contents($root.'/app/Controllers/AuthController.php');
+$service=file_get_contents($root.'/app/Services/AuthService.php');
+$login=file_get_contents($root.'/app/Views/auth/login.php');
+$css=file_get_contents($root.'/public/assets/css/auth.css');
+test('auth es la única ruta anterior al guard',fn()=>ok(strpos($front,"modulo'] ?? '') === 'auth'")<strpos($front,'if ($currentUser === null)')));
+test('dashboard queda detrás del guard',fn()=>ok(strpos($front,'if ($currentUser === null)')<strrpos($front,'new DashboardController()')));
+test('QR conserva REQUEST_URI mediante return',fn()=>ok(str_contains($front,"SERVER['REQUEST_URI']")&&str_contains($front,'rawurlencode($requestedReturn)')));
+test('páginas autenticadas usan no-store',fn()=>ok(substr_count($front,'Cache-Control: no-store')>=2&&str_contains($controller,'Cache-Control: no-store')));
+test('login autenticado respeta retorno seguro',fn()=>ok(str_contains($controller,'safeReturn(isset($query')));
+test('logout destruye sesión y expira cookie',fn()=>ok(str_contains($service,'session_destroy()')&&str_contains($service,"setcookie(session_name(),''")));
+test('login tiene dos secciones verticales',fn()=>ok(str_contains($login,'auth-viewport')&&str_contains($login,'auth-footer-section')));
+test('footer institucional tiene contenido exacto',fn()=>ok(str_contains($login,'VASCOR OPS V1.0')&&str_contains($login,'Plataforma Operativa')&&str_contains($login,'DESARROLLADO POR')&&str_contains($login,'2026 VASCOR OPS. Todos los derechos reservados.')));
+test('CV abre seguro en pestaña nueva',fn()=>ok(str_contains($login,'https://azarelfuentesluciano.github.io/Azarel_Fuentes_Luciano/')&&str_contains($login,'target="_blank"')&&str_contains($login,'rel="noopener noreferrer"')));
+test('primer viewport oculta footer por flujo normal',fn()=>ok(str_contains($css,'min-height:100svh')&&!preg_match('/\\.auth-footer[^}]*position\\s*:\\s*(fixed|sticky)/',$css)));
+test('responsive móvil no desborda',fn()=>ok(str_contains($css,'@media(max-width:480px)')&&str_contains($css,'min-width:320px')));
+finish('Global Authentication Guard');

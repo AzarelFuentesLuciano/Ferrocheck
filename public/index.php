@@ -40,12 +40,20 @@ $pdo = Database::getConnection();
 $authRepository = new AuthRepository($pdo);
 $authService = new AuthService($authRepository, $_SESSION);
 $currentUser = $authService->current();
+$requestedReturn = $authService->safeReturn((string) ($_SERVER['REQUEST_URI'] ?? ''));
+if ($currentUser === null) {
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Location: ' . BASE_URL . '/index.php?modulo=auth&return=' . rawurlencode($requestedReturn), true, 302);
+    return;
+}
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 $organizationalAccess = $currentUser ? new OrganizationalAccess($currentUser, new OrganizationalAccessRepository($pdo)) : null;
 if ($organizationalAccess) $_SESSION['auth_module_keys'] = array_column((new ModuleNavigationBuilder($organizationalAccess))->build((string)BASE_URL), 'key');
 else unset($_SESSION['auth_module_keys']);
 
 if (($_GET['modulo'] ?? '') === 'administracion') {
-    if ($currentUser === null) { $return=rawurlencode((string)($_SERVER['REQUEST_URI']??''));header('Location: '.BASE_URL.'/index.php?modulo=auth&return='.$return,true,302);return; }
     try{$organizationalAccess?->requireModuleAccess('administracion');}catch(ForbiddenException){http_response_code(403);require __DIR__.'/../app/Views/auth/403.php';return;}
     $userRepository = new UserAdminRepository($pdo);
     $roleRepository = new RoleAdminRepository($pdo);
@@ -66,7 +74,6 @@ if (($_GET['modulo'] ?? '') === 'administracion') {
 }
 
 if (($_GET['modulo'] ?? '') === 'control-escaneres') {
-    if ($currentUser === null) { $return=rawurlencode((string)($_SERVER['REQUEST_URI']??''));header('Location: '.BASE_URL.'/index.php?modulo=auth&return='.$return,true,302);return; }
     try{$organizationalAccess?->requireModuleAccess('control_escaneres','escaneres.ver');}catch(ForbiddenException){http_response_code(403);require __DIR__.'/../app/Views/auth/403.php';return;}
     $operationPermissions = ['entrega'=>'escaneres.entregar','recepcion'=>'escaneres.recibir','registrar'=>'escaneres.crear','importar-inventario'=>'escaneres.crear','editar'=>'escaneres.editar','baja'=>'escaneres.editar','reactivar'=>'escaneres.editar','areas'=>'escaneres.editar','incidencias'=>'escaneres.editar','mantenimiento'=>'escaneres.editar'];
     $operationSection = (string) ($_GET['seccion'] ?? '');
