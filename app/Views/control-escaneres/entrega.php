@@ -6,9 +6,38 @@ ob_start();
 <div class="vascor-ui ce-operation">
 <?php $pageTitle = 'Nueva entrega'; $pageDescription = 'Asigna el equipo y documenta sus condiciones de salida.'; $breadcrumbs = ['Control de Escáneres', 'Entrega']; require dirname(__DIR__) . '/components/page-header.php'; ?>
 <?php $finderMode='entrega';$finderButtonLabel='Escanear QR para entregar';$finderTitle='Localizar equipo para entrega';require __DIR__.'/partials/equipment-finder.php'; ?>
+
+<?php
+$deliverySucceeded = false;
+
+if (isset($deliveryForm)) {
+    foreach ($deliveryForm->messages as $message) {
+        if (($message['type'] ?? null) === 'success') {
+            $deliverySucceeded = true;
+        }
+
+        $alertType = $message['type'] ?? 'info';
+        $alertMessage = $message['message'] ?? '';
+        require dirname(__DIR__) . '/components/alert.php';
+    }
+}
+?>
+
 <?php if (isset($integrationError)): $alertType = 'error'; $alertMessage = $integrationError; require dirname(__DIR__) . '/components/alert.php'; ?>
-<?php elseif (!isset($deliveryForm) || $deliveryForm->scannerId === null): $emptyTitle = 'Selecciona un escáner disponible'; $emptyDescription = 'Vuelve al catálogo y elige Entrega.'; $emptyActionUrl = BASE_URL . '/index.php?modulo=control-escaneres&seccion=catalogo'; $emptyActionLabel = 'Volver al catálogo'; require dirname(__DIR__) . '/components/empty-state.php'; ?>
-<?php else: foreach ($deliveryForm->messages as $message) { $alertType = $message['type'] ?? 'info'; $alertMessage = $message['message'] ?? ''; require dirname(__DIR__) . '/components/alert.php'; } ?>
+<?php elseif (!isset($deliveryForm) || $deliveryForm->scannerId === null):
+    $emptyTitle = $deliverySucceeded
+        ? 'Entrega finalizada correctamente'
+        : 'Selecciona un escáner disponible';
+
+    $emptyDescription = $deliverySucceeded
+        ? 'El equipo quedó registrado como entregado. Puedes regresar al catálogo o escanear otro equipo.'
+        : 'Vuelve al catálogo y elige Entrega.';
+
+    $emptyActionUrl = BASE_URL . '/index.php?modulo=control-escaneres&seccion=catalogo';
+    $emptyActionLabel = 'Volver al catálogo';
+    require dirname(__DIR__) . '/components/empty-state.php';
+?>
+<?php else: ?>
 <form class="ce-form" method="post" enctype="multipart/form-data" data-vo-operation-form>
 <input type="hidden" name="_csrf" value="<?= $h($deliveryForm->csrfToken) ?>"><input type="hidden" name="scanner_id" value="<?= $deliveryForm->scannerId ?>">
 <section class="vo-form-section"><h2>Custodia</h2><div class="vo-form-grid">

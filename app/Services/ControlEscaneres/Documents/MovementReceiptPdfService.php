@@ -22,8 +22,21 @@ final class MovementReceiptPdfService
         $incidents = $this->all('SELECT tipo,severidad,descripcion,estado,resolucion FROM scanner_incidencias WHERE movimiento_id=:id ORDER BY reportada_at', $id);
         $evidences = (new PdoEvidenceRepository($this->pdo))->listByMovementId($id);
         $storage = $this->storage ?? new EvidenceFileStorage(dirname(__DIR__,4) . '/storage/evidencias/control-escaneres');
-        $qr = (new ScannerQrCodeService($this->pdo))->png((int) $movement['scanner_id'], 220);
-        $qrUri = 'data:' . $qr['mime'] . ';base64,' . base64_encode($qr['bytes']);
+        $qr = (new ScannerQrCodeService($this->pdo))->svg((int) $movement['scanner_id'], 220);
+        $qrSvg = preg_replace(
+            [
+                '/<\?xml[^>]*\?>/i',
+                '/<!DOCTYPE[^>]*>/i',
+            ],
+            '',
+            $qr['bytes']
+        );
+
+        if (!is_string($qrSvg) || trim($qrSvg) === '') {
+            throw new \RuntimeException('No fue posible preparar el QR para el comprobante.');
+        }
+
+        $qrSvg = trim($qrSvg);
         $h = static fn(mixed $value): string => htmlspecialchars((string) ($value ?? '—'), ENT_QUOTES, 'UTF-8');
 
         $detailRows = '';
@@ -46,9 +59,9 @@ final class MovementReceiptPdfService
 
         $duration = $movement['duracion_segundos'] === null ? 'Pendiente' : $this->duration((int) $movement['duracion_segundos']);
         $html = '<!doctype html><html lang="es"><meta charset="utf-8"><style>'
-            . '@page{margin:22mm 14mm 18mm}body{font-family:DejaVu Sans,sans-serif;font-size:10px;color:#172033}header{border-bottom:3px solid #1769aa;margin-bottom:14px;padding-bottom:8px}h1{margin:0;color:#123f6d;font-size:22px}h2{color:#123f6d;font-size:14px;margin-top:16px}table{width:100%;border-collapse:collapse;margin:7px 0}td,th{border:1px solid #bcc7d3;padding:5px;text-align:left}th{background:#eaf2f8}.identity{display:table;width:100%}.identity>div{display:table-cell;vertical-align:top}.qr{width:150px;text-align:center}.qr img{width:125px}.grid{display:grid;grid-template-columns:1fr 1fr}.evidence{font-size:0}.evidence figure{display:inline-block;width:30%;margin:1%;vertical-align:top;font-size:8px;text-align:center;page-break-inside:avoid}.evidence img{max-width:100%;height:105px;object-fit:contain}.signatures figure{width:46%}.signatures img{height:85px}footer{position:fixed;bottom:-12mm;left:0;right:0;border-top:1px solid #bcc7d3;padding-top:4px;color:#5b6773}</style>'
+            . '@page{margin:22mm 14mm 18mm}body{font-family:DejaVu Sans,sans-serif;font-size:10px;color:#172033}header{border-bottom:3px solid #1769aa;margin-bottom:14px;padding-bottom:8px}h1{margin:0;color:#123f6d;font-size:22px}h2{color:#123f6d;font-size:14px;margin-top:16px}table{width:100%;border-collapse:collapse;margin:7px 0}td,th{border:1px solid #bcc7d3;padding:5px;text-align:left}th{background:#eaf2f8}.identity{display:table;width:100%}.identity>div{display:table-cell;vertical-align:top}.qr{width:150px;text-align:center}.qr svg{display:block;width:125px;height:125px;margin:0 auto}.grid{display:grid;grid-template-columns:1fr 1fr}.evidence{font-size:0}.evidence figure{display:inline-block;width:30%;margin:1%;vertical-align:top;font-size:8px;text-align:center;page-break-inside:avoid}.evidence img{max-width:100%;height:105px;object-fit:contain}.signatures figure{width:46%}.signatures img{height:85px}footer{position:fixed;bottom:-12mm;left:0;right:0;border-top:1px solid #bcc7d3;padding-top:4px;color:#5b6773}</style>'
             . '<header><h1>VASCOR OPS</h1><b>FORMATO DE ENTREGA Y RECEPCIÓN DE ESCÁNER</b></header>'
-            . '<div class="identity"><div><p><b>Folio:</b> ' . $h($movement['folio']) . '</p><p><b>Equipo:</b> ' . $h($movement['codigo']) . ' · TAG ' . $h($movement['tag_original']) . '</p><p><b>Marca / modelo / serie:</b> ' . $h($movement['marca']) . ' / ' . $h($movement['modelo']) . ' / ' . $h($movement['numero_serie']) . '</p><p><b>Operador / No. empleado:</b> ' . $h($movement['persona_entrega_nombre']) . ' / ' . $h($movement['numero_empleado']) . '</p><p><b>Área:</b> ' . $h($movement['area_nombre'] ?? $movement['area_habitual']) . ' · <b>Turno:</b> ' . $h($movement['turno']) . '</p><p><b>Supervisor:</b> ' . $h($movement['supervisor_nombre']) . ' · <b>Entregó:</b> ' . $h($movement['responsable_entrega_nombre']) . '</p></div><div class="qr"><img src="' . $qrUri . '"><br>' . $h($movement['codigo']) . '</div></div>'
+            . '<div class="identity"><div><p><b>Folio:</b> ' . $h($movement['folio']) . '</p><p><b>Equipo:</b> ' . $h($movement['codigo']) . ' · TAG ' . $h($movement['tag_original']) . '</p><p><b>Marca / modelo / serie:</b> ' . $h($movement['marca']) . ' / ' . $h($movement['modelo']) . ' / ' . $h($movement['numero_serie']) . '</p><p><b>Operador / No. empleado:</b> ' . $h($movement['persona_entrega_nombre']) . ' / ' . $h($movement['numero_empleado']) . '</p><p><b>Área:</b> ' . $h($movement['area_nombre'] ?? $movement['area_habitual']) . ' · <b>Turno:</b> ' . $h($movement['turno']) . '</p><p><b>Supervisor:</b> ' . $h($movement['supervisor_nombre']) . ' · <b>Entregó:</b> ' . $h($movement['responsable_entrega_nombre']) . '</p></div><div class="qr">' . $qrSvg . '<br>' . $h($movement['codigo']) . '</div></div>'
             . '<h2>Entrega y recepción</h2><p><b>Entrega:</b> ' . $h($movement['entregado_at']) . ' · <b>Recepción:</b> ' . $h($movement['recibido_at'] ?? 'Pendiente') . '</p><p><b>Devolvió:</b> ' . $h($movement['devolucion_recibida_por_nombre']) . ' · <b>Recibió:</b> ' . $h($movement['responsable_recepcion_nombre']) . ' · <b>Duración:</b> ' . $h($duration) . '</p>' . $inspectionSummary
             . '<h2>Checklist</h2><table><thead><tr><th>Inspección</th><th>Componente</th><th>Estado</th></tr></thead><tbody>' . $detailRows . '</tbody></table>'
             . '<h2>Diferencias</h2><table><thead><tr><th>Componente</th><th>Entrega</th><th>Recepción</th><th>Clasificación</th></tr></thead><tbody>' . ($differenceRows ?: '<tr><td colspan="4">Sin diferencias registradas.</td></tr>') . '</tbody></table>'

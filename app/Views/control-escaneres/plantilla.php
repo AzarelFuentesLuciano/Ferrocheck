@@ -48,8 +48,11 @@ $navegacion['areas'] = ['Áreas', 'A'];
     </nav>
     <div class="ce-content"><?php echo $contenidoModulo; ?></div>
 </section>
-<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/operations-ui.js" defer></script>
-<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/equipment-finder.js" defer></script>
-<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/qr-scanner.js" defer></script>
-<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/signatures.js" defer></script>
-<?php if ($vistaActual === 'dashboard'): ?><script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/dashboard.js" defer></script><?php endif; ?>
+<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/operations-ui.js?v=20260723" defer></script>
+<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/equipment-finder.js?v=20260723" defer></script>
+<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/qr-scanner.js?v=20260723" defer></script>
+<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/signatures.js?v=20260723" defer></script>
+
+<?php if ($vistaActual === 'dashboard'): ?>
+<script src="<?php echo BASE_URL; ?>/assets/js/control-escaneres/dashboard.js?v=20260723" defer></script>
+<?php endif; ?>
