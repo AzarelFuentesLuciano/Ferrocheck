@@ -6,3 +6,102 @@
 .ce-equipment-finder{margin:0 0 1rem}.ce-equipment-finder__dialog{width:min(92vw,34rem);max-width:34rem;border:0}.ce-equipment-finder__dialog::backdrop{background:rgb(15 23 42/.55)}.ce-equipment-finder__message{min-height:2.75rem;margin:.75rem 0;padding:.65rem;border-radius:.5rem;background:#f3f6f8;overflow-wrap:anywhere}.ce-equipment-finder__dialog .vo-actions{display:flex;flex-wrap:wrap;gap:.5rem}.ce-equipment-finder__dialog .vo-btn{max-width:100%}
 .ce-equipment-finder video{display:block;width:100%;max-height:48vh;margin:.75rem 0;border-radius:.5rem;background:#111;object-fit:cover}.ce-equipment-finder video[hidden]{display:none}
 @media(max-width:360px){.ce-equipment-finder__dialog{width:calc(100vw - 1rem);padding:1rem}.ce-equipment-finder__dialog .vo-actions{align-items:stretch;flex-direction:column}.ce-equipment-finder__dialog .vo-btn{width:100%}}
+
+/* Modal Localizar escáner: comportamiento responsive */
+.ce-equipment-finder__dialog{
+    width:min(92vw,34rem);
+    max-width:34rem;
+    max-height:calc(100dvh - 1rem);
+    margin:auto;
+    padding:1.25rem;
+    overflow-x:hidden;
+    overflow-y:auto;
+    border:0;
+    border-radius:14px;
+}
+
+.ce-equipment-finder__dialog h2{
+    margin-top:0;
+    margin-bottom:.5rem;
+}
+
+.ce-equipment-finder__dialog > p{
+    margin-top:0;
+    overflow-wrap:anywhere;
+}
+
+.ce-equipment-finder__dialog form{
+    min-width:0;
+}
+
+.ce-equipment-finder__dialog .vo-field,
+.ce-equipment-finder__dialog .vo-input{
+    min-width:0;
+    width:100%;
+}
+
+.ce-equipment-finder__dialog .vo-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.75rem;
+}
+
+.ce-equipment-finder__dialog .vo-btn{
+    min-height:44px;
+    max-width:100%;
+}
+
+.ce-equipment-finder video{
+    display:block;
+    width:100%;
+    aspect-ratio:4/3;
+    max-height:min(42dvh,24rem);
+    margin:.75rem 0;
+    border-radius:.75rem;
+    background:#111;
+    object-fit:cover;
+}
+
+.ce-equipment-finder video[hidden]{
+    display:none;
+}
+
+@media(max-width:600px){
+    .ce-equipment-finder__dialog{
+        width:calc(100vw - 1rem);
+        max-width:none;
+        max-height:calc(100dvh - 1rem);
+        padding:1rem;
+        border-radius:12px;
+    }
+
+    .ce-equipment-finder__dialog .vo-actions{
+        align-items:stretch;
+        flex-direction:column;
+        gap:.65rem;
+    }
+
+    .ce-equipment-finder__dialog .vo-btn{
+        width:100%;
+        min-height:46px;
+        white-space:normal;
+        text-align:center;
+    }
+
+    .ce-equipment-finder video{
+        aspect-ratio:3/4;
+        max-height:42dvh;
+    }
+}
+
+@media(max-width:600px) and (orientation:landscape){
+    .ce-equipment-finder__dialog{
+        max-height:calc(100dvh - .5rem);
+        padding:.75rem 1rem;
+    }
+
+    .ce-equipment-finder video{
+        aspect-ratio:16/9;
+        max-height:45dvh;
+    }
+}
