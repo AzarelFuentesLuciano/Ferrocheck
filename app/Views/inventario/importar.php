@@ -10,17 +10,9 @@ $ferroSeccion = trim((string) ($_GET['seccion'] ?? 'consulta-vin'));
 $esFerrocheck = $modulo === 'ferrocheck';
 $permisosSesion = is_array($_SESSION['auth_permissions'] ?? null) ? $_SESSION['auth_permissions'] : [];
 $puedeAdministrar = in_array('administracion.acceder', $permisosSesion, true);
-$usuarioSesion = trim((string) ($_SESSION['auth_name'] ?? $_SESSION['auth_username'] ?? ''));
-$rolSesion = trim((string) ($_SESSION['auth_roles'][0] ?? 'Usuario'));
-$partesNombre = preg_split('/\s+/u', $usuarioSesion, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-$inicialesSesion = '';
-foreach (array_slice($partesNombre, 0, 2) as $parteNombre) {
-    $inicialesSesion .= mb_strtoupper(mb_substr($parteNombre, 0, 1));
-}
-$inicialesSesion = $inicialesSesion !== '' ? $inicialesSesion : 'US';
-$authCsrf = $usuarioSesion !== '' ? (new \App\Auth\Csrf($_SESSION))->token() : '';
 $modulosAutorizados = is_array($_SESSION['auth_module_keys'] ?? null) ? $_SESSION['auth_module_keys'] : [];
 $puedeVerModulo = static fn(string $clave): bool => $modulosAutorizados === [] || in_array($clave, $modulosAutorizados, true);
+$escape = static fn(mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 
 $esModulo = static function (string $id) use ($modulo): bool {
     return $modulo === $id;
@@ -52,6 +44,7 @@ if ($esFerrocheck) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/app-shell.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/importador.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-design-system.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/shell-coherence.css">
@@ -60,41 +53,7 @@ if ($esFerrocheck) {
     <div class="dashboard-shell">
         <div class="sidebar-backdrop" aria-hidden="true"></div>
 
-        <header class="topbar">
-            <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="sidebarNav">
-                <span class="menu-toggle__icon">☰</span>
-            </button>
-            <div class="brand">
-                <div class="brand-logo" aria-label="Logo VASCOR OPS">
-                    <div class="brand-mark">
-                        <span class="brand-mark__rail"></span>
-                        <span class="brand-mark__rail brand-mark__rail--secondary"></span>
-                        <span class="brand-mark__core">VO</span>
-                    </div>
-                </div>
-                <div>
-                    <h1>VASCOR OPS</h1>
-                    <p>Plataforma Operativa</p>
-                </div>
-            </div>
-            <div class="topbar-meta">
-                <div class="info-panel" aria-live="polite">
-                    <div class="info-panel__item info-panel__item--active" data-role="version">Versión v1.0</div>
-                    <div class="info-panel__item" data-role="date"><span class="meta-label">Fecha</span><span id="currentDate">--</span></div>
-                    <div class="info-panel__item" data-role="time"><span class="meta-label">Hora</span><span id="currentTime">--:--:--</span></div>
-                </div>
-                <?php if ($usuarioSesion !== ''): ?>
-                    <div class="topbar-user">
-                        <span class="topbar-user__avatar" aria-hidden="true"><?php echo htmlspecialchars($inicialesSesion, ENT_QUOTES, 'UTF-8'); ?></span>
-                        <span class="topbar-user__identity"><strong><?php echo htmlspecialchars($usuarioSesion, ENT_QUOTES, 'UTF-8'); ?></strong><small><?php echo htmlspecialchars($rolSesion, ENT_QUOTES, 'UTF-8'); ?></small></span>
-                        <form class="topbar-logout" method="post" action="<?php echo BASE_URL; ?>/index.php?modulo=auth&amp;accion=logout">
-                            <input type="hidden" name="_csrf" value="<?php echo htmlspecialchars($authCsrf, ENT_QUOTES, 'UTF-8'); ?>">
-                            <button type="submit"><span aria-hidden="true">↪</span><span class="topbar-logout__label">Cerrar sesión</span></button>
-                        </form>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </header>
+        <?php require __DIR__ . '/../partials/header.php'; ?>
 
         <div class="dashboard-body">
             <aside class="sidebar" id="sidebarNav" data-collapsed="false" aria-label="Navegación lateral">

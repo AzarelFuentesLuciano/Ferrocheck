@@ -4,10 +4,12 @@ namespace App\Controllers;
 
 require_once __DIR__ . '/../Services/DashboardService.php';
 
+use App\Auth\AuthenticatedUser;
 use App\Core\Rendering\Exceptions\RenderException;
 use App\Core\Rendering\LegacyRenderBridge;
 use App\Core\Rendering\RenderAdapter;
 use App\Services\DashboardService;
+use App\Support\AuthenticatedHeaderBuilder;
 use Throwable;
 
 class DashboardController
@@ -24,6 +26,14 @@ class DashboardController
         'busqueda-multiple',
         'configuracion',
     ];
+    private ?AuthenticatedUser $authenticatedUser = null;
+    private string $logoutCsrf = '';
+
+    public function setAuthenticatedUser(AuthenticatedUser $user, string $logoutCsrf): void
+    {
+        $this->authenticatedUser = $user;
+        $this->logoutCsrf = $logoutCsrf;
+    }
 
     public function index(): void
     {
@@ -90,6 +100,23 @@ class DashboardController
 
     private function renderLegacy(): void
     {
+        $baseUrl = defined('BASE_URL') ? rtrim((string) BASE_URL, '/') : '';
+        $headerMetadata = [
+            'systemName' => 'VASCOR OPS',
+            'systemSubtitle' => 'Plataforma Operativa',
+            'versionLabel' => 'Versión v1.0',
+            'menuLabel' => 'Abrir menú',
+            'legacyHooks' => true,
+        ];
+        $header = $this->authenticatedUser instanceof AuthenticatedUser
+            ? AuthenticatedHeaderBuilder::build(
+                $this->authenticatedUser,
+                $baseUrl . '/index.php?modulo=auth&accion=logout',
+                $this->logoutCsrf,
+                $headerMetadata,
+            )
+            : $headerMetadata;
+
         require __DIR__ . '/../Views/inventario/importar.php';
     }
 
@@ -133,6 +160,21 @@ class DashboardController
     private function buildLegacyRenderData(string $contenidoModulo, string $ferroSeccion): array
     {
         $baseUrl = defined('BASE_URL') ? rtrim((string) BASE_URL, '/') : '';
+
+        $headerMetadata = [
+            'systemName' => 'VASCOR OPS',
+            'systemSubtitle' => 'Plataforma Operativa',
+            'versionLabel' => 'Versión v1.0',
+            'menuLabel' => 'Abrir navegación',
+        ];
+        $header = $this->authenticatedUser instanceof AuthenticatedUser
+            ? AuthenticatedHeaderBuilder::build(
+                $this->authenticatedUser,
+                $baseUrl . '/index.php?modulo=auth&accion=logout',
+                $this->logoutCsrf,
+                $headerMetadata,
+            )
+            : $headerMetadata;
 
         return [
             'pageTitle' => 'VASCOR OPS | FerroCheck',
@@ -204,12 +246,7 @@ class DashboardController
             'additionalScripts' => [
                 $baseUrl . '/assets/js/importador.js',
             ],
-            'header' => [
-                'systemName' => 'VASCOR OPS',
-                'systemSubtitle' => 'Plataforma Operativa',
-                'versionLabel' => 'Versión v1.0',
-                'menuLabel' => 'Abrir navegación',
-            ],
+            'header' => $header,
             'footer' => [
                 'title' => 'VASCOR OPS v1.0',
                 'subtitle' => 'Plataforma Operativa',

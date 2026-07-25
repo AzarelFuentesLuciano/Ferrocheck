@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+use App\Support\AuthenticatedHeaderBuilder;
 $base = rtrim((string) BASE_URL, '/');
 $can = fn (string $permission): bool => $this->authorization->can($permission);
 $modules = [
@@ -30,6 +31,5 @@ $moduleNavigation='<section class="admin-module-hero"><p class="eyebrow">Adminis
 $additionalStyles = [$base.'/assets/css/admin.css',$base.'/assets/css/admin-shell.css'];
 $additionalScripts = [$base.'/assets/js/admin.js'];
 $user = $this->authorization->user();
-$currentRole=$user->roles[0]??'Usuario';
-$header = ['systemSubtitle'=>'Plataforma Operativa','currentUser'=>$user->name,'currentRole'=>$currentRole,'currentBadge'=>$user->isSuperAdministrator()?'Super Administrador':'','logoutUrl'=>$base.'/index.php?modulo=auth&accion=logout','logoutCsrf'=>$csrfToken];
+$header = AuthenticatedHeaderBuilder::build($user,$base.'/index.php?modulo=auth&accion=logout',$csrfToken,['systemSubtitle'=>'Plataforma Operativa']);
 require dirname(__DIR__).'/layouts/app.php';

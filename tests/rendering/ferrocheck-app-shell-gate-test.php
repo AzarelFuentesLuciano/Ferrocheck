@@ -46,7 +46,7 @@ $unknownDecision = $decide->invoke($controller, 'desconocido', '');
 $lateralOutput = (string) ob_get_clean();
 
 $test('Existe FERROCHECK_APP_SHELL_ENABLED', str_contains($source, 'FERROCHECK_APP_SHELL_ENABLED'));
-$test('Bandera predeterminada es false', str_contains($source, 'private const FERROCHECK_APP_SHELL_ENABLED = false;'));
+$test('Bandera activa es true', str_contains($source, 'private const FERROCHECK_APP_SHELL_ENABLED = true;'));
 $test('Bandera es privada', preg_match('/private const FERROCHECK_APP_SHELL_ENABLED/', $source) === 1);
 $test('Bandera es constante', preg_match('/const FERROCHECK_APP_SHELL_ENABLED/', $source) === 1);
 $test('Existe método para identificar FerroCheck', $identificationSource !== '');
@@ -58,9 +58,9 @@ $test('Control de Escáneres no es FerroCheck', $identify->invoke($controller, '
 $test('Inventario de Material no es FerroCheck', $identify->invoke($controller, 'inventario-material', '') === false);
 $test('Módulo desconocido no es FerroCheck', $identify->invoke($controller, 'ferrocheck-extra', 'dashboard') === false);
 $test('Secciones reales de FerroCheck son reconocidas', $allSectionsRecognized);
-$test('Bandera false mantiene FerroCheck en legacy', $ferroCheckDecision === false);
-$test('Bandera false mantiene Dashboard en legacy', $dashboardDecision === false);
-$test('Bandera false mantiene Escáneres en legacy', $scannerDecision === false);
+$test('Bandera activa envía FerroCheck a App Shell', $ferroCheckDecision === true);
+$test('Dashboard permanece en legacy', $dashboardDecision === false);
+$test('Escáneres permanece en legacy', $scannerDecision === false);
 $test('No existe activación por GET', !preg_match('/FERROCHECK_APP_SHELL_ENABLED[^;]*\$_GET/s', $source));
 $test('No existe activación por POST', !preg_match('/FERROCHECK_APP_SHELL_ENABLED[^;]*\$_POST/s', $source));
 $test('No existe activación por sesión', !preg_match('/FERROCHECK_APP_SHELL_ENABLED[^;]*\$_SESSION/s', $source));
@@ -72,7 +72,7 @@ $test('No usa coincidencia genérica insegura', !preg_match('/\b(?:strpos|stripo
 $test('No usa vistaActual', !str_contains($source, 'vistaActual'));
 $test('Pipeline existente permanece disponible', str_contains($source, 'private function renderAppShell(string $ferroSeccion): string'));
 $test('Fallback legacy continúa presente', str_contains($source, "require __DIR__ . '/../Views/inventario/importar.php';"));
-$test('importar.php es flujo activo con bandera false', str_contains($source, 'if (!$this->shouldRenderFerroCheckWithAppShell($modulo, $seccion))'));
+$test('importar.php conserva la ruta legacy detrás de la compuerta', str_contains($source, 'if (!$this->shouldRenderFerroCheckWithAppShell($modulo, $seccion))'));
 $test('RENDER_MODE no activa otros módulos', $dashboardDecision === false && $scannerDecision === false && $unknownDecision === false);
 $test('No existe rama App Shell para Escáneres', !preg_match('/renderAppShell[^;]*control-escaneres/s', $source));
 $test('No existe rama App Shell para Dashboard', !preg_match('/renderAppShell[^;]*modulo=dashboard/s', $source));

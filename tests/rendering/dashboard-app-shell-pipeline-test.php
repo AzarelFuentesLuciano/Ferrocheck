@@ -55,12 +55,12 @@ $test('Existe fallback legacy', str_contains($source, 'private function renderLe
 $test('Fallback usa importar.php', str_contains($source, "require __DIR__ . '/../Views/inventario/importar.php';"));
 $test('Fallback se invoca una vez en el catch', preg_match('/catch \(RenderException\)\s*\{\s*\$this->renderLegacy\(\);\s*return;/s', $source) === 1);
 $test('No existe salida previa al render completo', $renderPosition !== false && $echoPosition !== false && $renderPosition < $echoPosition);
-$test('RENDER_MODE continúa en legacy', str_contains($source, "private const RENDER_MODE = 'legacy';"));
+$test('RENDER_MODE activo es app_shell', str_contains($source, "private const RENDER_MODE = 'app_shell';"));
 $test('No existe activación HTTP del modo', !preg_match('/RENDER_MODE[^;]*\$_(?:GET|POST|SESSION|COOKIE|SERVER)/s', $source));
 $test('Punto de entrada y rutas permanecen estructuralmente presentes', str_contains($entrySource, '$controller = new DashboardController();') && str_contains($entrySource, '$controller->index();'));
 $test('Pipeline está detrás de la compuerta FerroCheck', strpos($source, 'shouldRenderFerroCheckWithAppShell($modulo, $seccion)') < $renderPosition);
 $test('Compuerta verifica la solicitud FerroCheck', str_contains($source, '$this->isFerroCheckRequest($modulo, $seccion)'));
-$test('Bandera FerroCheck permanece apagada', str_contains($source, 'private const FERROCHECK_APP_SHELL_ENABLED = false;'));
+$test('Bandera FerroCheck está activa', str_contains($source, 'private const FERROCHECK_APP_SHELL_ENABLED = true;'));
 $test('Preparación del pipeline permanece disponible', str_contains($source, 'private function renderAppShell(string $ferroSeccion): string'));
 $test('Fallback permanece sin cambios funcionales', preg_match('/catch \(RenderException\)\s*\{\s*\$this->renderLegacy\(\);\s*return;/s', $source) === 1);
 

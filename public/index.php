@@ -141,4 +141,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
 }
 
 $controller = new DashboardController();
+$controller->setAuthenticatedUser($currentUser, (new Csrf($_SESSION))->token());
 $controller->index();

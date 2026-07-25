@@ -112,6 +112,8 @@
 .app-header-user { display:flex; align-items:center; gap:9px; min-width:0; padding:6px 10px; border:1px solid var(--vascor-border,#dfe7ed); border-radius:12px; background:#f8fbfc; color:var(--vascor-primary-dark,#102a43); }
 .app-header-user__avatar { display:grid; place-items:center; width:34px; height:34px; flex:0 0 auto; border-radius:10px; background:var(--vascor-primary,#1769aa); color:#fff; font-size:.72rem; font-weight:700; }
 .app-header-user__identity { display:grid; min-width:0; gap:1px; }
+.app-header-user__role-line { display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+.app-header-user__sentinel-badge { display:inline-flex; padding:2px 6px; border:1px solid #b9d4e5; border-radius:999px; background:#edf7fb; color:#155474; font-size:.6rem; font-weight:700; line-height:1.25; white-space:nowrap; }
 .app-header-user strong { max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.76rem; }
 .app-header-user small { color:var(--vascor-text-muted,#657786); font-size:.62rem; }
 .app-header-logout { margin:0; }

@@ -4,10 +4,23 @@ declare(strict_types=1);
 
 /**
  * Pruebas de humo GET, deliberadamente no mutables.
- * Uso: php tests/smoke/smoke.php [base-url]
+ * Uso completo: php tests/smoke/smoke.php [base-url]
+ * Uso estático local: php tests/smoke/smoke.php --static-only
  */
 
-$baseUrl = $argv[1] ?? getenv('VASCOR_SMOKE_BASE_URL') ?: 'http://localhost/Ferrocheck/public';
+$staticOnly = in_array('--static-only', $argv, true);
+$baseUrlArgument = null;
+foreach (array_slice($argv, 1) as $argument) {
+    if ($argument !== '--static-only') {
+        $baseUrlArgument = $argument;
+        break;
+    }
+}
+
+$baseUrl = $baseUrlArgument
+    ?? getenv('SMOKE_BASE_URL')
+    ?: getenv('VASCOR_SMOKE_BASE_URL')
+    ?: 'http://localhost/Ferrocheck/public';
 $baseUrl = rtrim((string) $baseUrl, '/');
 $entryUrl = str_ends_with($baseUrl, '/index.php') ? $baseUrl : $baseUrl . '/index.php';
 $publicBase = str_ends_with($baseUrl, '/index.php') ? substr($baseUrl, 0, -10) : $baseUrl;
@@ -30,25 +43,72 @@ $tests = [
 
 $passed = 0;
 $failed = 0;
+$smokeCookies = [];
 
-function requestGet(string $url): array
+function requestHttp(string $url, string $method = 'GET', array $data = []): array
 {
+    global $smokeCookies;
+
+    $responseHeaders = [];
     $handle = curl_init($url);
-    curl_setopt_array($handle, [
+    $options = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => false,
         CURLOPT_CONNECTTIMEOUT => 5,
         CURLOPT_TIMEOUT => 15,
-        CURLOPT_HTTPGET => true,
         CURLOPT_HEADER => false,
-    ]);
+        CURLOPT_HEADERFUNCTION => static function ($curl, string $header) use (&$responseHeaders): int {
+            $responseHeaders[] = trim($header);
+            return strlen($header);
+        },
+    ];
+    if ($smokeCookies !== []) {
+        $options[CURLOPT_COOKIE] = implode('; ', array_map(
+            static fn(string $name, string $value): string => $name . '=' . $value,
+            array_keys($smokeCookies),
+            $smokeCookies,
+        ));
+    }
+    if ($method === 'POST') {
+        $options[CURLOPT_POST] = true;
+        $options[CURLOPT_POSTFIELDS] = http_build_query($data);
+        $options[CURLOPT_HTTPHEADER] = ['Content-Type: application/x-www-form-urlencoded'];
+    } else {
+        $options[CURLOPT_HTTPGET] = true;
+    }
+    curl_setopt_array($handle, $options);
 
     $body = curl_exec($handle);
     $status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
     $error = curl_error($handle);
     curl_close($handle);
 
-    return ['status' => $status, 'body' => is_string($body) ? $body : '', 'error' => $error];
+    $location = '';
+    foreach ($responseHeaders as $header) {
+        if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]*)/i', $header, $matches) === 1) {
+            $smokeCookies[$matches[1]] = $matches[2];
+        } elseif (stripos($header, 'Location:') === 0) {
+            $location = trim(substr($header, 9));
+        }
+    }
+
+    return [
+        'status' => $status,
+        'body' => is_string($body) ? $body : '',
+        'error' => $error,
+        'location' => $location,
+    ];
+}
+
+function requestGet(string $url): array
+{
+    return requestHttp($url);
+}
+
+function csrfToken(string $html): string
+{
+    preg_match('/name="_csrf"\s+value="([^"]+)"/', $html, $matches);
+    return html_entity_decode($matches[1] ?? '', ENT_QUOTES, 'UTF-8');
 }
 
 function report(string $label, bool $ok, string $detail = ''): void
@@ -68,7 +128,33 @@ function containsAll(string $html, array $markers): bool
     return true;
 }
 
-echo "VASCOR OPS smoke tests (GET only)\nBase: {$entryUrl}\n\n";
+echo "VASCOR OPS smoke tests\nModo: " . ($staticOnly ? 'estático local' : 'completo GET') . "\nBase: {$entryUrl}\n\n";
+
+if (!$staticOnly):
+$smokeUser = (string) (getenv('SMOKE_AUTH_USER') ?: getenv('AUTH_VISUAL_USER'));
+$smokePassword = (string) (getenv('SMOKE_AUTH_PASSWORD') ?: getenv('AUTH_VISUAL_PASSWORD'));
+if ($smokeUser === '' || $smokePassword === '') {
+    fwrite(STDERR, "El smoke HTTP requiere SMOKE_AUTH_USER y SMOKE_AUTH_PASSWORD (o AUTH_VISUAL_USER/AUTH_VISUAL_PASSWORD).\n");
+    exit(2);
+}
+
+$loginPage = requestGet($entryUrl . '?modulo=auth');
+$loginToken = csrfToken($loginPage['body']);
+$loginResponse = requestHttp($entryUrl . '?modulo=auth', 'POST', [
+    '_csrf' => $loginToken,
+    'usuario' => $smokeUser,
+    'password' => $smokePassword,
+]);
+if ($loginPage['status'] !== 200 || strlen($loginToken) !== 64 || $loginResponse['status'] !== 303) {
+    fwrite(STDERR, sprintf(
+        "No fue posible crear la sesión smoke (login GET %d, token %d, login POST %d, redirect %s).\n",
+        $loginPage['status'],
+        strlen($loginToken),
+        $loginResponse['status'],
+        $loginResponse['location'],
+    ));
+    exit(2);
+}
 
 foreach ($tests as [$name, $query, $pageMarker, $section, $isFerrocheck]) {
     $response = requestGet($entryUrl . $query);
@@ -79,7 +165,7 @@ foreach ($tests as [$name, $query, $pageMarker, $section, $isFerrocheck]) {
     report($name . ': sin error PHP visible', !preg_match('/(?:Fatal error|Parse error|Warning|Notice):/i', $html));
     report($name . ': shell global', $isFerrocheck
         ? containsAll($html, ['class="app-header"', 'id="appShellSidebar"', 'class="app-footer"'])
-        : containsAll($html, ['class="topbar"', 'id="sidebarNav"', 'id="footer"']));
+        : containsAll($html, [' topbar"', 'id="sidebarNav"', 'id="footer"']));
     report($name . ': contenido clave', str_contains($html, $pageMarker), $pageMarker);
     report($name . ': estilos globales', containsAll($html, ['assets/css/importador.css', 'assets/css/vascor-design-system.css', 'family=Poppins']));
 
@@ -112,6 +198,7 @@ foreach ($assets as $asset) {
     $response = requestGet($publicBase . $asset);
     report($asset, $response['status'] === 200 && $response['body'] !== '', 'HTTP ' . $response['status']);
 }
+endif;
 
 echo "\nIntegración reversible del App Shell\n";
 $controllerSource = file_get_contents(__DIR__ . '/../../app/Controllers/DashboardController.php');
@@ -134,15 +221,24 @@ echo "\nVista reutilizable de FerroCheck\n";
 $ferroContentPath = __DIR__ . '/../../app/Views/inventario/partials/ferrocheck-content.php';
 $ferroContentSource = file_get_contents($ferroContentPath);
 $legacyViewSource = file_get_contents(__DIR__ . '/../../app/Views/inventario/importar.php');
+$sharedHeaderSource = file_get_contents(__DIR__ . '/../../app/Views/partials/header.php');
 $ferroContentSource = is_string($ferroContentSource) ? $ferroContentSource : '';
 $legacyViewSource = is_string($legacyViewSource) ? $legacyViewSource : '';
+$sharedHeaderSource = is_string($sharedHeaderSource) ? $sharedHeaderSource : '';
 
 report('Existe ferrocheck-content.php', is_file($ferroContentPath));
 report('importar.php incluye la vista mediante ruta estática', str_contains($legacyViewSource, "require __DIR__ . '/partials/ferrocheck-content.php';"));
 report('Vista FerroCheck sin shell global', !containsAll($ferroContentSource, ['class="topbar"', 'id="sidebarNav"', 'id="footer"']));
 report('Vista FerroCheck sin documento HTML', !preg_match('/<!doctype|<\/?(?:html|head|body)\b/i', $ferroContentSource));
 report('Vista FerroCheck sin assets globales', !preg_match('/<(?:link|script)\b|(?:app-shell|importador)\.(?:css|js)/i', $ferroContentSource));
-report('importar.php conserva shell legacy', containsAll($legacyViewSource, ['<!DOCTYPE html>', 'class="topbar"', 'id="sidebarNav"', 'id="footer"']));
+report('importar.php conserva documento y shell legacy', containsAll($legacyViewSource, ['<!DOCTYPE html>', 'id="sidebarNav"', 'id="footer"']));
+report('importar.php incluye el encabezado compartido', str_contains($legacyViewSource, "require __DIR__ . '/../partials/header.php';"));
+report('header.php conserva compatibilidad topbar', str_contains($sharedHeaderSource, "' topbar'"));
+report('header.php conserva compatibilidad menu-toggle', containsAll($sharedHeaderSource, ["' menu-toggle'", "' menu-toggle__icon'"]));
+report('header.php conserva control de sidebarNav', str_contains($sharedHeaderSource, "'sidebarNav'"));
+report('importar.php no duplica el encabezado', !preg_match('/<header\b/', $legacyViewSource));
+report('importar.php no obtiene identidad desde sesión', !preg_match('/\$_SESSION\s*\[\s*[\'"]auth_(?:name|username|roles|super_administrator)[\'"]\s*\]/', $legacyViewSource));
+report('La insignia Sentinel se renderiza sólo en header.php', str_contains($sharedHeaderSource, 'app-header-user__sentinel-badge') && !str_contains($legacyViewSource, 'app-header-user__sentinel-badge'));
 report('RENDER_MODE permanece en App Shell', str_contains($controllerSource, "private const RENDER_MODE = 'app_shell';"));
 report('Contenido FerroCheck no está duplicado en importar.php', substr_count($legacyViewSource, 'aria-label="FerroCheck"') === 0);
 report('Vista extraída conserva contrato principal', containsAll($ferroContentSource, ['aria-label="FerroCheck"', 'id="importador"', 'id="verificacion"', 'class="results-table"']));

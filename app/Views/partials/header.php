@@ -12,17 +12,18 @@ $currentBadge = trim((string) ($header['currentBadge'] ?? ''));
 $initials = $currentUser === '' ? '' : implode('',array_map(static fn(string$part):string=>mb_strtoupper(mb_substr($part,0,1)),array_slice(array_values(array_filter(preg_split('/\s+/u',$currentUser)?:[])),0,2)));
 $logoutUrl = (string) ($header['logoutUrl'] ?? '');
 $logoutCsrf = (string) ($header['logoutCsrf'] ?? '');
+$legacyHooks = ($header['legacyHooks'] ?? false) === true;
 ?>
-<header class="app-header">
+<header class="app-header<?php echo $legacyHooks ? ' topbar' : ''; ?>">
     <button
-        class="app-header-menu"
+        class="app-header-menu<?php echo $legacyHooks ? ' menu-toggle' : ''; ?>"
         type="button"
         aria-label="<?php echo $escape($menuLabel); ?>"
         aria-expanded="false"
-        aria-controls="appShellSidebar"
+        aria-controls="<?php echo $legacyHooks ? 'sidebarNav' : 'appShellSidebar'; ?>"
         data-app-shell-toggle
     >
-        <span class="app-header-menu__icon" aria-hidden="true" data-app-shell-toggle-icon>☰</span>
+        <span class="app-header-menu__icon<?php echo $legacyHooks ? ' menu-toggle__icon' : ''; ?>" aria-hidden="true" data-app-shell-toggle-icon>☰</span>
     </button>
 
     <div class="app-header-brand">
@@ -39,8 +40,8 @@ $logoutCsrf = (string) ($header['logoutCsrf'] ?? '');
 
     <div class="app-header-meta" aria-live="polite">
         <span class="app-header-meta__version"><?php echo $escape($versionLabel); ?></span>
-        <span class="app-header-meta__item"><small>Fecha</small><span data-app-shell-date>--</span></span>
-        <span class="app-header-meta__item"><small>Hora</small><span data-app-shell-time>--:--:--</span></span>
+        <span class="app-header-meta__item"><small>Fecha</small><span<?php echo $legacyHooks ? ' id="currentDate"' : ''; ?> data-app-shell-date>--</span></span>
+        <span class="app-header-meta__item"><small>Hora</small><span<?php echo $legacyHooks ? ' id="currentTime"' : ''; ?> data-app-shell-time>--:--:--</span></span>
         <?php if ($currentUser !== ''): ?>
             <span class="app-header-user"><span class="app-header-user__avatar" aria-hidden="true"><?php echo $escape($initials); ?></span><span class="app-header-user__identity"><strong><?php echo $escape($currentUser); ?></strong><span class="app-header-user__role-line"><small><?php echo $escape($currentRole); ?></small><?php if ($currentBadge !== ''): ?><span class="app-header-user__sentinel-badge"><?php echo $escape($currentBadge); ?></span><?php endif; ?></span></span></span>
         <?php endif; ?>
