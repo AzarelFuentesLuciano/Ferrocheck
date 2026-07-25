@@ -107,7 +107,10 @@ if (($_GET['modulo'] ?? '') === 'control-escaneres') {
 }
 
 if (($_GET['modulo'] ?? '') === 'operaciones-patio') {
-    $controller = new OperacionPatioController();
+    $controller = new OperacionPatioController(
+        $currentUser,
+        (new Csrf($_SESSION))->token(),
+    );
     $controller->index();
     return;
 }

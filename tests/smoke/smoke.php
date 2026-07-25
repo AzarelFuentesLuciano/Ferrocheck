@@ -32,6 +32,7 @@ $tests = [
     ['FerroCheck Importar Excel', '?modulo=ferrocheck&seccion=importar-excel', 'Importador Ferromex', 'importar-excel', true],
     ['FerroCheck compatibilidad búsqueda múltiple', '?modulo=ferrocheck&seccion=busqueda-multiple', 'Buscar Plataformas', 'consulta-vin', true],
     ['FerroCheck Configuración', '?modulo=ferrocheck&seccion=configuracion', 'Preferencias de FerroCheck', 'configuracion', true],
+    ['Operaciones de Patio', '?modulo=operaciones-patio', 'Vista inicial del módulo', null, false],
     ['Escáneres Dashboard', '?modulo=control-escaneres&seccion=dashboard', 'Resumen operativo', 'dashboard', false],
     ['Escáneres Catálogo', '?modulo=control-escaneres&seccion=catalogo', 'Escáneres registrados', 'catalogo', false],
     ['Escáneres Expediente', '?modulo=control-escaneres&seccion=expediente', 'Expediente integral del equipo', 'expediente', false],
