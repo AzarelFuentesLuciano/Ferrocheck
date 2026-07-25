@@ -90,7 +90,10 @@ try {
 
     test('Administrador normal recibe HTTP 403 en edición directa',function()use($users,$roles,$organizational,$userService,$organizationalService,$audit,$policy,$normalActor,$protectedId){
         $session=[];$csrf=new Csrf($session);$controller=new AdministrationController(new Authorization($normalActor),$csrf,$users,$roles,$organizational,$userService,new RoleAdminService($roles,$audit),$organizationalService,$policy,$session);
-        http_response_code(200);ob_start();$controller->dispatch('GET',['seccion'=>'usuarios','accion'=>'editar','id'=>$protectedId],[]);ob_end_clean();same(403,http_response_code());
+        set_error_handler(static fn(int$severity,string$message):bool=>$severity===E_WARNING&&str_contains($message,'http_response_code()'));
+        ob_start();
+        try{$controller->dispatch('GET',['seccion'=>'usuarios','accion'=>'editar','id'=>$protectedId],[]);$response=(string)ob_get_contents();}finally{ob_end_clean();restore_error_handler();}
+        ok(str_contains($response,'<title>Acceso denegado</title>')&&str_contains($response,'No tienes permiso para realizar esta acción.'));
     });
 
     test('Administrador normal no actualiza datos ni roles de protegido',function()use($userService,$protectedId,$actorId,$normalActor,$input,$pdo){$before=$pdo->query("SELECT nombre FROM usuarios WHERE id=$protectedId")->fetchColumn();try{$userService->update($protectedId,$input('Cambio prohibido'),$actorId,$normalActor);}catch(ForbiddenException){}same($before,$pdo->query("SELECT nombre FROM usuarios WHERE id=$protectedId")->fetchColumn());});
