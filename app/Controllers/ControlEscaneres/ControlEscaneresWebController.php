@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace App\Controllers\ControlEscaneres;
+use App\Auth\AuthenticatedUser;
 use App\Domain\ControlEscaneres\{BatteryPercentage,IncidentSeverity,ScannerCode,ScannerFolio,ScannerStatus};
 use App\DTO\ControlEscaneres\{IncidentResolutionData,IncidentSeverityChangeData,MaintenanceCommandData,ScannerCreateData,ScannerIncidentCreateData,ScannerInspectionDetailData,ScannerMovementCreateData,ScannerReceptionData,ScannerUpdateData};
 use App\Factories\ControlEscaneresServiceFactory;
@@ -12,12 +13,13 @@ use App\Services\ControlEscaneres\Shared\ScannerStateMachine;
 use App\Services\ControlEscaneres\Import\{ScannerImportStagingStore,ScannerInventoryExcelPreviewer};
 use App\Services\ControlEscaneres\Qr\ScannerQrContentNormalizer;
 use App\Support\ControlEscaneres\{BusinessRequestContextFactory,ControlEscaneresErrorMapper,FlashMessageStore};
+use App\Support\AuthenticatedHeaderBuilder;
 use App\ViewModels\ControlEscaneres\{ScannerDeliveryFormViewModel,ScannerIncidentFormViewModel,ScannerMaintenanceFormViewModel,ScannerReceptionFormViewModel};
 use App\Validators\ControlEscaneres\ScannerRegistrationValidator;
 final class ControlEscaneresWebController
 {
     private const COMPONENTS=['bateria','pantalla','touch','botones','lector','wifi','datos_moviles','accesorios'];
-    public function __construct(private ControlEscaneresServiceFactory$factory,private AuthenticatedActorProviderInterface$actors,private CsrfTokenManagerInterface$csrf,private BusinessRequestContextFactory$contexts,private FlashMessageStore$flash,private ControlEscaneresErrorMapper$errors){}
+    public function __construct(private ControlEscaneresServiceFactory$factory,private AuthenticatedActorProviderInterface$actors,private CsrfTokenManagerInterface$csrf,private BusinessRequestContextFactory$contexts,private FlashMessageStore$flash,private ControlEscaneresErrorMapper$errors,private AuthenticatedUser$authenticatedUser,private string$logoutCsrf){}
     public function dispatch(array$query,array$post,array$files,string$method):void{$action=(string)($query['accion']??'');if($action==='resolver-equipo'){$this->resolveScanner($method==='POST'?$post:$query);return;}if($action==='resolver-qr'){$this->resolveQr($method==='POST'?$post:$query,$query);return;}$section=trim((string)($query['seccion']??'dashboard'));$allowed=['dashboard','catalogo','expediente','entrega','recepcion','incidencias','mantenimiento','historial','reporte','reportes','areas','importar-inventario','registrar','editar','baja','reactivar','qr','pdf','evidencia','reporte-exportar'];if(!in_array($section,$allowed,true)){header('Location: '.(defined('BASE_URL')?BASE_URL:'').'/index.php?modulo=control-escaneres&seccion=catalogo',true,302);return;}if($method==='POST'){$this->post($section,$post,$files);return;}$this->get($section,$query);}
     private function resolveScanner(array$input):void
     {
@@ -54,6 +56,7 @@ final class ControlEscaneresWebController
             elseif($section==='expediente'&&$id>0){$historyViewModel=(new ScannerHistoryController($this->factory->history(),$this->factory->auditQuery(),new SensitiveScannerDataPresenter()))->show($id,$messages);}
             if($section==='recepcion'&&isset($s)&&$s!==null&&!$s->active){unset($receptionForm);$integrationError='El escáner seleccionado está inactivo y no puede recibirse.';}
         }catch(\Throwable$e){$trackingId=bin2hex(random_bytes(8));error_log(sprintf('ControlEscaneres GET [%s]: %s: %s at %s:%d%s%s',$trackingId,get_class($e),$e->getMessage(),$e->getFile(),$e->getLine(),PHP_EOL,$e->getTraceAsString()));$integrationError=$this->errors->message($e);if($integrationError==='No fue posible completar la operación.')$integrationError='No fue posible cargar la información. Intenta nuevamente. Seguimiento: '.$trackingId;}
+        $header=$this->buildAuthenticatedHeader();
         require dirname(__DIR__,2).'/Views/inventario/importar.php';
     }
     private function post(string$section,array$post,array$files):void
@@ -74,7 +77,19 @@ final class ControlEscaneresWebController
     {
         $file=$files['inventory_file']??null;if(!is_array($file))throw new\InvalidArgumentException('Selecciona un archivo Excel válido.');
         $staged=$this->importStore()->stage($file);$importToken=$staged['token'];$importPreview=(new ScannerInventoryExcelPreviewer())->preview($staged['path'],$this->factory->catalog()->identities());$importCsrfToken=$this->csrf->token();
+        $header=$this->buildAuthenticatedHeader();
         require dirname(__DIR__,2).'/Views/inventario/importar.php';
+    }
+    private function buildAuthenticatedHeader():array
+    {
+        $baseUrl=defined('BASE_URL')?rtrim((string)BASE_URL,'/'):'';
+        return AuthenticatedHeaderBuilder::build($this->authenticatedUser,$baseUrl.'/index.php?modulo=auth&accion=logout',$this->logoutCsrf,[
+            'systemName'=>'VASCOR OPS',
+            'systemSubtitle'=>'Plataforma Operativa',
+            'versionLabel'=>'Versión v1.0',
+            'menuLabel'=>'Abrir menú',
+            'legacyHooks'=>true,
+        ]);
     }
     private function confirmImport(array$post,int$actorId):array{if(($post['confirm_import']??'')!=='1')throw new\DomainException('Confirma expresamente el dry-run antes de importar.');$token=$this->required($post,'import_token');$store=$this->importStore();$path=$store->resolve($token);$preview=(new ScannerInventoryExcelPreviewer())->preview($path,$this->factory->catalog()->identities());$result=$this->factory->inventoryImporter()->import($preview,defined('BASE_URL')?BASE_URL:'',$actorId);$store->discard($token);return$result;}
     private function importStore():ScannerImportStagingStore{return new ScannerImportStagingStore(dirname(__DIR__,3).'/storage/tmp/control-escaneres-import',$_SESSION);}

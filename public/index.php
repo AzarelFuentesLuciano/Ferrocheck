@@ -99,6 +99,8 @@ if (($_GET['modulo'] ?? '') === 'control-escaneres') {
         new BusinessRequestContextFactory($_SERVER, session_id()),
         new FlashMessageStore($_SESSION),
         new ControlEscaneresErrorMapper(),
+        $currentUser,
+        (new Csrf($_SESSION))->token(),
     );
     $controller->dispatch($_GET, $_POST, $_FILES, $_SERVER['REQUEST_METHOD'] ?? 'GET');
     return;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/control-escaneres/bootstrap.php';
 
 use App\Auth\AuthenticatedUser;
+use App\Controllers\ControlEscaneres\ControlEscaneresWebController;
 use App\Controllers\DashboardController;
 use App\Support\AuthenticatedHeaderBuilder;
 
@@ -43,6 +44,22 @@ function renderInventoryLegacy(AuthenticatedUser$user):string
     return(string)ob_get_clean();
 }
 
+function renderScannerLegacyHeader(AuthenticatedUser$user):array
+{
+    $reflection=new ReflectionClass(ControlEscaneresWebController::class);
+    $controller=$reflection->newInstanceWithoutConstructor();
+    foreach(['authenticatedUser'=>$user,'logoutCsrf'=>'sentinel-scanner-csrf']as$name=>$value){
+        $property=$reflection->getProperty($name);
+        $property->setValue($controller,$value);
+    }
+    $method=$reflection->getMethod('buildAuthenticatedHeader');
+    $header=$method->invoke($controller);
+    $escape=static fn(mixed$value):string=>htmlspecialchars((string)$value,ENT_QUOTES,'UTF-8');
+    ob_start();
+    require dirname(__DIR__,2).'/app/Views/partials/header.php';
+    return[$header,(string)ob_get_clean()];
+}
+
 $permissions=['administracion.acceder'];
 $super=new AuthenticatedUser(1,'Actor Sentinel','actor_sentinel',['Administrador'],$permissions,true,true);
 $normal=new AuthenticatedUser(2,'Administrador Normal','admin_normal',['Administrador'],$permissions);
@@ -52,6 +69,8 @@ $dashboardHeader=renderDashboardAppShell($super);
 $inventoryHeader=renderInventoryLegacy($super);
 $normalInventoryHeader=renderInventoryLegacy($normal);
 $inventorySource=(string)file_get_contents(dirname(__DIR__,2).'/app/Views/inventario/importar.php');
+$scannerControllerSource=(string)file_get_contents(dirname(__DIR__,2).'/app/Controllers/ControlEscaneres/ControlEscaneresWebController.php');
+[$scannerHeader,$scannerHeaderHtml]=renderScannerLegacyHeader($super);
 
 test('helper conserva metadatos y fuerza identidad real',function()use($super){$header=AuthenticatedHeaderBuilder::build($super,'/logout','csrf',['systemSubtitle'=>'Operación','currentUser'=>'Falso','currentRole'=>'Falso','currentBadge'=>'Falso']);same('Operación',$header['systemSubtitle']);same('Actor Sentinel',$header['currentUser']);same('Administrador',$header['currentRole']);same('Super Administrador',$header['currentBadge']);});
 test('helper usa Usuario cuando no hay roles',function(){$user=new AuthenticatedUser(3,'Sin Rol','sin_rol',[],[],true);same('Usuario',AuthenticatedHeaderBuilder::build($user,'/logout','csrf')['currentRole']);});
@@ -64,5 +83,8 @@ test('rol e insignia permanecen separados globalmente',fn()=>ok(!str_contains($a
 test('encabezados conservan controles compartidos',fn()=>ok(str_contains($adminHeader,'app-header-menu')&&str_contains($adminHeader,'app-header-logout')&&str_contains($dashboardHeader,'app-header-meta__version')&&str_contains($dashboardHeader,'data-app-shell-date')&&str_contains($dashboardHeader,'data-app-shell-time')));
 test('Inventario conserva menú, logout y metadatos legacy',fn()=>ok(str_contains($inventoryHeader,'class="app-header-menu menu-toggle"')&&str_contains($inventoryHeader,'aria-controls="sidebarNav"')&&str_contains($inventoryHeader,'class="app-header-logout"')&&str_contains($inventoryHeader,'Versión v1.0')&&str_contains($inventoryHeader,'id="currentDate"')&&str_contains($inventoryHeader,'id="currentTime"')));
 test('Inventario no lee identidad desde sesión',fn()=>ok(!preg_match("/\\\$_SESSION\\[['\"]auth_(?:name|username|roles|super_administrator)['\"]\\]/",$inventorySource)));
+test('Escáneres usa builder con identidad real y hooks legacy',fn()=>ok(str_contains($scannerControllerSource,'AuthenticatedHeaderBuilder::build(')&&$scannerHeader['legacyHooks']===true&&$scannerHeader['currentUser']==='Actor Sentinel'&&$scannerHeader['currentRole']==='Administrador'));
+test('Escáneres conserva encabezado legacy completo',fn()=>ok(substr_count($scannerHeaderHtml,'app-header-user__sentinel-badge')===1&&str_contains($scannerHeaderHtml,'class="app-header topbar"')&&str_contains($scannerHeaderHtml,'class="app-header-menu menu-toggle"')&&str_contains($scannerHeaderHtml,'menu-toggle__icon')&&str_contains($scannerHeaderHtml,'aria-controls="sidebarNav"')&&str_contains($scannerHeaderHtml,'id="currentDate"')&&str_contains($scannerHeaderHtml,'id="currentTime"')&&str_contains($scannerHeaderHtml,'class="app-header-logout"')));
+test('Escáneres no lee identidad de sesión ni duplica insignia',fn()=>ok(!preg_match("/\\\$_SESSION\\[['\"]auth_(?:name|username|roles|super_administrator)['\"]\\]/",$scannerControllerSource)&&!str_contains($scannerControllerSource,'app-header-user__sentinel-badge')));
 
-finish('Sentinel Global Header Phase B');
+finish('Sentinel Global Header Phase B.1');
