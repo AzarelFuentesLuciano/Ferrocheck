@@ -53,12 +53,12 @@ $input=static fn(string$name,array$extra=[]):array=>array_replace([
 ],$extra);
 
 try {
-    test('Super Administrador ve usuario protegido',function()use($users,$prefix){$rows=$users->list($prefix.'_protegido',null,1,20,'',true);ok(count($rows)===1&&(int)$rows[0]['es_usuario_protegido']===1);});
+    test('Directorio oculta usuario protegido también a Super Administrador',fn()=>same([],$users->list($prefix.'_protegido')));
     test('Administrador normal no ve usuario protegido',fn()=>same([],$users->list($prefix.'_protegido')));
     test('conteo normal excluye protegido',fn()=>same(0,$users->count($prefix.'_protegido')));
-    test('conteo Super Administrador incluye protegido',fn()=>same(1,$users->count($prefix.'_protegido',null,'',true)));
-    test('paginación permanece consistente al excluir protegidos',function()use($users,$prefix){same(1,$users->count($prefix));same(1,count($users->list($prefix,null,1,1)));same([],$users->list($prefix,null,2,1));same(2,$users->count($prefix,null,'',true));same(1,count($users->list($prefix,null,2,1,'',true)));});
-    test('búsqueda exacta no revela protegido',fn()=>same([],$users->list($prefix.'_protegido',null,1,20,'',false)));
+    test('conteo del Directorio excluye protegido sin excepciones',fn()=>same(0,$users->count($prefix.'_protegido')));
+    test('paginación permanece consistente al excluir protegidos',function()use($users,$prefix){same(1,$users->count($prefix));same(1,count($users->list($prefix,null,1,1)));same([],$users->list($prefix,null,2,1));});
+    test('búsqueda exacta no revela protegido',fn()=>same([],$users->list($prefix.'_protegido')));
     test('objetivo administrativo siempre incluye protección',function()use($users,$protectedId){$target=$users->find($protectedId);ok(is_array($target)&&array_key_exists('es_usuario_protegido',$target));});
     test('política falla cerrada con objetivo incompleto',function()use($policy,$normalActor){try{$policy->assertCanManage($normalActor,['id'=>1]);}catch(ForbiddenException){ok(true);return;}throw new RuntimeException('Objetivo incompleto autorizado.');});
 

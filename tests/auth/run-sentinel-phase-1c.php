@@ -45,14 +45,15 @@ $normalActor=new AuthenticatedUser(1,'Administrador Normal','admin_normal',['Adm
 $superActor=new AuthenticatedUser(2,'Actor Sentinel','actor_sentinel',['Administrador'],$permissions,true,true);
 $normalRow=sentinelUserRow(20,'Usuario Normal Fixture','normal_fixture',false,false);
 $protectedRow=sentinelUserRow(21,'Usuario Protegido Fixture','protegido_fixture',true,true);
+$visibleSuperRow=sentinelUserRow(22,'Super Administrador Visible','super_visible',false,true);
 
-$superList=renderSentinelUsers($superActor,['items'=>[$normalRow,$protectedRow],'total'=>2,'organizationalStats'=>['total'=>2,'assigned'=>2,'pending'=>0,'percentage'=>100.0]]);
+$superList=renderSentinelUsers($superActor,['items'=>[$normalRow,$visibleSuperRow],'total'=>2,'organizationalStats'=>['total'=>2,'assigned'=>2,'pending'=>0,'percentage'=>100.0]]);
 $normalList=renderSentinelUsers($normalActor,['items'=>[$normalRow]]);
 $protectedEdit=renderSentinelUsers($superActor,['action'=>'editar','user'=>$protectedRow,'items'=>[$protectedRow]]);
 $normalEdit=renderSentinelUsers($superActor,['action'=>'editar','user'=>$normalRow,'items'=>[$normalRow]]);
 $passwordView=renderSentinelUsers($superActor,['action'=>'password','user'=>$normalRow,'items'=>[$normalRow]]);
 
-test('Super Administrador ve insignia Protegido',fn()=>ok(str_contains($superList,'badge--sentinel-protected')&&str_contains($superList,'>Protegido</span>')));
+test('Directorio de Super Administrador no renderiza usuario protegido',fn()=>ok(!str_contains($superList,'Usuario Protegido Fixture')&&!str_contains($superList,'protegido_fixture')&&!str_contains($superList,'badge--sentinel-protected')));
 test('Super Administrador ve insignia Super Administrador',fn()=>ok(str_contains($superList,'badge--sentinel-super')&&str_contains($superList,'>Super Administrador</span>')));
 test('Administrador normal no recibe identidad ni indicadores protegidos',fn()=>ok(!str_contains($normalList,'Usuario Protegido Fixture')&&!str_contains($normalList,'protegido_fixture')&&!str_contains($normalList,'badge--sentinel-protected')&&!str_contains($normalList,'>Protegido</span>')));
 test('formulario protegido muestra aviso Sentinel',fn()=>ok(str_contains($protectedEdit,'Este usuario está protegido por Sentinel.')));

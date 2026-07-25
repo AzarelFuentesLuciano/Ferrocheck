@@ -52,8 +52,7 @@ final class AdministrationController
         $search=trim((string)($query['q']??''));$active=match((string)($query['activo']??'')){'1'=>true,'0'=>false,default=>null};
         $areaFilter=trim((string)($query['area']??''));
         if($action==='exportar-pendientes'){$this->authorization->require('usuarios.ver');$this->exportPendingUsers();return;}
-        $includeProtectedUsers=$this->authorization->isSuperAdministrator();
-        $page=max(1,(int)($query['pagina']??1));$items=$this->users->list($search,$active,$page,20,$areaFilter,$includeProtectedUsers);$total=$this->users->count($search,$active,$areaFilter,$includeProtectedUsers);$organizationalStats=$this->users->organizationalStats($includeProtectedUsers);
+        $page=max(1,(int)($query['pagina']??1));$items=$this->users->list($search,$active,$page,20,$areaFilter);$total=$this->users->count($search,$active,$areaFilter);$organizationalStats=$this->users->organizationalStats();
         $areaPreview=null;if($action==='asignar-area'&&$user&&is_array($this->session['_user_area_preview']??null)&&($this->session['_user_area_preview']['user_id']??0)===(int)$user['id'])$areaPreview=$this->session['_user_area_preview'];
         $csrfToken=$this->csrf->token();$message=$this->consume();require dirname(__DIR__).'/Views/admin/users.php';
     }
@@ -95,7 +94,7 @@ final class AdministrationController
 
     private function exportPendingUsers():void
     {
-        $rows=$this->users->list('',true,1,100000,'unassigned',$this->authorization->isSuperAdministrator());header('Content-Type: text/csv; charset=UTF-8');header('Content-Disposition: attachment; filename="usuarios-pendientes-area.csv"');echo "\xEF\xBB\xBF";$out=fopen('php://output','wb');fputcsv($out,['Nombre','Empleado','Usuario','Rol','Area principal','Estado']);foreach($rows as$row)fputcsv($out,[$row['nombre'],$row['numero_empleado'],$row['usuario'],$row['roles']?:'Sin rol','Pendiente de asignacion','Activo']);fclose($out);
+        $rows=$this->users->list('',true,1,100000,'unassigned');header('Content-Type: text/csv; charset=UTF-8');header('Content-Disposition: attachment; filename="usuarios-pendientes-area.csv"');echo "\xEF\xBB\xBF";$out=fopen('php://output','wb');fputcsv($out,['Nombre','Empleado','Usuario','Rol','Area principal','Estado']);foreach($rows as$row)fputcsv($out,[$row['nombre'],$row['numero_empleado'],$row['usuario'],$row['roles']?:'Sin rol','Pendiente de asignacion','Activo']);fclose($out);
     }
 
     private function roles(string$method,array$query,array$post):void
