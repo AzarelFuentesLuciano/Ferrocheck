@@ -30,5 +30,6 @@ $moduleNavigation='<section class="admin-module-hero"><p class="eyebrow">Adminis
 $additionalStyles = [$base.'/assets/css/admin.css',$base.'/assets/css/admin-shell.css'];
 $additionalScripts = [$base.'/assets/js/admin.js'];
 $user = $this->authorization->user();
-$header = ['systemSubtitle'=>'Plataforma Operativa','currentUser'=>$user->name,'currentRole'=>$user->roles[0]??'Usuario','logoutUrl'=>$base.'/index.php?modulo=auth&accion=logout','logoutCsrf'=>$csrfToken];
+$currentRole=$user->roles[0]??'Usuario';
+$header = ['systemSubtitle'=>'Plataforma Operativa','currentUser'=>$user->name,'currentRole'=>$currentRole.($user->isSuperAdministrator()?' · Super Administrador':''),'logoutUrl'=>$base.'/index.php?modulo=auth&accion=logout','logoutCsrf'=>$csrfToken];
 require dirname(__DIR__).'/layouts/app.php';

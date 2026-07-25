@@ -1,6 +1,7 @@
 <?php
 $isEdit=is_array($editing);$selectedRoles=$isEdit?(array)$editing['role_ids']:[];$selectedAreas=$isEdit?(array)($editing['area_ids']??[]):[];$principalArea=$isEdit?(int)($editing['principal_area_id']??0):0;$allowed=$isEdit?(array)($editing['module_allow_ids']??[]):[];$denied=$isEdit?(array)($editing['module_deny_ids']??[]):[];
 ?>
+<?php if($isEdit&&(int)($editing['es_usuario_protegido']??0)===1):?><div class="sentinel-notice" role="note">Este usuario está protegido por Sentinel.</div><?php endif?>
 <form method="post" class="form-grid"><input type="hidden" name="_csrf" value="<?= $e($csrfToken) ?>"><input type="hidden" name="operation" value="<?= $isEdit?'update':'create' ?>"><?php if($isEdit):?><input type="hidden" name="id" value="<?= (int)$editing['id'] ?>"><?php endif?>
 <label>Nombre completo<input name="nombre" maxlength="150" required value="<?= $e($editing['nombre']??'') ?>"></label><label>Número de empleado<input name="numero_empleado" maxlength="40" required value="<?= $e($editing['numero_empleado']??'') ?>"></label>
 <?php if(!$isEdit):?><label>Usuario<input name="usuario" maxlength="80" required autocomplete="username"></label><label>Contraseña<input type="password" name="password" minlength="12" required autocomplete="new-password"></label><label>Confirmación<input type="password" name="password_confirmation" minlength="12" required autocomplete="new-password"></label><?php else:?><div class="read-only-field"><span>Usuario</span><strong><?= $e($editing['usuario']) ?></strong></div><?php endif?>
