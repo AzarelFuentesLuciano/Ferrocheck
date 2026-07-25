@@ -8,6 +8,7 @@ $versionLabel = (string) ($header['versionLabel'] ?? 'Versión v1.0');
 $menuLabel = (string) ($header['menuLabel'] ?? 'Abrir navegación');
 $currentUser = trim((string) ($header['currentUser'] ?? ''));
 $currentRole = trim((string) ($header['currentRole'] ?? 'Usuario'));
+$currentBadge = trim((string) ($header['currentBadge'] ?? ''));
 $initials = $currentUser === '' ? '' : implode('',array_map(static fn(string$part):string=>mb_strtoupper(mb_substr($part,0,1)),array_slice(array_values(array_filter(preg_split('/\s+/u',$currentUser)?:[])),0,2)));
 $logoutUrl = (string) ($header['logoutUrl'] ?? '');
 $logoutCsrf = (string) ($header['logoutCsrf'] ?? '');
@@ -41,7 +42,7 @@ $logoutCsrf = (string) ($header['logoutCsrf'] ?? '');
         <span class="app-header-meta__item"><small>Fecha</small><span data-app-shell-date>--</span></span>
         <span class="app-header-meta__item"><small>Hora</small><span data-app-shell-time>--:--:--</span></span>
         <?php if ($currentUser !== ''): ?>
-            <span class="app-header-user"><span class="app-header-user__avatar" aria-hidden="true"><?php echo $escape($initials); ?></span><span class="app-header-user__identity"><strong><?php echo $escape($currentUser); ?></strong><small><?php echo $escape($currentRole); ?></small></span></span>
+            <span class="app-header-user"><span class="app-header-user__avatar" aria-hidden="true"><?php echo $escape($initials); ?></span><span class="app-header-user__identity"><strong><?php echo $escape($currentUser); ?></strong><span class="app-header-user__role-line"><small><?php echo $escape($currentRole); ?></small><?php if ($currentBadge !== ''): ?><span class="app-header-user__sentinel-badge"><?php echo $escape($currentBadge); ?></span><?php endif; ?></span></span></span>
         <?php endif; ?>
         <?php if ($logoutUrl !== '' && $logoutCsrf !== ''): ?>
             <form method="post" action="<?php echo $escape($logoutUrl); ?>" class="app-header-logout">

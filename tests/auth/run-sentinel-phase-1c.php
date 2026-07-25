@@ -59,8 +59,10 @@ test('formulario protegido muestra aviso Sentinel',fn()=>ok(str_contains($protec
 test('formulario normal no muestra aviso Sentinel',fn()=>ok(!str_contains($normalEdit,'Este usuario está protegido por Sentinel.')));
 test('formularios no envían indicadores Sentinel',function()use($protectedEdit,$normalEdit){foreach([$protectedEdit,$normalEdit]as$html)ok(!preg_match('/\bname=["\'](?:es_usuario_protegido|es_super_administrador)["\']/i',$html));});
 test('acciones administrativas existentes permanecen disponibles',function()use($superList,$protectedEdit,$passwordView){ok(str_contains($superList,'accion=editar')&&str_contains($superList,'accion=asignar-area')&&str_contains($protectedEdit,'name="role_ids[]"')&&str_contains($protectedEdit,'name="principal_area_id"')&&str_contains($protectedEdit,'module_decision')&&str_contains($protectedEdit,'name="activo"')&&str_contains($passwordView,'name="operation" value="password"'));});
-test('encabezado identifica al actor Super Administrador y conserva rol',fn()=>ok(str_contains($superList,'<small>Administrador · Super Administrador</small>')));
-test('encabezado normal conserva rol sin identificación Sentinel',fn()=>ok(str_contains($normalList,'<small>Administrador</small>')&&!str_contains($normalList,'Administrador · Super Administrador')));
+test('encabezado Super Administrador conserva rol real',fn()=>ok(str_contains($superList,'<small>Administrador</small>')));
+test('insignia Super Administrador aparece separada del rol',fn()=>ok(str_contains($superList,'class="app-header-user__sentinel-badge">Super Administrador</span>')&&!str_contains($superList,'Administrador · Super Administrador')));
+test('encabezado normal conserva rol sin insignia Sentinel',fn()=>ok(str_contains($normalList,'<small>Administrador</small>')&&!str_contains($normalList,'app-header-user__sentinel-badge')&&!str_contains($normalList,'Administrador · Super Administrador')));
+test('encabezado conserva versión, fecha, hora, avatar y cierre de sesión',fn()=>ok(str_contains($superList,'app-header-meta__version')&&str_contains($superList,'data-app-shell-date')&&str_contains($superList,'data-app-shell-time')&&str_contains($superList,'app-header-user__avatar')&&str_contains($superList,'app-header-logout')));
 test('renderizado conserva estructura responsive de tabla y acciones',fn()=>ok(str_contains($superList,'class="table-responsive"')&&str_contains($superList,'class="actions"')));
 
 finish('Sentinel Phase 1C');

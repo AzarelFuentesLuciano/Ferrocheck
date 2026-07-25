@@ -31,5 +31,5 @@ $additionalStyles = [$base.'/assets/css/admin.css',$base.'/assets/css/admin-shel
 $additionalScripts = [$base.'/assets/js/admin.js'];
 $user = $this->authorization->user();
 $currentRole=$user->roles[0]??'Usuario';
-$header = ['systemSubtitle'=>'Plataforma Operativa','currentUser'=>$user->name,'currentRole'=>$currentRole.($user->isSuperAdministrator()?' · Super Administrador':''),'logoutUrl'=>$base.'/index.php?modulo=auth&accion=logout','logoutCsrf'=>$csrfToken];
+$header = ['systemSubtitle'=>'Plataforma Operativa','currentUser'=>$user->name,'currentRole'=>$currentRole,'currentBadge'=>$user->isSuperAdministrator()?'Super Administrador':'','logoutUrl'=>$base.'/index.php?modulo=auth&accion=logout','logoutCsrf'=>$csrfToken];
 require dirname(__DIR__).'/layouts/app.php';
