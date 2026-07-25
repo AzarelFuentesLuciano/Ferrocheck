@@ -28,6 +28,8 @@ final class AuthService
         $this->session['auth_permissions']=$permissions;
         $this->session['auth_name']=(string)$record['nombre'];
         $this->session['auth_username']=(string)$record['usuario'];
+        $this->session['auth_super_administrator']=$this->flag($record['es_super_administrador']??false);
+        $this->session['auth_protected_user']=$this->flag($record['es_usuario_protegido']??false);
         return $this->safeReturn($returnUrl);
     }
 
@@ -40,8 +42,10 @@ final class AuthService
         if($record===null){return null;}
         [$roles,$permissions]=$this->repository->rolesAndPermissions($id);
         $this->repository->touchSession($hash);
-        $this->session['auth_roles']=$roles;$this->session['auth_permissions']=$permissions;$this->session['auth_name']=(string)$record['nombre'];$this->session['auth_username']=(string)$record['usuario'];
-        return new AuthenticatedUser($id,(string)$record['nombre'],(string)$record['usuario'],$roles,$permissions);
+        $super=array_key_exists('auth_super_administrator',$this->session)&&$this->flag($this->session['auth_super_administrator'])&&$this->flag($record['es_super_administrador']??false);
+        $protected=array_key_exists('auth_protected_user',$this->session)&&$this->flag($this->session['auth_protected_user'])&&$this->flag($record['es_usuario_protegido']??false);
+        $this->session['auth_roles']=$roles;$this->session['auth_permissions']=$permissions;$this->session['auth_name']=(string)$record['nombre'];$this->session['auth_username']=(string)$record['usuario'];$this->session['auth_super_administrator']=$super;$this->session['auth_protected_user']=$protected;
+        return new AuthenticatedUser($id,(string)$record['nombre'],(string)$record['usuario'],$roles,$permissions,$super,$protected);
     }
 
     public function logout(): void
@@ -70,4 +74,8 @@ final class AuthService
     }
     private function ip(array$server):?string{$ip=$server['REMOTE_ADDR']??null;return is_string($ip)&&filter_var($ip,FILTER_VALIDATE_IP)?$ip:null;}
     private function userAgentHash(array$server):?string{$ua=$server['HTTP_USER_AGENT']??null;return is_string($ua)&&$ua!==''?hash('sha256',$ua):null;}
+    private function flag(mixed $value): bool
+    {
+        return $value === true || $value === 1 || $value === '1';
+    }
 }

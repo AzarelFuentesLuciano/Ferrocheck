@@ -10,10 +10,22 @@ final readonly class AuthenticatedUser
         public string $username,
         public array $roles,
         public array $permissions,
+        public bool $superAdministrator = false,
+        public bool $protectedUser = false,
     ) {}
 
     public function can(string $permission): bool
     {
         return in_array($permission, $this->permissions, true);
+    }
+
+    public function isSuperAdministrator(): bool
+    {
+        return $this->superAdministrator;
+    }
+
+    public function isProtectedUser(): bool
+    {
+        return $this->protectedUser;
     }
 }

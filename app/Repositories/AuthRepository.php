@@ -4,11 +4,12 @@ namespace App\Repositories;
 
 final class AuthRepository
 {
+    private ?bool $sentinelColumns = null;
     public function __construct(private \PDO $pdo) {}
 
     public function findForLogin(string $username): ?array
     {
-        $stmt = $this->pdo->prepare('SELECT id,nombre,usuario,password_hash,activo FROM usuarios WHERE usuario=:usuario LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT id,nombre,usuario,password_hash,activo,'.$this->sentinelProjection().' FROM usuarios WHERE usuario=:usuario LIMIT 1');
         $stmt->execute(['usuario' => $username]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         return is_array($row) ? $row : null;
@@ -16,7 +17,7 @@ final class AuthRepository
 
     public function findActiveById(int $id): ?array
     {
-        $stmt = $this->pdo->prepare('SELECT id,nombre,usuario FROM usuarios WHERE id=:id AND activo=1 LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT id,nombre,usuario,'.$this->sentinelProjection().' FROM usuarios WHERE id=:id AND activo=1 LIMIT 1');
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         return is_array($row) ? $row : null;
@@ -45,14 +46,14 @@ final class AuthRepository
 
     public function validSession(int $userId, string $hash): bool
     {
-        $stmt = $this->pdo->prepare('SELECT 1 FROM usuario_sesiones WHERE usuario_id=:usuario AND session_hash=:hash AND revocada_at IS NULL AND expira_at>CURRENT_TIMESTAMP(6) LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT 1 FROM usuario_sesiones WHERE usuario_id=:usuario AND session_hash=:hash AND revocada_at IS NULL AND expira_at>'.$this->currentTimestamp().' LIMIT 1');
         $stmt->execute(['usuario'=>$userId,'hash'=>$hash]);
         return $stmt->fetchColumn() !== false;
     }
 
     public function touchSession(string $hash): void
     {
-        $stmt = $this->pdo->prepare('UPDATE usuario_sesiones SET ultimo_uso=CURRENT_TIMESTAMP(6) WHERE session_hash=:hash');
+        $stmt = $this->pdo->prepare('UPDATE usuario_sesiones SET ultimo_uso='.$this->currentTimestamp().' WHERE session_hash=:hash');
         $stmt->execute(['hash'=>$hash]);
     }
 
@@ -66,5 +67,31 @@ final class AuthRepository
     {
         $stmt = $this->pdo->prepare('UPDATE usuario_sesiones SET revocada_at=CURRENT_TIMESTAMP(6),revocada_por=:actor,motivo_revocacion=:motivo WHERE usuario_id=:usuario AND revocada_at IS NULL');
         $stmt->execute(['actor'=>$actorId,'motivo'=>$reason,'usuario'=>$userId]);
+    }
+
+    private function sentinelProjection(): string
+    {
+        return $this->hasSentinelColumns()
+            ? 'es_super_administrador,es_usuario_protegido'
+            : '0 AS es_super_administrador,0 AS es_usuario_protegido';
+    }
+
+    private function hasSentinelColumns(): bool
+    {
+        if ($this->sentinelColumns !== null) return $this->sentinelColumns;
+        if ($this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'sqlite') {
+            $columns=$this->pdo->query("PRAGMA table_info('usuarios')")->fetchAll(\PDO::FETCH_COLUMN,1);
+            return $this->sentinelColumns=in_array('es_super_administrador',$columns,true)&&in_array('es_usuario_protegido',$columns,true);
+        }
+        $stmt=$this->pdo->prepare("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='usuarios' AND column_name IN('es_super_administrador','es_usuario_protegido')");
+        $stmt->execute();
+        return $this->sentinelColumns=(int)$stmt->fetchColumn()===2;
+    }
+
+    private function currentTimestamp(): string
+    {
+        return $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'sqlite'
+            ? "strftime('%Y-%m-%d %H:%M:%f','now')"
+            : 'CURRENT_TIMESTAMP(6)';
     }
 }
