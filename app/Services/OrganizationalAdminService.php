@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Auth\{AuthenticatedUser,ProtectedUserPolicy};
 use App\Repositories\OrganizationalAdminRepository;
+use App\Repositories\UserAdminRepository;
 
 final class OrganizationalAdminService
 {
-    public function __construct(private OrganizationalAdminRepository $repository, private GeneralAuditService $audit) {}
+    public function __construct(private OrganizationalAdminRepository $repository, private GeneralAuditService $audit, private ?UserAdminRepository $users = null, private ?ProtectedUserPolicy $protectedUserPolicy = null) {}
 
     public function createArea(array $input, int $actorId): int
     {
@@ -26,8 +28,9 @@ final class OrganizationalAdminService
         $this->transaction(function()use($id,$active,$actorId){$this->repository->setAreaActive($id,$active,$actorId);$this->audit->record($actorId,$active?'area_organizacional.activar':'area_organizacional.desactivar','area_organizacional',$id,'exito',[],['activo'=>$active]);});
     }
 
-    public function assignUserAreas(int$userId,array$areaIds,int$principalAreaId,int$actorId):void
+    public function assignUserAreas(int$userId,array$areaIds,int$principalAreaId,int$actorId,?AuthenticatedUser$authenticatedActor=null):void
     {
+        $this->assertCanManageUser($userId,$authenticatedActor);
         $areaIds=$this->ids($areaIds);
         if($userId<=0||$principalAreaId<=0||!in_array($principalAreaId,$areaIds,true))throw new\DomainException('Debe seleccionar exactamente un área principal válida.');
         if(!$this->repository->validActiveAreaIds($areaIds))throw new\DomainException('No se pueden asignar áreas inexistentes o inactivas.');
@@ -42,8 +45,9 @@ final class OrganizationalAdminService
         $this->transaction(function()use($areaId,$moduleIds,$actorId){$before=$this->repository->areaModuleIds($areaId);$this->repository->replaceAreaModules($areaId,$moduleIds,$actorId);foreach(array_diff($moduleIds,$before)as$id)$this->audit->record($actorId,'area_organizacional.modulo_asociar','area_organizacional',$areaId,'exito',[],['modulo_id'=>(int)$id]);foreach(array_diff($before,$moduleIds)as$id)$this->audit->record($actorId,'area_organizacional.modulo_retirar','area_organizacional',$areaId,'exito',['modulo_id'=>(int)$id],[]);});
     }
 
-    public function setUserModuleDecision(int$userId,int$moduleId,string$type,bool$active,int$actorId):void
+    public function setUserModuleDecision(int$userId,int$moduleId,string$type,bool$active,int$actorId,?AuthenticatedUser$authenticatedActor=null):void
     {
+        $this->assertCanManageUser($userId,$authenticatedActor);
         if(!in_array($type,['permitir','denegar'],true))throw new\DomainException('Tipo de excepción de módulo inválido.');
         if($userId<=0||!$this->repository->validActiveModuleIds([$moduleId]))throw new\DomainException('Usuario o módulo inválido.');
         $this->transaction(function()use($userId,$moduleId,$type,$active,$actorId){$this->repository->setUserModuleDecision($userId,$moduleId,$type,$active,$actorId);$this->audit->record($actorId,'usuario.modulo_configurar','usuario',$userId,'exito',[],['modulo_id'=>$moduleId,'tipo'=>$type,'activo'=>$active]);});
@@ -66,5 +70,6 @@ final class OrganizationalAdminService
         return['clave'=>$key,'nombre'=>$name,'descripcion'=>$description===''?null:$description];
     }
     private function ids(array$ids):array{return array_values(array_unique(array_filter(array_map('intval',$ids),fn(int$id):bool=>$id>0)));}
+    private function assertCanManageUser(int$userId,?AuthenticatedUser$authenticatedActor):void{if($authenticatedActor===null)throw new \LogicException('AuthenticatedUser es obligatorio para operaciones Sentinel.');$users=$this->users??throw new \LogicException('La proteccion administrativa de usuarios no esta configurada.');$target=$users->find($userId)??throw new\DomainException('Usuario no encontrado.');($this->protectedUserPolicy??new ProtectedUserPolicy())->assertCanManage($authenticatedActor,$target);}
     private function transaction(callable$callback):mixed{$pdo=$this->repository->pdo();$pdo->beginTransaction();try{$result=$callback();$pdo->commit();return$result;}catch(\Throwable$e){if($pdo->inTransaction())$pdo->rollBack();throw$e;}}
 }

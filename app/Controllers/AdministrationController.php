@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Auth\{AuthenticationRequiredException,Authorization,Csrf,ForbiddenException};
+use App\Auth\{AuthenticatedUser,AuthenticationRequiredException,Authorization,Csrf,ForbiddenException,ProtectedUserPolicy};
 use App\Repositories\{OrganizationalAdminRepository,RoleAdminRepository,UserAdminRepository};
 use App\Services\{OrganizationalAdminService,RoleAdminService,UserAdminService};
 
@@ -18,6 +18,7 @@ final class AdministrationController
         private UserAdminService $userService,
         private RoleAdminService $roleService,
         private OrganizationalAdminService $organizationalService,
+        private ProtectedUserPolicy $protectedUserPolicy,
         private array &$session,
     ) {}
 
@@ -46,12 +47,13 @@ final class AdministrationController
     {
         if($method==='POST'){$this->postUser($post);return;}
         $action=(string)($query['accion']??'listar');$user=null;
-        if(in_array($action,['editar','password','asignar-area'],true))$user=$this->users->find((int)($query['id']??0));
+        if(in_array($action,['editar','password','asignar-area'],true))$user=$this->visibleTarget((int)($query['id']??0));
         $roles=$this->users->roles();$areas=$this->organizational->activeAreas();$modules=$this->organizational->modules();
         $search=trim((string)($query['q']??''));$active=match((string)($query['activo']??'')){'1'=>true,'0'=>false,default=>null};
         $areaFilter=trim((string)($query['area']??''));
         if($action==='exportar-pendientes'){$this->authorization->require('usuarios.ver');$this->exportPendingUsers();return;}
-        $page=max(1,(int)($query['pagina']??1));$items=$this->users->list($search,$active,$page,20,$areaFilter);$total=$this->users->count($search,$active,$areaFilter);$organizationalStats=$this->users->organizationalStats();
+        $includeProtectedUsers=$this->authorization->isSuperAdministrator();
+        $page=max(1,(int)($query['pagina']??1));$items=$this->users->list($search,$active,$page,20,$areaFilter,$includeProtectedUsers);$total=$this->users->count($search,$active,$areaFilter,$includeProtectedUsers);$organizationalStats=$this->users->organizationalStats($includeProtectedUsers);
         $areaPreview=null;if($action==='asignar-area'&&$user&&is_array($this->session['_user_area_preview']??null)&&($this->session['_user_area_preview']['user_id']??0)===(int)$user['id'])$areaPreview=$this->session['_user_area_preview'];
         $csrfToken=$this->csrf->token();$message=$this->consume();require dirname(__DIR__).'/Views/admin/users.php';
     }
@@ -64,18 +66,20 @@ final class AdministrationController
         $permission=match($operation){'create'=>'usuarios.crear','update'=>'usuarios.editar','activate','deactivate'=>'usuarios.desactivar','password'=>'usuarios.restablecer_password',default=>''};
         if($permission==='')throw new ForbiddenException();$this->authorization->require($permission);
         if(in_array($operation,['create','update'],true))$this->authorization->require('areas.asignar');
+        if($operation!=='create')$this->managedTarget($id);
         try{
             if($operation==='create')$this->userService->create($post,$this->actorId());
-            elseif($operation==='update')$this->userService->update($id,$post,$this->actorId());
-            elseif($operation==='password')$this->userService->resetPassword($id,(string)($post['password']??''),(string)($post['password_confirmation']??''),$this->actorId());
-            else $this->userService->setActive($id,$operation==='activate',$this->actorId());
+            elseif($operation==='update')$this->userService->update($id,$post,$this->actorId(),$this->actor());
+            elseif($operation==='password')$this->userService->resetPassword($id,(string)($post['password']??''),(string)($post['password_confirmation']??''),$this->actorId(),$this->actor());
+            else $this->userService->setActive($id,$operation==='activate',$this->actorId(),$this->actor());
             $this->flash('Operación completada.');$this->csrf->rotate();
-        }catch(\Throwable$e){$this->flash($e->getMessage());}
+        }catch(ForbiddenException$e){throw$e;}catch(\Throwable$e){$this->flash($e->getMessage());}
         $this->redirect('usuarios');
     }
 
     private function postUserAreas(string$operation,int$userId,array$post):void
     {
+        $this->managedTarget($userId);
         try{
             $user=$this->users->find($userId)??throw new\DomainException('Usuario no encontrado.');
             if($operation==='preview_areas'){
@@ -83,15 +87,15 @@ final class AdministrationController
                 $preview=$this->organizational->userAreaPreview($userId,$ids,$principal);$token=bin2hex(random_bytes(24));$this->session['_user_area_preview']=$preview+['token'=>$token,'user_id'=>$userId,'area_ids'=>$ids,'principal_id'=>$principal];$this->flash('Revisa el impacto y confirma la asignacion.');
             }else{
                 $saved=$this->session['_user_area_preview']??null;if(!is_array($saved)||!hash_equals((string)($saved['token']??''),(string)($post['preview_token']??''))||(int)($saved['user_id']??0)!==$userId)throw new\DomainException('La vista previa ya no es valida. Genera una nueva.');
-                $this->organizationalService->assignUserAreas($userId,(array)$saved['area_ids'],(int)$saved['principal_id'],$this->actorId());unset($this->session['_user_area_preview']);$this->csrf->rotate();$this->flash('Clasificacion organizacional del usuario actualizada.');$this->redirect('usuarios');
+                $this->organizationalService->assignUserAreas($userId,(array)$saved['area_ids'],(int)$saved['principal_id'],$this->actorId(),$this->actor());unset($this->session['_user_area_preview']);$this->csrf->rotate();$this->flash('Clasificacion organizacional del usuario actualizada.');$this->redirect('usuarios');
             }
-        }catch(\Throwable$e){$this->flash($e->getMessage());}
+        }catch(ForbiddenException$e){throw$e;}catch(\Throwable$e){$this->flash($e->getMessage());}
         header('Location: '.BASE_URL.'/index.php?modulo=administracion&seccion=usuarios&accion=asignar-area&id='.$userId,true,303);exit;
     }
 
     private function exportPendingUsers():void
     {
-        $rows=$this->users->list('',true,1,100000,'unassigned');header('Content-Type: text/csv; charset=UTF-8');header('Content-Disposition: attachment; filename="usuarios-pendientes-area.csv"');echo "\xEF\xBB\xBF";$out=fopen('php://output','wb');fputcsv($out,['Nombre','Empleado','Usuario','Rol','Area principal','Estado']);foreach($rows as$row)fputcsv($out,[$row['nombre'],$row['numero_empleado'],$row['usuario'],$row['roles']?:'Sin rol','Pendiente de asignacion','Activo']);fclose($out);
+        $rows=$this->users->list('',true,1,100000,'unassigned',$this->authorization->isSuperAdministrator());header('Content-Type: text/csv; charset=UTF-8');header('Content-Disposition: attachment; filename="usuarios-pendientes-area.csv"');echo "\xEF\xBB\xBF";$out=fopen('php://output','wb');fputcsv($out,['Nombre','Empleado','Usuario','Rol','Area principal','Estado']);foreach($rows as$row)fputcsv($out,[$row['nombre'],$row['numero_empleado'],$row['usuario'],$row['roles']?:'Sin rol','Pendiente de asignacion','Activo']);fclose($out);
     }
 
     private function roles(string$method,array$query,array$post):void
@@ -126,6 +130,9 @@ final class AdministrationController
     }
 
     private function validCsrf(array$post):void{if(!$this->csrf->validate((string)($post['_csrf']??'')))throw new ForbiddenException();}
+    private function visibleTarget(int$id):?array{$target=$this->users->find($id);if($target!==null)$this->protectedUserPolicy->assertCanView($this->actor(),$target);return$target;}
+    private function managedTarget(int$id):array{$target=$this->users->find($id)??throw new\DomainException('Usuario no encontrado.');$this->protectedUserPolicy->assertCanManage($this->actor(),$target);return$target;}
+    private function actor():AuthenticatedUser{return$this->authorization->user()??throw new AuthenticationRequiredException();}
     private function actorId():int{return$this->authorization->user()?->id??throw new AuthenticationRequiredException();}
     private function redirect(string$section):never{header('Location: '.BASE_URL.'/index.php?modulo=administracion&seccion='.$section,true,303);exit;}
     private function flash(string$message):void{$this->session['_admin_flash']=$message;}

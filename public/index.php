@@ -18,7 +18,7 @@ use App\Controllers\ControlEscaneres\ControlEscaneresWebController;
 use App\Factories\ControlEscaneresServiceFactory;
 use App\Security\ControlEscaneres\{SessionAuthenticatedActorProvider, SessionCsrfTokenManager};
 use App\Support\ControlEscaneres\{BusinessRequestContextFactory, ControlEscaneresErrorMapper, FlashMessageStore};
-use App\Auth\{Authorization, Csrf, OrganizationalAccess, ForbiddenException};
+use App\Auth\{Authorization, Csrf, OrganizationalAccess, ForbiddenException, ProtectedUserPolicy};
 use App\Controllers\{AdministrationController, AuthController};
 use App\Core\Database;
 use App\Repositories\{AuthRepository, OrganizationalAccessRepository, OrganizationalAdminRepository, RoleAdminRepository, UserAdminRepository};
@@ -59,15 +59,17 @@ if (($_GET['modulo'] ?? '') === 'administracion') {
     $roleRepository = new RoleAdminRepository($pdo);
     $organizationalRepository = new OrganizationalAdminRepository($pdo);
     $audit = new GeneralAuditService($pdo);
+    $protectedUserPolicy = new ProtectedUserPolicy();
     (new AdministrationController(
         new Authorization($currentUser),
         new Csrf($_SESSION),
         $userRepository,
         $roleRepository,
         $organizationalRepository,
-        new UserAdminService($userRepository, $authRepository, $audit, $organizationalRepository),
+        new UserAdminService($userRepository, $authRepository, $audit, $organizationalRepository, $protectedUserPolicy),
         new RoleAdminService($roleRepository, $audit),
-        new OrganizationalAdminService($organizationalRepository, $audit),
+        new OrganizationalAdminService($organizationalRepository, $audit, $userRepository, $protectedUserPolicy),
+        $protectedUserPolicy,
         $_SESSION,
     ))->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_GET, $_POST);
     return;
