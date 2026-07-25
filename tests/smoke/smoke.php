@@ -161,6 +161,7 @@ foreach ($tests as [$name, $query, $pageMarker, $section, $isFerrocheck]) {
     $response = requestGet($entryUrl . $query);
     $html = $response['body'];
     $isScanner = str_contains($query, 'modulo=control-escaneres');
+    $isPatio = str_contains($query, 'modulo=operaciones-patio');
 
     report($name . ': HTTP 200', $response['status'] === 200, $response['error']);
     report($name . ': sin error PHP visible', !preg_match('/(?:Fatal error|Parse error|Warning|Notice):/i', $html));
@@ -181,6 +182,8 @@ foreach ($tests as [$name, $query, $pageMarker, $section, $isFerrocheck]) {
         report($name . ': sección activa', (bool) preg_match($activePattern, $html), (string) $section);
         report($name . ': CSS del módulo', str_contains($html, 'assets/css/control-escaneres/control-escaneres.css'));
         report($name . ': módulo activo en sidebar', (bool) preg_match('/sidebar__item active[^>]+data-label="Control de Esc/i', $html));
+    } elseif ($isPatio) {
+        report($name . ': Inventario de Patio activo', (bool) preg_match('/sidebar__item active[^>]+data-label="Inventario de Patio"/', $html));
     } else {
         report($name . ': Dashboard activo', (bool) preg_match('/sidebar__item active[^>]+data-label="Dashboard"/', $html));
     }
