@@ -1,0 +1,199 @@
+.rail-module {
+    display: grid;
+    min-width: 0;
+    max-width: 100%;
+    gap: var(--vascor-spacing-lg, 22px);
+    color: var(--vascor-text, #172b3a);
+}
+
+.rail-navigation {
+    display: grid;
+    min-width: 0;
+    max-width: 100%;
+    gap: var(--vascor-spacing-sm, 10px);
+}
+
+.rail-primary-nav,
+.rail-context-nav {
+    display: flex;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+}
+
+.rail-primary-nav {
+    gap: 6px;
+    padding: 7px;
+    border: 1px solid var(--vascor-border, #dfe7ed);
+    border-radius: var(--vascor-radius-md, 14px);
+    background: var(--vascor-surface, #fff);
+    box-shadow: var(--vascor-shadow-sm, 0 5px 18px rgba(16, 42, 67, .06));
+}
+
+.rail-context-nav {
+    gap: 4px;
+    padding: 5px;
+    border-bottom: 1px solid var(--vascor-border, #dfe7ed);
+}
+
+.rail-primary-nav__link,
+.rail-context-nav__link {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: 10px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.rail-primary-nav__link {
+    gap: 8px;
+    padding: 9px 14px;
+    color: var(--vascor-text-muted, #657786);
+    font-size: .84rem;
+    font-weight: 600;
+}
+
+.rail-primary-nav__icon {
+    display: inline-grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    color: var(--vascor-primary, #1769aa);
+}
+
+.rail-context-nav__link {
+    padding: 8px 13px;
+    color: var(--vascor-text-muted, #657786);
+    font-size: .78rem;
+    font-weight: 500;
+}
+
+.rail-primary-nav__link:hover,
+.rail-primary-nav__link--current {
+    background: var(--vascor-primary-dark, #102a43);
+    color: #fff;
+}
+
+.rail-primary-nav__link--current .rail-primary-nav__icon {
+    color: #fff;
+}
+
+.rail-context-nav__link:hover,
+.rail-context-nav__link--current {
+    background: var(--vascor-primary-light, #eaf4fa);
+    color: var(--vascor-primary, #1769aa);
+}
+
+.rail-primary-nav__link:focus-visible,
+.rail-context-nav__link:focus-visible {
+    outline: 3px solid rgba(23, 105, 170, .3);
+    outline-offset: 2px;
+}
+
+.rail-content {
+    display: grid;
+    min-width: 0;
+    max-width: 100%;
+    gap: var(--vascor-spacing-lg, 22px);
+}
+
+.rail-section-header {
+    min-width: 0;
+    padding: clamp(20px, 4vw, 30px);
+    border-radius: var(--vascor-radius-lg, 18px);
+    background: linear-gradient(125deg, var(--vascor-primary-dark, #102a43), #164d75);
+    color: #fff;
+    box-shadow: var(--vascor-shadow-md, 0 14px 32px rgba(16, 42, 67, .16));
+}
+
+.rail-section-header__eyebrow {
+    display: block;
+    color: #80e1e8;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.rail-section-header h1 {
+    margin: 6px 0;
+    color: #fff;
+    font-size: clamp(1.5rem, 4vw, 2.15rem);
+}
+
+.rail-section-header p {
+    max-width: 720px;
+    margin: 0;
+    color: #d9e8f2;
+}
+
+.rail-empty-state {
+    display: grid;
+    min-width: 0;
+    min-height: 260px;
+    max-width: 100%;
+    place-items: center;
+    align-content: center;
+    padding: clamp(24px, 6vw, 46px);
+    border: 1px solid var(--vascor-border, #dfe7ed);
+    border-radius: var(--vascor-radius-md, 14px);
+    background: var(--vascor-surface, #fff);
+    box-shadow: var(--vascor-shadow-sm, 0 5px 18px rgba(16, 42, 67, .06));
+    text-align: center;
+}
+
+.rail-empty-state__icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 10px;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--vascor-primary-light, #eaf4fa);
+    color: var(--vascor-primary, #1769aa);
+    font-size: 1.35rem;
+}
+
+.rail-empty-state h2 {
+    margin: 0 0 6px;
+    color: var(--vascor-text, #172b3a);
+    font-size: clamp(1.15rem, 3vw, 1.45rem);
+}
+
+.rail-empty-state p {
+    max-width: 580px;
+    margin: 3px 0;
+    color: var(--vascor-text-muted, #657786);
+}
+
+@media (max-width: 640px) {
+    .rail-module {
+        gap: 16px;
+    }
+
+    .rail-navigation {
+        gap: 8px;
+    }
+
+    .rail-primary-nav__link,
+    .rail-context-nav__link {
+        min-height: 44px;
+    }
+
+    .rail-section-header,
+    .rail-empty-state {
+        border-radius: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rail-primary-nav,
+    .rail-context-nav {
+        scroll-behavior: auto;
+    }
+}

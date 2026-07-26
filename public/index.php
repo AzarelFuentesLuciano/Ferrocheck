@@ -20,6 +20,7 @@ use App\Security\ControlEscaneres\{SessionAuthenticatedActorProvider, SessionCsr
 use App\Support\ControlEscaneres\{BusinessRequestContextFactory, ControlEscaneresErrorMapper, FlashMessageStore};
 use App\Auth\{Authorization, Csrf, OrganizationalAccess, ForbiddenException, ProtectedUserPolicy};
 use App\Controllers\{AdministrationController, AuthController};
+use App\Controllers\Rail\RailController;
 use App\Core\Database;
 use App\Repositories\{AuthRepository, OrganizationalAccessRepository, OrganizationalAdminRepository, RoleAdminRepository, UserAdminRepository};
 use App\Services\{AuthService, GeneralAuditService, ModuleNavigationBuilder, OrganizationalAdminService, RoleAdminService, UserAdminService};
@@ -72,6 +73,22 @@ if (($_GET['modulo'] ?? '') === 'administracion') {
         $protectedUserPolicy,
         $_SESSION,
     ))->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_GET, $_POST);
+    return;
+}
+
+if (($_GET['modulo'] ?? '') === 'rail') {
+    try {
+        $organizationalAccess?->requireModuleAccess('rail', 'rail.ver');
+    } catch (ForbiddenException) {
+        http_response_code(403);
+        require __DIR__ . '/../app/Views/auth/403.php';
+        return;
+    }
+    echo (new RailController(
+        $currentUser,
+        (new Csrf($_SESSION))->token(),
+        new ModuleNavigationBuilder($organizationalAccess),
+    ))->render($_GET);
     return;
 }
 
