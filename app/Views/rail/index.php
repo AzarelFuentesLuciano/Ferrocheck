@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 $railEscape = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 $railViewAllowlist = [
-    'dashboard' => __DIR__ . '/dashboard.php',
     'ferrocheck' => __DIR__ . '/ferro.php',
     'consist-rail' => __DIR__ . '/consist-rail.php',
     'facturacion' => __DIR__ . '/facturacion.php',
@@ -19,7 +18,7 @@ $railSubsection = isset($railSubsection) && is_string($railSubsection) ? trim($r
 $railBaseUrl = isset($railBaseUrl) && is_string($railBaseUrl) ? rtrim(trim($railBaseUrl), '/') : '';
 
 if (!isset($railViewAllowlist[$railSection], $railNavigation[$railSection]) || !is_array($railNavigation[$railSection])) {
-    $railSection = 'dashboard';
+    $railSection = 'ferrocheck';
 }
 
 $railSectionConfig = isset($railNavigation[$railSection]) && is_array($railNavigation[$railSection])

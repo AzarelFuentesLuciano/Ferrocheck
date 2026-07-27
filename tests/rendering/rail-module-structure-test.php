@@ -22,7 +22,7 @@ $test = static function (string $name, callable $assertion) use (&$passed, &$fai
 };
 
 $navigation = require $navigationPath;
-$expected = ['dashboard', 'ferrocheck', 'consist-rail', 'facturacion', 'inventario', 'evidencias', 'configuracion'];
+$expected = ['ferrocheck', 'consist-rail', 'facturacion', 'inventario', 'evidencias', 'configuracion'];
 $render = static function (string $section, string $subsection) use ($navigation, $indexPath): array {
     $railSection = $section;
     $railSubsection = $subsection;
@@ -51,7 +51,7 @@ $railSources = (string) file_get_contents($indexPath)
     . $viewSources;
 $css = (string) file_get_contents($cssPath);
 
-$test('configuración declara las siete secciones en orden', static fn (): bool => array_keys($navigation) === $expected);
+$test('configuración declara las seis secciones en orden', static fn (): bool => array_keys($navigation) === $expected);
 $test('cada sección declara metadatos y subsecciones', static function () use ($navigation): bool {
     foreach ($navigation as $key => $section) {
         if (!is_array($section)
@@ -78,7 +78,7 @@ $test('todas las secciones tienen una vista controlada', static function () use 
 $test('render aislado separa dos barras del contenido', static fn (): bool => substr_count($ferroNavigation, '<nav ') === 2 && !str_contains($ferroHtml, '<nav '));
 $test('navegación marca sección y subsección activas', static fn (): bool => substr_count($ferroNavigation, 'aria-current="page"') === 2);
 $test('FerroCheck conserva la URL histórica', static fn (): bool => str_contains($ferroNavigation, 'modulo=ferrocheck&amp;seccion=dashboard'));
-$test('sección inválida cae en Dashboard y resumen', static fn (): bool => str_contains($fallbackHtml, '<h1 id="railSectionTitle">Dashboard</h1>') && str_contains($fallbackHtml, '<strong>Resumen</strong>'));
+$test('sección inválida cae en FerroCheck', static fn (): bool => str_contains($fallbackHtml, '<h1 id="railSectionTitle">FerroCheck</h1>'));
 $test('vista no duplica documento ni shell global', static fn (): bool => !preg_match('/<!doctype|<html(?:\\s|>)|<head(?:\\s|>)|<body(?:\\s|>)|app-header|app-sidebar|app-footer/i', $railSources));
 $test('vistas no leen superglobales', static fn (): bool => !preg_match('/\\$_(?:GET|POST|SESSION|FILES|COOKIE|SERVER)/', $railSources));
 $test('vistas no contienen SQL ni lógica funcional', static fn (): bool => !preg_match('/\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b|<form|<table/i', $railSources));

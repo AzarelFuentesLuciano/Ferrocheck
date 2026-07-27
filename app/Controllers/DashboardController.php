@@ -222,6 +222,7 @@ class DashboardController
             'moduleNavigation' => $railModuleNavigation,
             'contenidoModulo' => $contenidoModulo,
             'additionalStyles' => [
+                $baseUrl . '/assets/css/rail/rail.css',
                 $baseUrl . '/assets/css/importador.css',
             ],
             'additionalScripts' => [

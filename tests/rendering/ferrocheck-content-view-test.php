@@ -60,6 +60,18 @@ report('No incluye importador.css', !str_contains($source, 'importador.css'));
 report('No incluye importador.js', !str_contains($source, 'importador.js'));
 report('No contiene etiquetas script', stripos($source, '<script') === false);
 report('Conserva el contenedor FerroCheck', str_contains($all, 'aria-label="FerroCheck"'));
+report('Encabezado FerroCheck es sencillo y no duplica el banner Rail',
+    str_contains($all, 'class="vascor-view-heading"')
+    && str_contains($all, '<h2>FerroCheck</h2>')
+    && !str_contains($all, 'class="vascor-module-header"')
+    && !str_contains($all, 'Operación ferroviaria')
+);
+report('Conserva navegación funcional interna de FerroCheck',
+    str_contains($all, '>Dashboard</a>')
+    && str_contains($all, '>Buscar Plataformas</a>')
+    && str_contains($all, '>Importar Excel</a>')
+    && str_contains($all, '>Configuración</a>')
+);
 report('Conserva IDs críticos del importador', preg_match_all('/id="(?:importador|dropzone|fileInput|fileInfo|fileName|fileSize|fileType|recordCount|fileStatus|progressPercent|progressFill|statusMessage|importBtn)"/', $import) === 13);
 report('Conserva formulario crítico', str_contains($import, 'class="importador-form"') && str_contains($import, 'method="post"'));
 report('Conserva botones críticos', str_contains($import, 'id="importBtn"') && str_contains($results, 'id="exportExcelBtn"'));

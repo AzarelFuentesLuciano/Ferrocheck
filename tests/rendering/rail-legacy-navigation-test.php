@@ -66,6 +66,10 @@ $rail = findNavigationModule($navigation, 'rail');
 
 test('FerroCheck no aparece como módulo principal', fn()=>ok(!in_array('ferrocheck',array_column($navigation,'key'),true)));
 test('sidebar principal no agrega FerroCheck como submenú de Rail',fn()=>same([],$rail['sections']??null));
+test('módulo Rail abre directamente la URL histórica de FerroCheck',fn()=>same(
+    '/Ferrocheck/public/index.php?modulo=ferrocheck&seccion=dashboard',
+    $rail['url']??null
+));
 test('URL histórica de FerroCheck permanece en la navegación interna',function():void{
     $configuration=require dirname(__DIR__,2).'/config/rail-navigation.php';
     same('index.php?modulo=ferrocheck&seccion=dashboard',$configuration['ferrocheck']['url']??null);
@@ -127,7 +131,8 @@ test('FerroCheck conserva sección funcional y activa Rail en App Shell',fn()=>o
     &&str_contains($ferroContext['moduleNavigation'],'class="rail-navigation"')
     &&str_contains($ferroContext['moduleNavigation'],'rail-primary-nav__link--current')
     &&substr_count($ferroContext['moduleNavigation'],'class="rail-navigation"')===1
-    &&str_contains($ferroContext['additionalStyles'][0],'/assets/css/importador.css')
+    &&str_contains(implode('|',$ferroContext['additionalStyles']),'/assets/css/rail/rail.css')
+    &&str_contains(implode('|',$ferroContext['additionalStyles']),'/assets/css/importador.css')
     &&str_contains($ferroContext['additionalScripts'][0],'/assets/js/importador.js')
 ));
 test('título general precede la navegación interna de FerroCheck',fn()=>ok(

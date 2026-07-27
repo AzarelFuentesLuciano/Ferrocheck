@@ -1,11 +1,9 @@
                     <section class="vascor-module" aria-label="FerroCheck">
-                        <header class="vascor-module-header">
+                        <header class="vascor-view-heading">
                             <div>
-                                <span class="vascor-module-header__category">Operación ferroviaria</span>
-                                <h1>FerroCheck</h1>
+                                <h2>FerroCheck</h2>
                                 <p>Consulta, validación e importación del inventario ferroviario.</p>
                             </div>
-                            <span class="vascor-module-header__status"><i aria-hidden="true"></i> Operación activa</span>
                         </header>
                         <nav class="vascor-module-nav" aria-label="Secciones de FerroCheck">
                             <a class="vascor-module-nav__item<?php echo $ferroSeccion === 'dashboard' ? ' is-active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=dashboard"><span aria-hidden="true">▦</span>Dashboard</a>

@@ -82,7 +82,7 @@ $html = $controller->render(['seccion'=>'ferrocheck','subseccion'=>'incidencias'
 $fallback = $controller->render(['seccion'=>'../../invalid','subseccion'=>'../../invalid']);
 
 $test('controlador renderiza un solo App Shell', static fn (): bool => preg_match_all('/<html\b/i', $html) === 1 && substr_count($html, 'data-app-shell>') === 1);
-$test('Rail queda activo en el sidebar', static fn (): bool => preg_match('/app-sidebar-link is-active[^>]+href="[^"]*modulo=rail"/', $html) === 1);
+$test('Rail queda activo y abre FerroCheck desde el sidebar', static fn (): bool => preg_match('/app-sidebar-link is-active[^>]+href="[^"]*modulo=ferrocheck&amp;seccion=dashboard"/', $html) === 1);
 $test('sidebar Rail no contiene submenús', static fn (): bool => !str_contains($html, 'appShellSubmenu-rail') && !str_contains($html, 'app-sidebar-submenu'));
 $test('navegación interna contiene FerroCheck histórico', static fn (): bool => str_contains($html, 'modulo=ferrocheck&amp;seccion=dashboard'));
 $test('navegación interna contiene exactamente dos barras', static fn (): bool => substr_count($html, '<nav class="rail-') === 2);
@@ -90,7 +90,7 @@ $test('navegación interna no se duplica', static fn (): bool => substr_count($h
 $test('moduleNavigation aparece antes del contenido', static fn (): bool => strpos($html, 'class="rail-navigation"') < strpos($html, 'class="rail-module"'));
 $test('título general aparece antes de la navegación interna', static fn (): bool => strpos($html, '<h1>Rail</h1>') < strpos($html, 'class="rail-navigation"'));
 $test('sección y subsección quedan activas', static fn (): bool => str_contains($html, '<h1 id="railSectionTitle">FerroCheck</h1>') && str_contains($html, '<strong>Incidencias</strong>'));
-$test('sección inválida cae en Dashboard resumen', static fn (): bool => str_contains($fallback, '<h1 id="railSectionTitle">Dashboard</h1>') && str_contains($fallback, '<strong>Resumen</strong>'));
+$test('sección inválida cae en FerroCheck', static fn (): bool => str_contains($fallback, '<h1 id="railSectionTitle">FerroCheck</h1>'));
 $test('CSS Rail se carga una sola vez después del CSS global', static fn (): bool => substr_count($html, '/assets/css/rail/rail.css') === 1 && strpos($html, '/assets/css/app-shell.css') < strpos($html, '/assets/css/rail/rail.css'));
 $test('Rail no carga JavaScript propio', static fn (): bool => !str_contains($html, '/assets/js/rail/'));
 $test('encabezado conserva identidad y logout', static fn (): bool => str_contains($html, 'Administrador Rail') && str_contains($html, 'csrf-rail') && str_contains($html, 'modulo=auth&amp;accion=logout'));

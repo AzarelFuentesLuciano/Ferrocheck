@@ -22,12 +22,15 @@ final class ModuleNavigationBuilder
 
             $route = ltrim((string) $module['ruta'], '/');
             $sections = $sectionsByModule[$key] ?? [];
+            $url = $key === 'rail'
+                ? rtrim($baseUrl, '/') . '/index.php?modulo=ferrocheck&seccion=dashboard'
+                : rtrim($baseUrl, '/') . '/index.php?modulo=' . rawurlencode($route);
 
             $modules[] = [
                 'id' => str_replace('_', '-', $key),
                 'key' => $key,
                 'label' => (string) $module['nombre'],
-                'url' => rtrim($baseUrl, '/') . '/index.php?modulo=' . rawurlencode($route),
+                'url' => $url,
                 'icon' => (string) ($module['icono'] ?? '•'),
                 'sections' => $sections,
             ];

@@ -3,16 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'dashboard' => [
-        'key' => 'dashboard',
-        'label' => 'Dashboard',
-        'description' => 'Resumen general del módulo Rail.',
-        'icon' => '▦',
-        'default_subsection' => 'resumen',
-        'subsections' => [
-            'resumen' => ['key' => 'resumen', 'label' => 'Resumen'],
-        ],
-    ],
     'ferrocheck' => [
         'key' => 'ferrocheck',
         'label' => 'FerroCheck',

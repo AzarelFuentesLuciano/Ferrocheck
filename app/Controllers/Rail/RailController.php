@@ -74,7 +74,7 @@ final class RailController
     {
         $path = dirname(__DIR__, 3) . '/config/rail-navigation.php';
         $navigation = require $path;
-        if (!is_array($navigation) || !isset($navigation['dashboard'])) {
+        if (!is_array($navigation) || !isset($navigation['ferrocheck'])) {
             throw new RuntimeException('La navegación de Rail no está disponible.');
         }
 
@@ -85,9 +85,9 @@ final class RailController
     {
         $section = isset($query['seccion']) && is_string($query['seccion'])
             ? trim($query['seccion'])
-            : 'dashboard';
+            : 'ferrocheck';
         if (!isset($navigation[$section]) || !is_array($navigation[$section])) {
-            $section = 'dashboard';
+            $section = 'ferrocheck';
         }
 
         $sectionConfiguration = $navigation[$section];
