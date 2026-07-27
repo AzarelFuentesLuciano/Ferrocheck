@@ -5,10 +5,12 @@ namespace App\Controllers;
 
 use App\Auth\{AuthenticatedUser,AuthenticationRequiredException,Authorization,Csrf,ForbiddenException,ProtectedUserPolicy};
 use App\Repositories\{OrganizationalAdminRepository,RoleAdminRepository,UserAdminRepository};
-use App\Services\{OrganizationalAdminService,RoleAdminService,UserAdminService};
+use App\Services\{ModuleNavigationBuilder,OrganizationalAdminService,RoleAdminService,UserAdminService};
 
 final class AdministrationController
 {
+    private array $navigationModules = [];
+
     public function __construct(
         private Authorization $authorization,
         private Csrf $csrf,
@@ -19,6 +21,7 @@ final class AdministrationController
         private RoleAdminService $roleService,
         private OrganizationalAdminService $organizationalService,
         private ProtectedUserPolicy $protectedUserPolicy,
+        private ModuleNavigationBuilder $moduleNavigationBuilder,
         private array &$session,
     ) {}
 
@@ -26,6 +29,9 @@ final class AdministrationController
     {
         try {
             $this->authorization->require('administracion.acceder');
+            if ($method === 'GET') {
+                $this->navigationModules = $this->buildNavigation(rtrim((string) BASE_URL, '/'));
+            }
             $section=(string)($query['seccion']??'usuarios');
             match($section){
                 'roles'=>$this->guarded('roles.ver',fn()=>$this->roles($method,$query,$post)),
@@ -54,7 +60,7 @@ final class AdministrationController
         if($action==='exportar-pendientes'){$this->authorization->require('usuarios.ver');$this->exportPendingUsers();return;}
         $page=max(1,(int)($query['pagina']??1));$items=$this->users->list($search,$active,$page,20,$areaFilter);$total=$this->users->count($search,$active,$areaFilter);$organizationalStats=$this->users->organizationalStats();
         $areaPreview=null;if($action==='asignar-area'&&$user&&is_array($this->session['_user_area_preview']??null)&&($this->session['_user_area_preview']['user_id']??0)===(int)$user['id'])$areaPreview=$this->session['_user_area_preview'];
-        $csrfToken=$this->csrf->token();$message=$this->consume();require dirname(__DIR__).'/Views/admin/users.php';
+        $csrfToken=$this->csrf->token();$message=$this->consume();$navigationModules=$this->navigationModules;require dirname(__DIR__).'/Views/admin/users.php';
     }
 
     private function postUser(array$post):void
@@ -104,7 +110,7 @@ final class AdministrationController
             try{$operation==='create'?$this->roleService->create($post,$this->actorId()):$this->roleService->update((int)($post['id']??0),$post,$this->actorId());$this->flash('Rol actualizado.');$this->csrf->rotate();}catch(\Throwable$e){$this->flash($e->getMessage());}
             $this->redirect('roles');return;
         }
-        $items=$this->roles->list();$permissions=$this->roles->permissions();$role=isset($query['id'])?$this->roles->find((int)$query['id']):null;$csrfToken=$this->csrf->token();$message=$this->consume();require dirname(__DIR__).'/Views/admin/roles.php';
+        $items=$this->roles->list();$permissions=$this->roles->permissions();$role=isset($query['id'])?$this->roles->find((int)$query['id']):null;$csrfToken=$this->csrf->token();$message=$this->consume();$navigationModules=$this->navigationModules;require dirname(__DIR__).'/Views/admin/roles.php';
     }
 
     private function areas(string$method,array$query,array$post):void
@@ -115,7 +121,7 @@ final class AdministrationController
             try{if($operation==='create')$this->organizationalService->createArea($post,$this->actorId());elseif($operation==='update'){$id=(int)($post['id']??0);$this->organizationalService->updateArea($id,$post,$this->actorId());$this->organizationalService->assignAreaModules($id,(array)($post['module_ids']??[]),$this->actorId());}else$this->organizationalService->setAreaActive((int)($post['id']??0),$operation==='activate',$this->actorId());$this->flash('Área organizacional actualizada.');$this->csrf->rotate();}catch(\Throwable$e){$this->flash($e->getMessage());}
             $this->redirect('areas');return;
         }
-        $search=trim((string)($query['q']??''));$items=$this->organizational->areas($search);$modules=$this->organizational->modules();$area=isset($query['id'])?$this->organizational->findArea((int)$query['id']):null;$csrfToken=$this->csrf->token();$message=$this->consume();require dirname(__DIR__).'/Views/admin/areas.php';
+        $search=trim((string)($query['q']??''));$items=$this->organizational->areas($search);$modules=$this->organizational->modules();$area=isset($query['id'])?$this->organizational->findArea((int)$query['id']):null;$csrfToken=$this->csrf->token();$message=$this->consume();$navigationModules=$this->navigationModules;require dirname(__DIR__).'/Views/admin/areas.php';
     }
 
     private function modules(string$method,array$query,array$post):void
@@ -125,12 +131,26 @@ final class AdministrationController
             try{$this->organizationalService->updateModuleSettings((int)($post['id']??0),(string)($post['nombre']??''),(string)($post['descripcion']??''),(int)($post['orden']??0),($post['activo']??'0')==='1',($post['visible_menu']??'0')==='1',(array)($post['area_ids']??[]),$this->actorId());$this->flash('Módulo actualizado.');$this->csrf->rotate();}catch(\Throwable$e){$this->flash($e->getMessage());}
             $this->redirect('modulos');return;
         }
-        $search=trim((string)($query['q']??''));$items=$this->organizational->modules($search);$areas=$this->organizational->activeAreas();$module=isset($query['id'])?$this->organizational->findModule((int)$query['id']):null;$csrfToken=$this->csrf->token();$message=$this->consume();require dirname(__DIR__).'/Views/admin/modules.php';
+        $search=trim((string)($query['q']??''));$items=$this->organizational->modules($search);$areas=$this->organizational->activeAreas();$module=isset($query['id'])?$this->organizational->findModule((int)$query['id']):null;$csrfToken=$this->csrf->token();$message=$this->consume();$navigationModules=$this->navigationModules;require dirname(__DIR__).'/Views/admin/modules.php';
     }
 
     private function validCsrf(array$post):void{if(!$this->csrf->validate((string)($post['_csrf']??'')))throw new ForbiddenException();}
     private function visibleTarget(int$id):?array{$target=$this->users->find($id);if($target!==null)$this->protectedUserPolicy->assertCanView($this->actor(),$target);return$target;}
     private function managedTarget(int$id):array{$target=$this->users->find($id)??throw new\DomainException('Usuario no encontrado.');$this->protectedUserPolicy->assertCanManage($this->actor(),$target);return$target;}
+    private function buildNavigation(string $baseUrl):array
+    {
+        $sections=[];
+        if($this->authorization->can('usuarios.ver'))$sections[]=['id'=>'usuarios','label'=>'Usuarios','url'=>$baseUrl.'/index.php?modulo=administracion&seccion=usuarios'];
+        if($this->authorization->can('roles.ver'))$sections[]=['id'=>'roles','label'=>'Roles y permisos','url'=>$baseUrl.'/index.php?modulo=administracion&seccion=roles'];
+        if($this->authorization->can('areas.ver'))$sections[]=['id'=>'areas','label'=>'Áreas','url'=>$baseUrl.'/index.php?modulo=administracion&seccion=areas'];
+        if($this->authorization->can('modulos.ver'))$sections[]=['id'=>'modulos','label'=>'Módulos','url'=>$baseUrl.'/index.php?modulo=administracion&seccion=modulos'];
+        if($sections===[])throw new ForbiddenException();
+
+        $modules=$this->moduleNavigationBuilder->build($baseUrl,['administracion'=>$sections]);
+        foreach($modules as&$module)if(($module['key']??'')==='administracion'){$module['url']=$sections[0]['url'];break;}
+        unset($module);
+        return$modules;
+    }
     private function actor():AuthenticatedUser{return$this->authorization->user()??throw new AuthenticationRequiredException();}
     private function actorId():int{return$this->authorization->user()?->id??throw new AuthenticationRequiredException();}
     private function redirect(string$section):never{header('Location: '.BASE_URL.'/index.php?modulo=administracion&seccion='.$section,true,303);exit;}

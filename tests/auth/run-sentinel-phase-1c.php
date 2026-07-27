@@ -6,7 +6,6 @@ require dirname(__DIR__) . '/control-escaneres/bootstrap.php';
 use App\Auth\{AuthenticatedUser,Authorization};
 
 if(!defined('BASE_URL'))define('BASE_URL','/vascor-test');
-$_SESSION['auth_module_keys']=['administracion'];
 
 function sentinelUserRow(int$id,string$name,string$username,bool$protected,bool$super):array
 {
@@ -29,6 +28,14 @@ function renderSentinelUsers(AuthenticatedUser$actor,array$overrides=[]):string
         'roles'=>[['id'=>1,'nombre'=>'Administrador','descripcion'=>'','activo'=>1,'es_sistema'=>1]],
         'areas'=>[['id'=>1,'clave'=>'sistemas','nombre'=>'Sistemas','descripcion'=>'','activo'=>1]],
         'modules'=>[['id'=>1,'clave'=>'administracion','nombre'=>'Administración','descripcion'=>'','ruta'=>'administracion','icono'=>'','orden'=>1,'activo'=>1,'visible_menu'=>1]],
+        'navigationModules'=>[[
+            'id'=>'administracion',
+            'key'=>'administracion',
+            'label'=>'Administración',
+            'url'=>BASE_URL.'/index.php?modulo=administracion&seccion=usuarios',
+            'icon'=>'A',
+            'sections'=>[['id'=>'usuarios','label'=>'Usuarios','url'=>BASE_URL.'/index.php?modulo=administracion&seccion=usuarios']],
+        ]],
         'search'=>'','active'=>null,'areaFilter'=>'','page'=>1,'areaPreview'=>null,'csrfToken'=>'sentinel-csrf','message'=>null,
     ];
     $render=function(array$variables):string{

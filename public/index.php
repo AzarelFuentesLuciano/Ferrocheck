@@ -51,7 +51,10 @@ if ($currentUser === null) {
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 $organizationalAccess = $currentUser ? new OrganizationalAccess($currentUser, new OrganizationalAccessRepository($pdo)) : null;
-if ($organizationalAccess) $_SESSION['auth_module_keys'] = array_column((new ModuleNavigationBuilder($organizationalAccess))->build((string)BASE_URL), 'key');
+$moduleNavigationBuilder = $organizationalAccess
+    ? new ModuleNavigationBuilder($organizationalAccess)
+    : null;
+if ($moduleNavigationBuilder) $_SESSION['auth_module_keys'] = array_column($moduleNavigationBuilder->build((string)BASE_URL), 'key');
 else unset($_SESSION['auth_module_keys']);
 
 if (($_GET['modulo'] ?? '') === 'administracion') {
@@ -71,6 +74,7 @@ if (($_GET['modulo'] ?? '') === 'administracion') {
         new RoleAdminService($roleRepository, $audit),
         new OrganizationalAdminService($organizationalRepository, $audit, $userRepository, $protectedUserPolicy),
         $protectedUserPolicy,
+        $moduleNavigationBuilder,
         $_SESSION,
     ))->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_GET, $_POST);
     return;
@@ -87,7 +91,7 @@ if (($_GET['modulo'] ?? '') === 'rail') {
     echo (new RailController(
         $currentUser,
         (new Csrf($_SESSION))->token(),
-        new ModuleNavigationBuilder($organizationalAccess),
+        $moduleNavigationBuilder,
     ))->render($_GET);
     return;
 }

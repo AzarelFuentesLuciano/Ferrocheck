@@ -4,11 +4,11 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/control-escaneres/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/config/config.php';
 
-use App\Auth\{AuthenticatedUser,Authorization,Csrf,ForbiddenException,ProtectedUserPolicy};
+use App\Auth\{AuthenticatedUser,Authorization,Csrf,ForbiddenException,OrganizationalAccess,ProtectedUserPolicy};
 use App\Controllers\AdministrationController;
 use App\Core\Database;
-use App\Repositories\{AuthRepository,OrganizationalAdminRepository,RoleAdminRepository,UserAdminRepository};
-use App\Services\{GeneralAuditService,OrganizationalAdminService,RoleAdminService,UserAdminService};
+use App\Repositories\{AuthRepository,OrganizationalAccessRepository,OrganizationalAdminRepository,RoleAdminRepository,UserAdminRepository};
+use App\Services\{GeneralAuditService,ModuleNavigationBuilder,OrganizationalAdminService,RoleAdminService,UserAdminService};
 
 $pdo=Database::getConnection();
 $users=new UserAdminRepository($pdo);
@@ -89,7 +89,7 @@ try {
     });
 
     test('Administrador normal recibe HTTP 403 en edición directa',function()use($users,$roles,$organizational,$userService,$organizationalService,$audit,$policy,$normalActor,$protectedId){
-        $session=[];$csrf=new Csrf($session);$controller=new AdministrationController(new Authorization($normalActor),$csrf,$users,$roles,$organizational,$userService,new RoleAdminService($roles,$audit),$organizationalService,$policy,$session);
+        $session=[];$csrf=new Csrf($session);$navigationBuilder=new ModuleNavigationBuilder(new OrganizationalAccess($normalActor,new OrganizationalAccessRepository($pdo)));$controller=new AdministrationController(new Authorization($normalActor),$csrf,$users,$roles,$organizational,$userService,new RoleAdminService($roles,$audit),$organizationalService,$policy,$navigationBuilder,$session);
         set_error_handler(static fn(int$severity,string$message):bool=>$severity===E_WARNING&&str_contains($message,'http_response_code()'));
         ob_start();
         try{$controller->dispatch('GET',['seccion'=>'usuarios','accion'=>'editar','id'=>$protectedId],[]);$response=(string)ob_get_contents();}finally{ob_end_clean();restore_error_handler();}

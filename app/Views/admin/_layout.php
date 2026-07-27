@@ -3,25 +3,7 @@ declare(strict_types=1);
 use App\Support\AuthenticatedHeaderBuilder;
 $base = rtrim((string) BASE_URL, '/');
 $can = fn (string $permission): bool => $this->authorization->can($permission);
-$modules = [
-    ['id'=>'dashboard','label'=>'Dashboard','icon'=>'⌂','url'=>$base.'/index.php?modulo=dashboard'],
-    ['id'=>'ferrocheck','label'=>'FerroCheck','icon'=>'▰','url'=>$base.'/index.php?modulo=ferrocheck&seccion=dashboard'],
-    ['id'=>'inventario-material','label'=>'Inventario de Material','icon'=>'▣','url'=>$base.'/index.php?modulo=inventario-material'],
-    ['id'=>'operaciones-patio','label'=>'Inventario de Patio','icon'=>'▤','url'=>$base.'/index.php?modulo=operaciones-patio'],
-    ['id'=>'control-escaneres','label'=>'Control de Escáneres','icon'=>'▦','url'=>$base.'/index.php?modulo=control-escaneres'],
-    ['id'=>'reportes','label'=>'Reportes','icon'=>'▥','url'=>$base.'/index.php?modulo=reportes'],
-];
-if ($can('administracion.acceder')) {
-    $sections = [];
-    if ($can('usuarios.ver')) $sections[] = ['id'=>'usuarios','label'=>'Usuarios','url'=>$base.'/index.php?modulo=administracion&seccion=usuarios'];
-    if ($can('roles.ver')) $sections[] = ['id'=>'roles','label'=>'Roles y permisos','url'=>$base.'/index.php?modulo=administracion&seccion=roles'];
-    if ($can('areas.ver')) $sections[] = ['id'=>'areas','label'=>'Áreas','url'=>$base.'/index.php?modulo=administracion&seccion=areas'];
-    if ($can('modulos.ver')) $sections[] = ['id'=>'modulos','label'=>'Módulos','url'=>$base.'/index.php?modulo=administracion&seccion=modulos'];
-    $modules[] = ['id'=>'administracion','label'=>'Administración','icon'=>'⚙','url'=>$sections[0]['url'] ?? '#','sections'=>$sections];
-}
-$modules[]=['id'=>'configuracion-general','label'=>'Configuración General','icon'=>'◉','url'=>$base.'/index.php?modulo=configuracion-general'];
-$authorizedKeys=(array)($_SESSION['auth_module_keys']??[]);
-if($authorizedKeys!==[]){$keyById=['dashboard'=>'dashboard','ferrocheck'=>'ferrocheck','inventario-material'=>'inventario_material','operaciones-patio'=>'inventario_patio','control-escaneres'=>'control_escaneres','reportes'=>'reportes','administracion'=>'administracion','configuracion-general'=>'configuracion_general'];$modules=array_values(array_filter($modules,fn(array$m):bool=>in_array($keyById[$m['id']]??'', $authorizedKeys,true)));}
+$modules = $navigationModules;
 $pageTitle = ($adminTitle ?? 'Administración').' | VASCOR OPS';
 $assetBaseUrl = $base;
 $activeModule = 'administracion';
