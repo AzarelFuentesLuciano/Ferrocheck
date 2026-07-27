@@ -8,10 +8,6 @@ if ($modulo === '') {
 
 $ferroSeccion = trim((string) ($_GET['seccion'] ?? 'consulta-vin'));
 $esFerrocheck = $modulo === 'ferrocheck';
-$permisosSesion = is_array($_SESSION['auth_permissions'] ?? null) ? $_SESSION['auth_permissions'] : [];
-$puedeAdministrar = in_array('administracion.acceder', $permisosSesion, true);
-$modulosAutorizados = is_array($_SESSION['auth_module_keys'] ?? null) ? $_SESSION['auth_module_keys'] : [];
-$puedeVerModulo = static fn(string $clave): bool => $modulosAutorizados === [] || in_array($clave, $modulosAutorizados, true);
 $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 
 $esModulo = static function (string $id) use ($modulo): bool {
@@ -56,62 +52,7 @@ if ($esFerrocheck) {
         <?php require __DIR__ . '/../partials/header.php'; ?>
 
         <div class="dashboard-body">
-            <aside class="sidebar" id="sidebarNav" data-collapsed="false" aria-label="Navegación lateral">
-                <div class="sidebar__section">
-                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=dashboard" class="sidebar__item<?php echo $esModulo('dashboard') ? ' active' : ''; ?>" data-label="Dashboard" <?php echo $puedeVerModulo('dashboard')?'':'hidden'; ?>>
-                        <span class="sidebar__icon">🏠</span>
-                        <span class="sidebar__text">Dashboard</span>
-                    </a>
-
-                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=dashboard" class="sidebar__item sidebar__ferro-desktop<?php echo $esFerrocheck ? ' active' : ''; ?>" data-label="FerroCheck" <?php echo $puedeVerModulo('ferrocheck')?'':'hidden'; ?>>
-                        <span class="sidebar__icon">🚂</span>
-                        <span class="sidebar__text">FerroCheck</span>
-                    </a>
-
-                    <details class="sidebar-group sidebar__ferro-mobile<?php echo $esFerrocheck ? ' is-open' : ''; ?>" <?php echo $esFerrocheck ? 'open' : ''; ?> <?php echo $puedeVerModulo('ferrocheck')?'':'hidden'; ?>>
-                        <summary class="sidebar__item sidebar__item--summary<?php echo $esFerrocheck ? ' active' : ''; ?>" data-label="FerroCheck" aria-controls="ferrocheckMobileSubmenu" aria-expanded="<?php echo $esFerrocheck ? 'true' : 'false'; ?>">
-                            <span class="sidebar__icon">🚂</span>
-                            <span class="sidebar__text">FerroCheck</span>
-                        </summary>
-                        <div class="sidebar-submenu" id="ferrocheckMobileSubmenu">
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=dashboard" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'dashboard' ? ' active' : ''; ?>">Dashboard</a>
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=consulta-vin" class="sidebar-submenu__item<?php echo $esFerrocheck && ($ferroSeccion === 'consulta-vin' || $ferroSeccion === 'busqueda-multiple') ? ' active' : ''; ?>">Buscar Plataformas</a>
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=importar-excel" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'importar-excel' ? ' active' : ''; ?>">Importar Excel</a>
-                            <a href="<?php echo BASE_URL; ?>/index.php?modulo=ferrocheck&amp;seccion=configuracion" class="sidebar-submenu__item<?php echo $esFerrocheck && $ferroSeccion === 'configuracion' ? ' active' : ''; ?>">Configuración</a>
-                        </div>
-                    </details>
-
-                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=inventario-material" class="sidebar__item<?php echo $esModulo('inventario-material') ? ' active' : ''; ?>" data-label="Inventario de Material" <?php echo $puedeVerModulo('inventario_material')?'':'hidden'; ?>>
-                        <span class="sidebar__icon">📦</span>
-                        <span class="sidebar__text">Inventario de Material</span>
-                    </a>
-
-                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=operaciones-patio" class="sidebar__item" data-label="Inventario de Patio" <?php echo $puedeVerModulo('inventario_patio')?'':'hidden'; ?>>
-                        <span class="sidebar__icon">🚛</span>
-                        <span class="sidebar__text">Inventario de Patio</span>
-                    </a>
-
-                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=control-escaneres" class="sidebar__item<?php echo $esModulo('control-escaneres') ? ' active' : ''; ?>" data-label="Control de Escáneres" <?php echo $puedeVerModulo('control_escaneres')?'':'hidden'; ?>>
-                        <span class="sidebar__icon">📡</span>
-                        <span class="sidebar__text">Control de Escáneres</span>
-                    </a>
-
-                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=reportes" class="sidebar__item<?php echo $esModulo('reportes') ? ' active' : ''; ?>" data-label="Reportes" <?php echo $puedeVerModulo('reportes')?'':'hidden'; ?>>
-                        <span class="sidebar__icon">📊</span>
-                        <span class="sidebar__text">Reportes</span>
-                    </a>
-
-                    <?php if ($puedeAdministrar && $puedeVerModulo('administracion')): ?><a href="<?php echo BASE_URL; ?>/index.php?modulo=administracion" class="sidebar__item<?php echo $esModulo('administracion') ? ' active' : ''; ?>" data-label="Administración">
-                        <span class="sidebar__icon">👤</span>
-                        <span class="sidebar__text">Administración</span>
-                    </a><?php endif; ?>
-
-                    <a href="<?php echo BASE_URL; ?>/index.php?modulo=configuracion-general" class="sidebar__item<?php echo $esModulo('configuracion-general') ? ' active' : ''; ?>" data-label="Configuración General" <?php echo $puedeVerModulo('configuracion_general')?'':'hidden'; ?>>
-                        <span class="sidebar__icon">⚙</span>
-                        <span class="sidebar__text">Configuración General</span>
-                    </a>
-                </div>
-            </aside>
+            <?php require __DIR__ . '/../partials/legacy-sidebar.php'; ?>
 
             <main class="main-content">
                 <?php if ($esModulo('dashboard')): ?>

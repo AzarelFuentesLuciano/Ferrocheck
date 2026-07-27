@@ -22,7 +22,7 @@ $test = static function (string $name, callable $assertion) use (&$passed, &$fai
 };
 
 $navigation = require $navigationPath;
-$expected = ['dashboard', 'ferro', 'consist-rail', 'facturacion', 'inventario', 'evidencias', 'configuracion'];
+$expected = ['dashboard', 'ferrocheck', 'consist-rail', 'facturacion', 'inventario', 'evidencias', 'configuracion'];
 $render = static function (string $section, string $subsection) use ($navigation, $indexPath): array {
     $railSection = $section;
     $railSubsection = $subsection;
@@ -36,14 +36,15 @@ $render = static function (string $section, string $subsection) use ($navigation
     ];
 };
 
-$ferroRender = $render('ferro', 'incidencias');
+$ferroRender = $render('ferrocheck', 'incidencias');
 $fallbackRender = $render('../../invalid', '../../invalid');
 $ferroHtml = $ferroRender['content'];
 $ferroNavigation = $ferroRender['navigation'];
 $fallbackHtml = $fallbackRender['content'];
 $viewSources = '';
 foreach ($expected as $section) {
-    $viewSources .= (string) file_get_contents($root . '/app/Views/rail/' . $section . '.php');
+    $view = $section === 'ferrocheck' ? 'ferro' : $section;
+    $viewSources .= (string) file_get_contents($root . '/app/Views/rail/' . $view . '.php');
 }
 $railSources = (string) file_get_contents($indexPath)
     . (string) file_get_contents($root . '/app/Views/rail/partials/navigation.php')
@@ -67,7 +68,8 @@ $test('cada sección declara metadatos y subsecciones', static function () use (
 });
 $test('todas las secciones tienen una vista controlada', static function () use ($expected, $root): bool {
     foreach ($expected as $section) {
-        if (!is_file($root . '/app/Views/rail/' . $section . '.php')) {
+        $view = $section === 'ferrocheck' ? 'ferro' : $section;
+        if (!is_file($root . '/app/Views/rail/' . $view . '.php')) {
             return false;
         }
     }
@@ -75,7 +77,7 @@ $test('todas las secciones tienen una vista controlada', static function () use 
 });
 $test('render aislado separa dos barras del contenido', static fn (): bool => substr_count($ferroNavigation, '<nav ') === 2 && !str_contains($ferroHtml, '<nav '));
 $test('navegación marca sección y subsección activas', static fn (): bool => substr_count($ferroNavigation, 'aria-current="page"') === 2);
-$test('URLs conservan módulo, sección y subsección', static fn (): bool => str_contains($ferroNavigation, 'modulo=rail&amp;seccion=ferro&amp;subseccion=incidencias'));
+$test('FerroCheck conserva la URL histórica', static fn (): bool => str_contains($ferroNavigation, 'modulo=ferrocheck&amp;seccion=dashboard'));
 $test('sección inválida cae en Dashboard y resumen', static fn (): bool => str_contains($fallbackHtml, '<h1 id="railSectionTitle">Dashboard</h1>') && str_contains($fallbackHtml, '<strong>Resumen</strong>'));
 $test('vista no duplica documento ni shell global', static fn (): bool => !preg_match('/<!doctype|<html(?:\\s|>)|<head(?:\\s|>)|<body(?:\\s|>)|app-header|app-sidebar|app-footer/i', $railSources));
 $test('vistas no leen superglobales', static fn (): bool => !preg_match('/\\$_(?:GET|POST|SESSION|FILES|COOKIE|SERVER)/', $railSources));

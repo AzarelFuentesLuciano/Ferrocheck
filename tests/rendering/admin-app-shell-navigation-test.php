@@ -123,8 +123,8 @@ test('controlador usa ModuleNavigationBuilder y no consulta sesión de módulos'
 test('public index crea una sola instancia y la reutiliza', function () use ($public): void {
     same(1, substr_count($public, 'new ModuleNavigationBuilder('));
     ok(
-        str_contains($public, '$moduleNavigationBuilder->build(')
-        && substr_count($public, '$moduleNavigationBuilder,') >= 2
+        substr_count($public, '$moduleNavigationBuilder,') >= 4
+        && str_contains($public, 'setAuthenticatedUser($currentUser, (new Csrf($_SESSION))->token(), $moduleNavigationBuilder)')
     );
 });
 test('Administración queda activa en el App Shell compartido', function () use ($layout): void {

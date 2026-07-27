@@ -12,6 +12,7 @@ use App\Security\ControlEscaneres\{AuthenticatedActorProviderInterface,CsrfToken
 use App\Services\ControlEscaneres\Shared\ScannerStateMachine;
 use App\Services\ControlEscaneres\Import\{ScannerImportStagingStore,ScannerInventoryExcelPreviewer};
 use App\Services\ControlEscaneres\Qr\ScannerQrContentNormalizer;
+use App\Services\ModuleNavigationBuilder;
 use App\Support\ControlEscaneres\{BusinessRequestContextFactory,ControlEscaneresErrorMapper,FlashMessageStore};
 use App\Support\AuthenticatedHeaderBuilder;
 use App\ViewModels\ControlEscaneres\{ScannerDeliveryFormViewModel,ScannerIncidentFormViewModel,ScannerMaintenanceFormViewModel,ScannerReceptionFormViewModel};
@@ -19,7 +20,7 @@ use App\Validators\ControlEscaneres\ScannerRegistrationValidator;
 final class ControlEscaneresWebController
 {
     private const COMPONENTS=['bateria','pantalla','touch','botones','lector','wifi','datos_moviles','accesorios'];
-    public function __construct(private ControlEscaneresServiceFactory$factory,private AuthenticatedActorProviderInterface$actors,private CsrfTokenManagerInterface$csrf,private BusinessRequestContextFactory$contexts,private FlashMessageStore$flash,private ControlEscaneresErrorMapper$errors,private AuthenticatedUser$authenticatedUser,private string$logoutCsrf){}
+    public function __construct(private ControlEscaneresServiceFactory$factory,private AuthenticatedActorProviderInterface$actors,private CsrfTokenManagerInterface$csrf,private BusinessRequestContextFactory$contexts,private FlashMessageStore$flash,private ControlEscaneresErrorMapper$errors,private AuthenticatedUser$authenticatedUser,private string$logoutCsrf,private ModuleNavigationBuilder$moduleNavigationBuilder){}
     public function dispatch(array$query,array$post,array$files,string$method):void{$action=(string)($query['accion']??'');if($action==='resolver-equipo'){$this->resolveScanner($method==='POST'?$post:$query);return;}if($action==='resolver-qr'){$this->resolveQr($method==='POST'?$post:$query,$query);return;}$section=trim((string)($query['seccion']??'dashboard'));$allowed=['dashboard','catalogo','expediente','entrega','recepcion','incidencias','mantenimiento','historial','reporte','reportes','areas','importar-inventario','registrar','editar','baja','reactivar','qr','pdf','evidencia','reporte-exportar'];if(!in_array($section,$allowed,true)){header('Location: '.(defined('BASE_URL')?BASE_URL:'').'/index.php?modulo=control-escaneres&seccion=catalogo',true,302);return;}if($method==='POST'){$this->post($section,$post,$files);return;}$this->get($section,$query);}
     private function resolveScanner(array$input):void
     {
@@ -56,6 +57,7 @@ final class ControlEscaneresWebController
             elseif($section==='expediente'&&$id>0){$historyViewModel=(new ScannerHistoryController($this->factory->history(),$this->factory->auditQuery(),new SensitiveScannerDataPresenter()))->show($id,$messages);}
             if($section==='recepcion'&&isset($s)&&$s!==null&&!$s->active){unset($receptionForm);$integrationError='El escáner seleccionado está inactivo y no puede recibirse.';}
         }catch(\Throwable$e){$trackingId=bin2hex(random_bytes(8));error_log(sprintf('ControlEscaneres GET [%s]: %s: %s at %s:%d%s%s',$trackingId,get_class($e),$e->getMessage(),$e->getFile(),$e->getLine(),PHP_EOL,$e->getTraceAsString()));$integrationError=$this->errors->message($e);if($integrationError==='No fue posible completar la operación.')$integrationError='No fue posible cargar la información. Intenta nuevamente. Seguimiento: '.$trackingId;}
+        [$modules,$activeModule,$activeSection]=$this->legacyNavigation($section);
         $header=$this->buildAuthenticatedHeader();
         require dirname(__DIR__,2).'/Views/inventario/importar.php';
     }
@@ -77,8 +79,14 @@ final class ControlEscaneresWebController
     {
         $file=$files['inventory_file']??null;if(!is_array($file))throw new\InvalidArgumentException('Selecciona un archivo Excel válido.');
         $staged=$this->importStore()->stage($file);$importToken=$staged['token'];$importPreview=(new ScannerInventoryExcelPreviewer())->preview($staged['path'],$this->factory->catalog()->identities());$importCsrfToken=$this->csrf->token();
+        [$modules,$activeModule,$activeSection]=$this->legacyNavigation('importar-inventario');
         $header=$this->buildAuthenticatedHeader();
         require dirname(__DIR__,2).'/Views/inventario/importar.php';
+    }
+    private function legacyNavigation(string$section):array
+    {
+        $baseUrl=defined('BASE_URL')?rtrim((string)BASE_URL,'/'):'';
+        return[$this->moduleNavigationBuilder->build($baseUrl),'control-escaneres',$section];
     }
     private function buildAuthenticatedHeader():array
     {

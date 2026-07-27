@@ -5,7 +5,7 @@ declare(strict_types=1);
 $railEscape = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 $railViewAllowlist = [
     'dashboard' => __DIR__ . '/dashboard.php',
-    'ferro' => __DIR__ . '/ferro.php',
+    'ferrocheck' => __DIR__ . '/ferro.php',
     'consist-rail' => __DIR__ . '/consist-rail.php',
     'facturacion' => __DIR__ . '/facturacion.php',
     'inventario' => __DIR__ . '/inventario.php',

@@ -13,11 +13,12 @@ return [
             'resumen' => ['key' => 'resumen', 'label' => 'Resumen'],
         ],
     ],
-    'ferro' => [
-        'key' => 'ferro',
-        'label' => 'Ferro',
+    'ferrocheck' => [
+        'key' => 'ferrocheck',
+        'label' => 'FerroCheck',
         'description' => 'Consulta y preparación de procesos ferroviarios.',
         'icon' => '▰',
+        'url' => 'index.php?modulo=ferrocheck&seccion=dashboard',
         'default_subsection' => 'buscar',
         'subsections' => [
             'buscar' => ['key' => 'buscar', 'label' => 'Buscar'],

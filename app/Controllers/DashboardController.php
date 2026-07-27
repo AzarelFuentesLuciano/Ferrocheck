@@ -9,6 +9,7 @@ use App\Core\Rendering\Exceptions\RenderException;
 use App\Core\Rendering\LegacyRenderBridge;
 use App\Core\Rendering\RenderAdapter;
 use App\Services\DashboardService;
+use App\Services\ModuleNavigationBuilder;
 use App\Support\AuthenticatedHeaderBuilder;
 use Throwable;
 
@@ -28,11 +29,17 @@ class DashboardController
     ];
     private ?AuthenticatedUser $authenticatedUser = null;
     private string $logoutCsrf = '';
+    private ?ModuleNavigationBuilder $moduleNavigationBuilder = null;
 
-    public function setAuthenticatedUser(AuthenticatedUser $user, string $logoutCsrf): void
+    public function setAuthenticatedUser(
+        AuthenticatedUser $user,
+        string $logoutCsrf,
+        ?ModuleNavigationBuilder $moduleNavigationBuilder = null
+    ): void
     {
         $this->authenticatedUser = $user;
         $this->logoutCsrf = $logoutCsrf;
+        $this->moduleNavigationBuilder = $moduleNavigationBuilder;
     }
 
     public function index(): void
@@ -101,6 +108,12 @@ class DashboardController
     private function renderLegacy(): void
     {
         $baseUrl = defined('BASE_URL') ? rtrim((string) BASE_URL, '/') : '';
+        $requestedModule = trim((string) ($_GET['modulo'] ?? 'dashboard'));
+        $modules = $this->moduleNavigationBuilder?->build($baseUrl) ?? [];
+        $activeModule = $requestedModule === 'ferrocheck'
+            ? 'rail'
+            : str_replace('_', '-', $requestedModule);
+        $activeSection = $requestedModule === 'ferrocheck' ? 'ferrocheck' : '';
         $headerMetadata = [
             'systemName' => 'VASCOR OPS',
             'systemSubtitle' => 'Plataforma Operativa',
@@ -180,64 +193,9 @@ class DashboardController
             'pageTitle' => 'VASCOR OPS | FerroCheck',
             'documentLanguage' => 'es',
             'baseUrl' => $baseUrl,
-            'modulo' => 'ferrocheck',
-            'seccion' => $ferroSeccion,
-            'modules' => [
-                [
-                    'id' => 'dashboard',
-                    'label' => 'Dashboard',
-                    'url' => $baseUrl . '/index.php?modulo=dashboard',
-                    'icon' => '🏠',
-                ],
-                [
-                    'id' => 'ferrocheck',
-                    'label' => 'FerroCheck',
-                    'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=dashboard',
-                    'icon' => '🚂',
-                    'sections' => [
-                        ['id' => 'dashboard', 'label' => 'Dashboard', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=dashboard'],
-                        ['id' => 'consulta-vin', 'label' => 'Buscar Plataformas', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=consulta-vin'],
-                        ['id' => 'importar-excel', 'label' => 'Importar Excel', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=importar-excel'],
-                        ['id' => 'configuracion', 'label' => 'Configuración', 'url' => $baseUrl . '/index.php?modulo=ferrocheck&seccion=configuracion'],
-                    ],
-                ],
-                [
-                    'id' => 'inventario-material',
-                    'label' => 'Inventario de Material',
-                    'url' => $baseUrl . '/index.php?modulo=inventario-material',
-                    'icon' => '📦',
-                ],
-                [
-                    'id' => 'operaciones-patio',
-                    'label' => 'Inventario de Patio',
-                    'url' => $baseUrl . '/index.php?modulo=operaciones-patio',
-                    'icon' => '🚛',
-                ],
-                [
-                    'id' => 'control-escaneres',
-                    'label' => 'Control de Escáneres',
-                    'url' => $baseUrl . '/index.php?modulo=control-escaneres',
-                    'icon' => '📡',
-                ],
-                [
-                    'id' => 'reportes',
-                    'label' => 'Reportes',
-                    'url' => $baseUrl . '/index.php?modulo=reportes',
-                    'icon' => '📊',
-                ],
-                [
-                    'id' => 'administracion',
-                    'label' => 'Administración',
-                    'url' => $baseUrl . '/index.php?modulo=administracion',
-                    'icon' => '👤',
-                ],
-                [
-                    'id' => 'configuracion-general',
-                    'label' => 'Configuración General',
-                    'url' => $baseUrl . '/index.php?modulo=configuracion-general',
-                    'icon' => '⚙',
-                ],
-            ],
+            'modulo' => 'rail',
+            'seccion' => 'ferrocheck',
+            'modules' => $this->moduleNavigationBuilder?->build($baseUrl) ?? [],
             'moduleNavigation' => '',
             'contenidoModulo' => $contenidoModulo,
             'additionalStyles' => [

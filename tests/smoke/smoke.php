@@ -225,9 +225,11 @@ echo "\nVista reutilizable de FerroCheck\n";
 $ferroContentPath = __DIR__ . '/../../app/Views/inventario/partials/ferrocheck-content.php';
 $ferroContentSource = file_get_contents($ferroContentPath);
 $legacyViewSource = file_get_contents(__DIR__ . '/../../app/Views/inventario/importar.php');
+$legacySidebarSource = file_get_contents(__DIR__ . '/../../app/Views/partials/legacy-sidebar.php');
 $sharedHeaderSource = file_get_contents(__DIR__ . '/../../app/Views/partials/header.php');
 $ferroContentSource = is_string($ferroContentSource) ? $ferroContentSource : '';
 $legacyViewSource = is_string($legacyViewSource) ? $legacyViewSource : '';
+$legacySidebarSource = is_string($legacySidebarSource) ? $legacySidebarSource : '';
 $sharedHeaderSource = is_string($sharedHeaderSource) ? $sharedHeaderSource : '';
 
 report('Existe ferrocheck-content.php', is_file($ferroContentPath));
@@ -235,7 +237,7 @@ report('importar.php incluye la vista mediante ruta estática', str_contains($le
 report('Vista FerroCheck sin shell global', !containsAll($ferroContentSource, ['class="topbar"', 'id="sidebarNav"', 'id="footer"']));
 report('Vista FerroCheck sin documento HTML', !preg_match('/<!doctype|<\/?(?:html|head|body)\b/i', $ferroContentSource));
 report('Vista FerroCheck sin assets globales', !preg_match('/<(?:link|script)\b|(?:app-shell|importador)\.(?:css|js)/i', $ferroContentSource));
-report('importar.php conserva documento y shell legacy', containsAll($legacyViewSource, ['<!DOCTYPE html>', 'id="sidebarNav"', 'id="footer"']));
+report('importar.php conserva documento y shell legacy', containsAll($legacyViewSource, ['<!DOCTYPE html>', 'legacy-sidebar.php', 'id="footer"']) && str_contains($legacySidebarSource, 'id="sidebarNav"'));
 report('importar.php incluye el encabezado compartido', str_contains($legacyViewSource, "require __DIR__ . '/../partials/header.php';"));
 report('header.php conserva compatibilidad topbar', str_contains($sharedHeaderSource, "' topbar'"));
 report('header.php conserva compatibilidad menu-toggle', containsAll($sharedHeaderSource, ["' menu-toggle'", "' menu-toggle__icon'"]));

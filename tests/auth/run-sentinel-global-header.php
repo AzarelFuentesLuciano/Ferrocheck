@@ -3,13 +3,35 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/control-escaneres/bootstrap.php';
 
-use App\Auth\AuthenticatedUser;
+use App\Auth\{AuthenticatedUser,OrganizationalAccess,OrganizationalAccessRepositoryInterface};
 use App\Controllers\ControlEscaneres\ControlEscaneresWebController;
 use App\Controllers\DashboardController;
 use App\Controllers\OperacionPatioController;
+use App\Services\ModuleNavigationBuilder;
 use App\Support\AuthenticatedHeaderBuilder;
 
 if(!defined('BASE_URL'))define('BASE_URL','/vascor-test');
+
+final class SentinelHeaderNavigationRepository implements OrganizationalAccessRepositoryInterface
+{
+    private array $modules=[
+        'dashboard'=>['id'=>1,'clave'=>'dashboard','nombre'=>'Dashboard','ruta'=>'dashboard','icono'=>'D','orden'=>10],
+        'inventario_patio'=>['id'=>2,'clave'=>'inventario_patio','nombre'=>'Inventario de Patio','ruta'=>'operaciones-patio','icono'=>'P','orden'=>40],
+    ];
+    public function findActiveModule(string$key):?array{return$this->modules[$key]??null;}
+    public function individualModuleDecision(int$userId,int$moduleId):?string{return null;}
+    public function inheritsModuleFromActiveArea(int$userId,int$moduleId):bool{return true;}
+    public function activeAreaIdsForUser(int$userId):array{return[1];}
+    public function activeAreaExists(int$areaId):bool{return$areaId===1;}
+    public function visibleActiveModules():array{return array_values($this->modules);}
+    public function userHasActiveArea(int$userId):bool{return true;}
+    public function userHasActiveModuleDecision(int$userId):bool{return false;}
+}
+
+function sentinelHeaderNavigation(AuthenticatedUser$user):ModuleNavigationBuilder
+{
+    return new ModuleNavigationBuilder(new OrganizationalAccess($user,new SentinelHeaderNavigationRepository()));
+}
 
 function renderSharedHeader(AuthenticatedUser$user):string
 {
@@ -35,7 +57,6 @@ function renderInventoryLegacy(AuthenticatedUser$user):string
 {
     $_GET=['modulo'=>'dashboard'];
     $_SESSION['auth_permissions']=['administracion.acceder'];
-    $_SESSION['auth_module_keys']=[];
     $controller=new DashboardController();
     $controller->setAuthenticatedUser($user,'sentinel-inventory-csrf');
     $method=new ReflectionMethod($controller,'renderLegacy');
@@ -64,9 +85,8 @@ function renderScannerLegacyHeader(AuthenticatedUser$user):array
 function renderPatioLegacy(AuthenticatedUser$user):string
 {
     $_SESSION['auth_permissions']=['administracion.acceder'];
-    $_SESSION['auth_module_keys']=[];
     ob_start();
-    (new OperacionPatioController($user,'sentinel-patio-csrf'))->index();
+    (new OperacionPatioController($user,'sentinel-patio-csrf',sentinelHeaderNavigation($user)))->index();
     return(string)ob_get_clean();
 }
 

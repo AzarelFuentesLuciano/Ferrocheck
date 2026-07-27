@@ -11,20 +11,42 @@ final class ModuleNavigationBuilder
 
     public function build(string $baseUrl, array $sectionsByModule = []): array
     {
+        $authorizedModules = $this->access->authorizedModules();
+        $ferroCheck = null;
+        foreach ($authorizedModules as $module) {
+            if ((string) ($module['clave'] ?? '') === 'ferrocheck') {
+                $ferroCheck = $module;
+                break;
+            }
+        }
+
         $modules = [];
-        foreach ($this->access->authorizedModules() as $module) {
+        foreach ($authorizedModules as $module) {
             $key = (string) $module['clave'];
+            if ($key === 'ferrocheck') {
+                continue;
+            }
+
             $route = ltrim((string) $module['ruta'], '/');
+            $sections = $sectionsByModule[$key] ?? [];
+            if ($key === 'rail' && $ferroCheck !== null) {
+                $sections[] = [
+                    'id' => 'ferrocheck',
+                    'key' => 'ferrocheck',
+                    'label' => (string) $ferroCheck['nombre'],
+                    'url' => rtrim($baseUrl, '/') . '/index.php?modulo=ferrocheck&seccion=dashboard',
+                ];
+            }
+
             $modules[] = [
                 'id' => str_replace('_', '-', $key),
                 'key' => $key,
                 'label' => (string) $module['nombre'],
                 'url' => rtrim($baseUrl, '/') . '/index.php?modulo=' . rawurlencode($route),
                 'icon' => (string) ($module['icono'] ?? '•'),
-                'sections' => $sectionsByModule[$key] ?? [],
+                'sections' => $sections,
             ];
         }
         return $modules;
     }
 }
-

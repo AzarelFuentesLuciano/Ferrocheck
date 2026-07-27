@@ -13,6 +13,14 @@ $railUrl = static function (string $section, string $subsection) use ($railBaseU
 
     return $railBaseUrl . '/index.php?' . $query;
 };
+$railConfiguredUrl = static function (array $item, string $section, string $subsection) use ($railBaseUrl, $railUrl): string {
+    $explicitUrl = trim((string) ($item['url'] ?? ''));
+    if ($explicitUrl !== '') {
+        return $railBaseUrl . '/' . ltrim($explicitUrl, '/');
+    }
+
+    return $railUrl($section, $subsection);
+};
 ?>
 <div class="rail-navigation">
     <nav class="rail-primary-nav" aria-label="Secciones principales de Rail">
@@ -27,7 +35,7 @@ $railUrl = static function (string $section, string $subsection) use ($railBaseU
             $railNavigationActive = $railNavigationKey === $railSection;
             ?>
             <a class="rail-primary-nav__link<?php echo $railNavigationActive ? ' rail-primary-nav__link--current' : ''; ?>"
-               href="<?php echo $railEscape($railUrl($railNavigationKey, $railNavigationDefault)); ?>"
+               href="<?php echo $railEscape($railConfiguredUrl($railNavigationItem, $railNavigationKey, $railNavigationDefault)); ?>"
                <?php echo $railNavigationActive ? 'aria-current="page"' : ''; ?>>
                 <span class="rail-primary-nav__icon" aria-hidden="true"><?php echo $railEscape($railNavigationIcon); ?></span>
                 <span><?php echo $railEscape($railNavigationLabel); ?></span>

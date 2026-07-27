@@ -1,7 +1,7 @@
 <?php declare(strict_types=1); ?>
 <header class="rail-section-header">
     <span class="rail-section-header__eyebrow">Rail</span>
-    <h1 id="railSectionTitle">Ferro</h1>
+    <h1 id="railSectionTitle">FerroCheck</h1>
     <p>Espacio preparado para integrar posteriormente las operaciones ferroviarias autorizadas.</p>
 </header>
 <section class="rail-empty-state" aria-labelledby="railEmptyTitle">

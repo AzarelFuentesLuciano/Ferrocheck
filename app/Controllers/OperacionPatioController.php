@@ -5,6 +5,7 @@ namespace App\Controllers;
 require_once __DIR__ . '/../Services/OperacionPatioService.php';
 
 use App\Auth\AuthenticatedUser;
+use App\Services\ModuleNavigationBuilder;
 use App\Support\AuthenticatedHeaderBuilder;
 
 class OperacionPatioController
@@ -12,6 +13,7 @@ class OperacionPatioController
     public function __construct(
         private AuthenticatedUser $authenticatedUser,
         private string $logoutCsrf,
+        private ModuleNavigationBuilder $moduleNavigationBuilder,
     ) {
     }
 
@@ -20,6 +22,9 @@ class OperacionPatioController
         $service = new \App\Services\OperacionPatioService();
         $contexto = $service->obtenerContextoInicial();
         $baseUrl = defined('BASE_URL') ? rtrim((string) BASE_URL, '/') : '';
+        $modules = $this->moduleNavigationBuilder->build($baseUrl);
+        $activeModule = 'inventario-patio';
+        $activeSection = '';
         $header = AuthenticatedHeaderBuilder::build(
             $this->authenticatedUser,
             $baseUrl . '/index.php?modulo=auth&accion=logout',

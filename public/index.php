@@ -54,8 +54,6 @@ $organizationalAccess = $currentUser ? new OrganizationalAccess($currentUser, ne
 $moduleNavigationBuilder = $organizationalAccess
     ? new ModuleNavigationBuilder($organizationalAccess)
     : null;
-if ($moduleNavigationBuilder) $_SESSION['auth_module_keys'] = array_column($moduleNavigationBuilder->build((string)BASE_URL), 'key');
-else unset($_SESSION['auth_module_keys']);
 
 if (($_GET['modulo'] ?? '') === 'administracion') {
     try{$organizationalAccess?->requireModuleAccess('administracion');}catch(ForbiddenException){http_response_code(403);require __DIR__.'/../app/Views/auth/403.php';return;}
@@ -122,6 +120,7 @@ if (($_GET['modulo'] ?? '') === 'control-escaneres') {
         new ControlEscaneresErrorMapper(),
         $currentUser,
         (new Csrf($_SESSION))->token(),
+        $moduleNavigationBuilder,
     );
     $controller->dispatch($_GET, $_POST, $_FILES, $_SERVER['REQUEST_METHOD'] ?? 'GET');
     return;
@@ -131,6 +130,7 @@ if (($_GET['modulo'] ?? '') === 'operaciones-patio') {
     $controller = new OperacionPatioController(
         $currentUser,
         (new Csrf($_SESSION))->token(),
+        $moduleNavigationBuilder,
     );
     $controller->index();
     return;
@@ -167,5 +167,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
 }
 
 $controller = new DashboardController();
-$controller->setAuthenticatedUser($currentUser, (new Csrf($_SESSION))->token());
+$controller->setAuthenticatedUser($currentUser, (new Csrf($_SESSION))->token(), $moduleNavigationBuilder);
 $controller->index();
