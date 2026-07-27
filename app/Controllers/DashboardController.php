@@ -136,11 +136,30 @@ class DashboardController
     private function renderAppShell(string $ferroSeccion): string
     {
         $contenidoModulo = $this->renderFerroCheckContent($ferroSeccion);
-        $legacy = $this->buildLegacyRenderData($contenidoModulo, $ferroSeccion);
+        $railModuleNavigation = $this->renderRailNavigationForFerroCheck();
+        $legacy = $this->buildLegacyRenderData($contenidoModulo, $ferroSeccion, $railModuleNavigation);
 
         $context = (new LegacyRenderBridge())->createContext($legacy);
 
         return (new RenderAdapter())->render($context);
+    }
+
+    private function renderRailNavigationForFerroCheck(): string
+    {
+        $railNavigation = require dirname(__DIR__, 2) . '/config/rail-navigation.php';
+        $railSection = 'ferrocheck';
+        $railSubsection = '';
+        $railSubsections = [];
+        $railSectionConfig = is_array($railNavigation[$railSection] ?? null)
+            ? $railNavigation[$railSection]
+            : [];
+        $railBaseUrl = defined('BASE_URL') ? rtrim((string) BASE_URL, '/') : '';
+        $railEscape = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+
+        ob_start();
+        require __DIR__ . '/../Views/rail/partials/navigation.php';
+
+        return (string) ob_get_clean();
     }
 
     private function renderFerroCheckContent(string $ferroSeccion): string
@@ -170,7 +189,11 @@ class DashboardController
         }
     }
 
-    private function buildLegacyRenderData(string $contenidoModulo, string $ferroSeccion): array
+    private function buildLegacyRenderData(
+        string $contenidoModulo,
+        string $ferroSeccion,
+        string $railModuleNavigation = ''
+    ): array
     {
         $baseUrl = defined('BASE_URL') ? rtrim((string) BASE_URL, '/') : '';
 
@@ -196,7 +219,7 @@ class DashboardController
             'modulo' => 'rail',
             'seccion' => 'ferrocheck',
             'modules' => $this->moduleNavigationBuilder?->build($baseUrl) ?? [],
-            'moduleNavigation' => '',
+            'moduleNavigation' => $railModuleNavigation,
             'contenidoModulo' => $contenidoModulo,
             'additionalStyles' => [
                 $baseUrl . '/assets/css/importador.css',

@@ -12,13 +12,6 @@ final class ModuleNavigationBuilder
     public function build(string $baseUrl, array $sectionsByModule = []): array
     {
         $authorizedModules = $this->access->authorizedModules();
-        $ferroCheck = null;
-        foreach ($authorizedModules as $module) {
-            if ((string) ($module['clave'] ?? '') === 'ferrocheck') {
-                $ferroCheck = $module;
-                break;
-            }
-        }
 
         $modules = [];
         foreach ($authorizedModules as $module) {
@@ -29,14 +22,6 @@ final class ModuleNavigationBuilder
 
             $route = ltrim((string) $module['ruta'], '/');
             $sections = $sectionsByModule[$key] ?? [];
-            if ($key === 'rail' && $ferroCheck !== null) {
-                $sections[] = [
-                    'id' => 'ferrocheck',
-                    'key' => 'ferrocheck',
-                    'label' => (string) $ferroCheck['nombre'],
-                    'url' => rtrim($baseUrl, '/') . '/index.php?modulo=ferrocheck&seccion=dashboard',
-                ];
-            }
 
             $modules[] = [
                 'id' => str_replace('_', '-', $key),

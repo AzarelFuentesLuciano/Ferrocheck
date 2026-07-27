@@ -65,8 +65,11 @@ $navigation = $builder->build('/Ferrocheck/public');
 $rail = findNavigationModule($navigation, 'rail');
 
 test('FerroCheck no aparece como módulo principal', fn()=>ok(!in_array('ferrocheck',array_column($navigation,'key'),true)));
-test('FerroCheck aparece dentro de Rail cuando ambos están autorizados',fn()=>same(['ferrocheck'],array_column($rail['sections']??[],'id')));
-test('URL histórica de FerroCheck permanece intacta',fn()=>same('/Ferrocheck/public/index.php?modulo=ferrocheck&seccion=dashboard',$rail['sections'][0]['url']??null));
+test('sidebar principal no agrega FerroCheck como submenú de Rail',fn()=>same([],$rail['sections']??null));
+test('URL histórica de FerroCheck permanece en la navegación interna',function():void{
+    $configuration=require dirname(__DIR__,2).'/config/rail-navigation.php';
+    same('index.php?modulo=ferrocheck&seccion=dashboard',$configuration['ferrocheck']['url']??null);
+});
 test('orden principal conserva el catálogo sin depender de posiciones fijas',fn()=>same(
     ['dashboard','rail','inventario_material','inventario_patio','control_escaneres','reportes','configuracion_general'],
     array_column($navigation,'key')
@@ -95,11 +98,11 @@ test('bridge conserva hooks responsive legacy',fn()=>ok(
     &&str_contains($legacyHtml,'sidebar__item')
     &&str_contains($legacyHtml,'sidebar__icon')
     &&str_contains($legacyHtml,'sidebar__text')
-    &&str_contains($legacyHtml,'sidebar-submenu')
+    &&!str_contains($legacyHtml,'sidebar-submenu')
 ));
-test('bridge renderiza Rail y submenú FerroCheck activos',fn()=>ok(
+test('bridge renderiza Rail activo sin submenús',fn()=>ok(
     preg_match('/sidebar__item[^"]* active[^>]+data-label="Rail"/',$legacyHtml)===1
-    &&preg_match('/sidebar-submenu__item active[^>]+aria-current="page"[^>]*>\\s*FerroCheck/s',$legacyHtml)===1
+    &&!str_contains($legacyHtml,'FerroCheck')
 ));
 test('bridge soporta módulos futuros sin catálogo manual',function()use($navigation):void{
     $future=$navigation;
@@ -114,13 +117,22 @@ $controller->setAuthenticatedUser(
     railNavigationBuilder(new RailLegacyNavigationRepository())
 );
 $contextMethod=new ReflectionMethod($controller,'buildLegacyRenderData');
-$ferroContext=$contextMethod->invoke($controller,'<section id="ferro-content"></section>','consulta-vin');
+$navigationMethod=new ReflectionMethod($controller,'renderRailNavigationForFerroCheck');
+$railModuleNavigation=$navigationMethod->invoke($controller);
+$ferroContext=$contextMethod->invoke($controller,'<section id="ferro-content"></section>','consulta-vin',$railModuleNavigation);
 test('FerroCheck conserva sección funcional y activa Rail en App Shell',fn()=>ok(
     $ferroContext['modulo']==='rail'
     &&$ferroContext['seccion']==='ferrocheck'
     &&str_contains($ferroContext['contenidoModulo'],'ferro-content')
+    &&str_contains($ferroContext['moduleNavigation'],'class="rail-navigation"')
+    &&str_contains($ferroContext['moduleNavigation'],'rail-primary-nav__link--current')
+    &&substr_count($ferroContext['moduleNavigation'],'class="rail-navigation"')===1
     &&str_contains($ferroContext['additionalStyles'][0],'/assets/css/importador.css')
     &&str_contains($ferroContext['additionalScripts'][0],'/assets/js/importador.js')
+));
+test('título general precede la navegación interna de FerroCheck',fn()=>ok(
+    strpos($ferroContext['moduleNavigation'],'<h1>Rail</h1>')
+    < strpos($ferroContext['moduleNavigation'],'class="rail-navigation"')
 ));
 
 $root=dirname(__DIR__,2);
@@ -145,6 +157,7 @@ test('Control de Escáneres prepara ambos renders de importar.php',fn()=>ok(
 test('Dashboard elimina catálogo manual y conserva endpoint histórico',fn()=>ok(
     !str_contains($dashboardSource,"'id' => 'ferrocheck'")
     &&str_contains($publicSource,"(\$_GET['modulo'] ?? '') === 'rail'")
+    &&str_contains($dashboardSource,'renderRailNavigationForFerroCheck')
     &&str_contains($ferroContent,'id="importador"')
     &&str_contains($ferroContent,'name="archivo"')
 ));

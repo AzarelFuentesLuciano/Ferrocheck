@@ -22,6 +22,11 @@ $railConfiguredUrl = static function (array $item, string $section, string $subs
     return $railUrl($section, $subsection);
 };
 ?>
+<header class="rail-section-header rail-module-header">
+    <span class="rail-section-header__eyebrow">Módulo</span>
+    <h1>Rail</h1>
+    <p>Operaciones y servicios ferroviarios de VASCOR OPS.</p>
+</header>
 <div class="rail-navigation">
     <nav class="rail-primary-nav" aria-label="Secciones principales de Rail">
         <?php foreach ($railNavigationItems as $railNavigationKey => $railNavigationItem): ?>
@@ -43,6 +48,7 @@ $railConfiguredUrl = static function (array $item, string $section, string $subs
         <?php endforeach; ?>
     </nav>
 
+    <?php if ($railContextItems !== []): ?>
     <nav class="rail-context-nav" aria-label="Opciones de la sección <?php echo $railEscape((string) ($railSectionConfig['label'] ?? $railSection)); ?>">
         <?php foreach ($railContextItems as $railContextKey => $railContextItem): ?>
             <?php
@@ -59,4 +65,5 @@ $railConfiguredUrl = static function (array $item, string $section, string $subs
             </a>
         <?php endforeach; ?>
     </nav>
+    <?php endif; ?>
 </div>
