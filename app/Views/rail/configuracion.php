@@ -1,6 +1,5 @@
 <?php declare(strict_types=1); ?>
-<header class="rail-section-header">
-    <span class="rail-section-header__eyebrow">Rail</span>
+<header class="rail-section-heading">
     <h1 id="railSectionTitle">Configuración</h1>
     <p>Vista inicial para parámetros y catálogos internos exclusivos de Rail.</p>
 </header>

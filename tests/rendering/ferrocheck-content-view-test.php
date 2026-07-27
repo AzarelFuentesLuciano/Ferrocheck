@@ -72,6 +72,9 @@ report('Conserva navegación funcional interna de FerroCheck',
     && str_contains($all, '>Importar Excel</a>')
     && str_contains($all, '>Configuración</a>')
 );
+report('Navegación funcional precede al título sencillo',
+    strpos($all, 'class="vascor-module-nav"') < strpos($all, 'class="vascor-view-heading"')
+);
 report('Conserva IDs críticos del importador', preg_match_all('/id="(?:importador|dropzone|fileInput|fileInfo|fileName|fileSize|fileType|recordCount|fileStatus|progressPercent|progressFill|statusMessage|importBtn)"/', $import) === 13);
 report('Conserva formulario crítico', str_contains($import, 'class="importador-form"') && str_contains($import, 'method="post"'));
 report('Conserva botones críticos', str_contains($import, 'id="importBtn"') && str_contains($results, 'id="exportExcelBtn"'));

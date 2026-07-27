@@ -1,6 +1,5 @@
 <?php declare(strict_types=1); ?>
-<header class="rail-section-header">
-    <span class="rail-section-header__eyebrow">Rail</span>
+<header class="rail-section-heading">
     <h1 id="railSectionTitle">Evidencias</h1>
     <p>Espacio preparado para consultar y resguardar evidencias del módulo Rail.</p>
 </header>

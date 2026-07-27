@@ -66,6 +66,19 @@
     color: var(--vascor-primary, #1769aa);
 }
 
+.rail-nav-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 20px;
+    padding: 2px 7px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    opacity: .78;
+    font-size: .62rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
 .rail-context-nav__link {
     padding: 8px 13px;
     color: var(--vascor-text-muted, #657786);
@@ -100,6 +113,22 @@
     min-width: 0;
     max-width: 100%;
     gap: var(--vascor-spacing-lg, 22px);
+}
+
+.rail-section-heading {
+    min-width: 0;
+}
+
+.rail-section-heading h1 {
+    margin: 0 0 6px;
+    color: var(--vascor-text, #172b3a);
+    font-size: clamp(1.35rem, 3vw, 1.8rem);
+}
+
+.rail-section-heading p {
+    max-width: 720px;
+    margin: 0;
+    color: var(--vascor-text-muted, #657786);
 }
 
 .rail-section-header {

@@ -36,6 +36,7 @@ $railConfiguredUrl = static function (array $item, string $section, string $subs
             }
             $railNavigationLabel = (string) ($railNavigationItem['label'] ?? $railNavigationKey);
             $railNavigationIcon = (string) ($railNavigationItem['icon'] ?? '');
+            $railNavigationBadge = trim((string) ($railNavigationItem['badge'] ?? ''));
             $railNavigationDefault = (string) ($railNavigationItem['default_subsection'] ?? '');
             $railNavigationActive = $railNavigationKey === $railSection;
             ?>
@@ -44,6 +45,9 @@ $railConfiguredUrl = static function (array $item, string $section, string $subs
                <?php echo $railNavigationActive ? 'aria-current="page"' : ''; ?>>
                 <span class="rail-primary-nav__icon" aria-hidden="true"><?php echo $railEscape($railNavigationIcon); ?></span>
                 <span><?php echo $railEscape($railNavigationLabel); ?></span>
+                <?php if ($railNavigationBadge !== ''): ?>
+                    <span class="rail-nav-badge"><?php echo $railEscape($railNavigationBadge); ?></span>
+                <?php endif; ?>
             </a>
         <?php endforeach; ?>
     </nav>

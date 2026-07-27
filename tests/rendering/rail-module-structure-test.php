@@ -66,6 +66,14 @@ $test('cada sección declara metadatos y subsecciones', static function () use (
     }
     return true;
 });
+$test('badges de estado usan un solo contrato de configuración', static fn (): bool =>
+    ($navigation['ferrocheck']['badge'] ?? null) === 'Principal'
+    && ($navigation['consist-rail']['badge'] ?? null) === 'En desarrollo'
+    && ($navigation['facturacion']['badge'] ?? null) === 'Próximamente'
+    && ($navigation['inventario']['badge'] ?? null) === 'Próximamente'
+    && ($navigation['evidencias']['badge'] ?? null) === 'Próximamente'
+    && !array_key_exists('badge', $navigation['configuracion'])
+);
 $test('todas las secciones tienen una vista controlada', static function () use ($expected, $root): bool {
     foreach ($expected as $section) {
         $view = $section === 'ferrocheck' ? 'ferro' : $section;
@@ -77,9 +85,25 @@ $test('todas las secciones tienen una vista controlada', static function () use 
 });
 $test('render aislado separa dos barras del contenido', static fn (): bool => substr_count($ferroNavigation, '<nav ') === 2 && !str_contains($ferroHtml, '<nav '));
 $test('navegación marca sección y subsección activas', static fn (): bool => substr_count($ferroNavigation, 'aria-current="page"') === 2);
+$test('navegación renderiza badges con un componente único', static fn (): bool =>
+    substr_count($ferroNavigation, 'class="rail-nav-badge"') === 5
+    && str_contains($ferroNavigation, '>Principal</span>')
+    && str_contains($ferroNavigation, '>En desarrollo</span>')
+    && substr_count($ferroNavigation, '>Próximamente</span>') === 3
+);
 $test('FerroCheck conserva la URL histórica', static fn (): bool => str_contains($ferroNavigation, 'modulo=ferrocheck&amp;seccion=dashboard'));
 $test('sección inválida cae en FerroCheck', static fn (): bool => str_contains($fallbackHtml, '<h1 id="railSectionTitle">FerroCheck</h1>'));
 $test('vista no duplica documento ni shell global', static fn (): bool => !preg_match('/<!doctype|<html(?:\\s|>)|<head(?:\\s|>)|<body(?:\\s|>)|app-header|app-sidebar|app-footer/i', $railSources));
+$test('vistas internas usan encabezado sencillo sin banners repetidos', static function () use ($expected, $root): bool {
+    foreach ($expected as $section) {
+        $view = $section === 'ferrocheck' ? 'ferro' : $section;
+        $source = (string) file_get_contents($root . '/app/Views/rail/' . $view . '.php');
+        if (!str_contains($source, 'class="rail-section-heading"') || str_contains($source, 'class="rail-section-header"')) {
+            return false;
+        }
+    }
+    return true;
+});
 $test('vistas no leen superglobales', static fn (): bool => !preg_match('/\\$_(?:GET|POST|SESSION|FILES|COOKIE|SERVER)/', $railSources));
 $test('vistas no contienen SQL ni lógica funcional', static fn (): bool => !preg_match('/\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b|<form|<table/i', $railSources));
 $test('CSS está acotado al prefijo Rail', static function () use ($css): bool {

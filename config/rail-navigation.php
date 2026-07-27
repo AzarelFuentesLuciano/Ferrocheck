@@ -8,6 +8,7 @@ return [
         'label' => 'FerroCheck',
         'description' => 'Consulta y preparación de procesos ferroviarios.',
         'icon' => '▰',
+        'badge' => 'Principal',
         'url' => 'index.php?modulo=ferrocheck&seccion=dashboard',
         'default_subsection' => 'buscar',
         'subsections' => [
@@ -23,6 +24,7 @@ return [
         'label' => 'Consist Rail',
         'description' => 'Administración futura de composiciones ferroviarias.',
         'icon' => '≋',
+        'badge' => 'En desarrollo',
         'default_subsection' => 'dashboard',
         'subsections' => [
             'dashboard' => ['key' => 'dashboard', 'label' => 'Dashboard'],
@@ -37,6 +39,7 @@ return [
         'label' => 'Facturación',
         'description' => 'Preparación de procesos de facturación ferroviaria.',
         'icon' => '$',
+        'badge' => 'Próximamente',
         'default_subsection' => 'dashboard',
         'subsections' => [
             'dashboard' => ['key' => 'dashboard', 'label' => 'Dashboard'],
@@ -51,6 +54,7 @@ return [
         'label' => 'Inventario',
         'description' => 'Estructura inicial del inventario ferroviario.',
         'icon' => '▤',
+        'badge' => 'Próximamente',
         'default_subsection' => 'dashboard',
         'subsections' => [
             'dashboard' => ['key' => 'dashboard', 'label' => 'Dashboard'],
@@ -65,6 +69,7 @@ return [
         'label' => 'Evidencias',
         'description' => 'Consulta y resguardo futuro de evidencias.',
         'icon' => '▣',
+        'badge' => 'Próximamente',
         'default_subsection' => 'consultar',
         'subsections' => [
             'consultar' => ['key' => 'consultar', 'label' => 'Consultar'],
