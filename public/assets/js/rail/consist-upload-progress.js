@@ -74,4 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }), delay);
         });
     });
+
+    const analysisForm = document.querySelector('[data-consist-analysis-form]');
+    analysisForm?.addEventListener('submit', () => {
+        const button = analysisForm.querySelector('[data-analysis-submit]');
+        if (button) {
+            button.disabled = true;
+            button.textContent = 'Analizando VIN...';
+        }
+    });
 });

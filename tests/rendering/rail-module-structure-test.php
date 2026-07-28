@@ -116,7 +116,9 @@ $test('vistas no contienen SQL y el formulario queda aislado en Consist Rail', s
         }
     }
     $consist = (string) file_get_contents($root . '/app/Views/rail/consist-rail.php');
-    return substr_count($consist, '<form') === 1 && str_contains($consist, 'enctype="multipart/form-data"');
+    return substr_count($consist, '<form') === 2
+        && str_contains($consist, 'enctype="multipart/form-data"')
+        && str_contains($consist, 'name="action" value="analyze_vin_cross"');
 });
 $test('CSS está acotado a Rail y las clases reutilizadas permanecen contextualizadas', static function () use ($css): bool {
     preg_match_all('/\\.([a-zA-Z_][a-zA-Z0-9_-]*)/', $css, $matches);

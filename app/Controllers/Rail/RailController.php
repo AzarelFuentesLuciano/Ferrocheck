@@ -9,12 +9,16 @@ use App\Auth\Csrf;
 use App\Core\Rendering\RenderAdapter;
 use App\Core\Rendering\RenderContext;
 use App\Services\ModuleNavigationBuilder;
+use App\Services\Rail\Consist\ConsistAnalysisResultStore;
 use App\Services\Rail\Consist\ConsistSpreadsheetPreviewer;
 use App\Services\Rail\Consist\ConsistTemporaryUploadStore;
 use App\Services\Rail\Consist\ConsistUploadValidator;
+use App\Services\Rail\Consist\ConsistVinCrossAnalyzer;
+use App\Services\Rail\Consist\ConsistVinExtractor;
 use App\Support\AuthenticatedHeaderBuilder;
 use App\Support\Rail\RailFlashStore;
 use App\ViewModels\Rail\ConsistUploadViewModel;
+use App\ViewModels\Rail\ConsistAnalysisViewModel;
 use RuntimeException;
 use Throwable;
 
@@ -33,6 +37,9 @@ final class RailController
         private ?ConsistTemporaryUploadStore $temporaryStore = null,
         private ?ConsistUploadValidator $uploadValidator = null,
         private ?ConsistSpreadsheetPreviewer $spreadsheetPreviewer = null,
+        private ?ConsistVinExtractor $vinExtractor = null,
+        private ?ConsistVinCrossAnalyzer $vinCrossAnalyzer = null,
+        private ?ConsistAnalysisResultStore $analysisResultStore = null,
     ) {
         $this->baseUrl = $baseUrl !== null
             ? rtrim($baseUrl, '/')
@@ -51,11 +58,18 @@ final class RailController
         }
         $this->requireUploadDependencies();
         $redirect = $this->consistUploadUrl();
+        $requestedAnalysisToken = trim((string) ($post['batch_token'] ?? ''));
+        if (($post['action'] ?? '') === 'analyze_vin_cross' && preg_match('/^[a-f0-9]{64}$/', $requestedAnalysisToken)) {
+            $redirect .= '&preview=' . rawurlencode($requestedAnalysisToken);
+        }
         $stagedToken = null;
 
         try {
             if (!$this->csrf->validate((string) ($post['_csrf'] ?? ''))) {
                 throw new RuntimeException('La sesión del formulario expiró. Intenta nuevamente.');
+            }
+            if (($post['action'] ?? '') === 'analyze_vin_cross') {
+                return $this->analyzeVinCross($post, $redirect);
             }
             $validated = $this->uploadValidator->validateBatch($files);
             $staged = $this->temporaryStore->stageBatch($validated);
@@ -74,7 +88,12 @@ final class RailController
             if ($stagedToken !== null) {
                 $this->temporaryStore->discard($stagedToken);
             }
-            $this->flashStore->add('error', $exception->getMessage());
+            $this->flashStore->add(
+                'error',
+                $exception instanceof RuntimeException
+                    ? $exception->getMessage()
+                    : 'Ocurrió un error inesperado al procesar el lote.',
+            );
         }
 
         header('Location: ' . $redirect, true, 303);
@@ -202,10 +221,19 @@ final class RailController
         }
 
         $preview = null;
+        $analysis = null;
+        $canAnalyze = false;
         $token = isset($query['preview']) && is_string($query['preview']) ? trim($query['preview']) : '';
         if ($token !== '' && $this->temporaryStore !== null) {
             try {
                 $preview = $this->temporaryStore->preview($token);
+                $canAnalyze = is_array($preview)
+                    && ($preview['valid'] ?? false) === true
+                    && count($preview['files'] ?? []) === 3;
+                if ($canAnalyze && $this->analysisResultStore !== null) {
+                    $storedAnalysis = $this->analysisResultStore->load($token);
+                    $analysis = is_array($storedAnalysis) ? new ConsistAnalysisViewModel($storedAnalysis) : null;
+                }
             } catch (Throwable $exception) {
                 $this->flashStore->add('error', $exception->getMessage());
             }
@@ -216,6 +244,9 @@ final class RailController
             $this->flashStore->consume(),
             $preview,
             $this->importConfiguration(),
+            $token,
+            $canAnalyze,
+            $analysis,
         );
     }
 
@@ -240,5 +271,41 @@ final class RailController
     {
         $configuration = require dirname(__DIR__, 3) . '/config/consist-rail-import.php';
         return is_array($configuration) ? $configuration : [];
+    }
+
+    private function analyzeVinCross(array $post, string $redirect): ?string
+    {
+        if ($this->vinExtractor === null || $this->vinCrossAnalyzer === null || $this->analysisResultStore === null) {
+            throw new RuntimeException('El análisis de VIN no está disponible.');
+        }
+        $token = trim((string) ($post['batch_token'] ?? ''));
+        if ($token === '') {
+            throw new RuntimeException('El token del lote es obligatorio.');
+        }
+
+        $entry = $this->temporaryStore->resolve($token);
+        $preview = $entry['preview'] ?? null;
+        if (!is_array($preview) || ($preview['valid'] ?? false) !== true || count($entry['files'] ?? []) !== 3) {
+            throw new RuntimeException('Los tres archivos deben estar validados antes de analizar el cruce.');
+        }
+
+        $configuration = $this->importConfiguration();
+        $extracted = [];
+        foreach ($configuration['files'] as $field => $definition) {
+            if (!isset($entry['files'][$field])) {
+                throw new RuntimeException(sprintf('Falta el archivo %s en el lote.', $definition['label']));
+            }
+            $extracted[$field] = $this->vinExtractor->extract($entry['files'][$field], $definition);
+        }
+        $result = $this->vinCrossAnalyzer->analyze(
+            $extracted['vehicle_load_report'],
+            $extracted['shippers'],
+            $extracted['cnacs'],
+        );
+        $this->analysisResultStore->save($token, $result);
+        $this->csrf->rotate();
+        $this->flashStore->add('success', 'Cruce de VIN completado.');
+        header('Location: ' . $redirect, true, 303);
+        return null;
     }
 }

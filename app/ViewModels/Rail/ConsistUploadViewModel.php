@@ -11,6 +11,9 @@ final readonly class ConsistUploadViewModel
         public array $messages,
         public ?array $preview,
         public array $configuration,
+        public string $batchToken = '',
+        public bool $canAnalyze = false,
+        public ?ConsistAnalysisViewModel $analysis = null,
     ) {
     }
 }

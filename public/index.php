@@ -24,7 +24,7 @@ use App\Controllers\Rail\RailController;
 use App\Core\Database;
 use App\Repositories\{AuthRepository, OrganizationalAccessRepository, OrganizationalAdminRepository, RoleAdminRepository, UserAdminRepository};
 use App\Services\{AuthService, GeneralAuditService, ModuleNavigationBuilder, OrganizationalAdminService, RoleAdminService, UserAdminService};
-use App\Services\Rail\Consist\{ConsistSpreadsheetPreviewer, ConsistTemporaryUploadStore, ConsistUploadValidator};
+use App\Services\Rail\Consist\{ConsistAnalysisResultStore, ConsistSpreadsheetPreviewer, ConsistTemporaryUploadStore, ConsistUploadValidator, ConsistVinCrossAnalyzer, ConsistVinExtractor};
 use App\Support\Rail\RailFlashStore;
 
 if (($_GET['modulo'] ?? '') === 'auth') {
@@ -90,6 +90,13 @@ if (($_GET['modulo'] ?? '') === 'rail') {
     }
     $railCsrf = new Csrf($_SESSION);
     $consistConfiguration = require __DIR__ . '/../config/consist-rail-import.php';
+    $consistTemporaryStore = new ConsistTemporaryUploadStore(
+        dirname(__DIR__) . '/storage/rail/consist/temp',
+        $_SESSION,
+        $currentUser->id,
+        session_id(),
+        (int) $consistConfiguration['expires_seconds'],
+    );
     $railController = new RailController(
         $currentUser,
         $railCsrf->token(),
@@ -98,15 +105,12 @@ if (($_GET['modulo'] ?? '') === 'rail') {
         null,
         $railCsrf,
         new RailFlashStore($_SESSION),
-        new ConsistTemporaryUploadStore(
-            dirname(__DIR__) . '/storage/rail/consist/temp',
-            $_SESSION,
-            $currentUser->id,
-            session_id(),
-            (int) $consistConfiguration['expires_seconds'],
-        ),
+        $consistTemporaryStore,
         new ConsistUploadValidator($consistConfiguration),
         new ConsistSpreadsheetPreviewer($consistConfiguration),
+        new ConsistVinExtractor($consistConfiguration),
+        new ConsistVinCrossAnalyzer((int) $consistConfiguration['analysis_sample_limit']),
+        new ConsistAnalysisResultStore($consistTemporaryStore, $currentUser->id, session_id()),
     );
     $response = $railController->dispatch(
         $_SERVER['REQUEST_METHOD'] ?? 'GET',

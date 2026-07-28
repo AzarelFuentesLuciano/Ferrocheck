@@ -11,6 +11,7 @@ return [
     'header_scan_rows' => 50,
     'chunk_rows' => 500,
     'sample_limit' => 20,
+    'analysis_sample_limit' => 50,
     'error_limit' => 25,
     'allowed_extensions' => ['xlsx', 'xls', 'csv'],
     'files' => [

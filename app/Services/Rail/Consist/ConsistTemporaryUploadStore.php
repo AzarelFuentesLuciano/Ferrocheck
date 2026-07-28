@@ -75,24 +75,31 @@ final class ConsistTemporaryUploadStore
             throw new RuntimeException('El lote temporal solicitado no es válido.');
         }
         $entry = $this->session[self::SESSION_KEY][$token] ?? null;
-        if (!is_array($entry)
-            || ($entry['user_id'] ?? null) !== $this->userId
-            || !hash_equals((string) ($entry['session_hash'] ?? ''), hash('sha256', $this->sessionId))
-        ) {
-            throw new RuntimeException('El lote temporal expiró o no pertenece a esta sesión.');
+        if (!is_array($entry)) {
+            throw new RuntimeException('El lote temporal solicitado no existe.');
+        }
+        if (($entry['user_id'] ?? null) !== $this->userId) {
+            throw new RuntimeException('El lote temporal pertenece a otro usuario.');
+        }
+        if (!hash_equals((string) ($entry['session_hash'] ?? ''), hash('sha256', $this->sessionId))) {
+            throw new RuntimeException('El lote temporal pertenece a otra sesión.');
         }
         if ((int) ($entry['expires_at'] ?? 0) < time()) {
             $this->discard($token);
-            throw new RuntimeException('El lote temporal expiró o no pertenece a esta sesión.');
+            throw new RuntimeException('El lote temporal solicitado expiró.');
         }
 
         foreach ($entry['files'] ?? [] as $file) {
             $path = realpath((string) ($file['path'] ?? ''));
             $root = realpath($this->root);
-            if ($path === false || $root === false || !$this->isWithin($path, $root)
-                || !hash_equals((string) $file['sha256'], (string) hash_file('sha256', $path))
-            ) {
-                throw new RuntimeException('La integridad del lote temporal no pudo verificarse.');
+            if ($path === false || !is_file($path)) {
+                throw new RuntimeException('Falta un archivo temporal requerido por el lote.');
+            }
+            if ($root === false || !$this->isWithin($path, $root)) {
+                throw new RuntimeException('La ruta de un archivo temporal no es válida.');
+            }
+            if (!hash_equals((string) $file['sha256'], (string) hash_file('sha256', $path))) {
+                throw new RuntimeException('Un archivo temporal fue alterado después de su carga.');
             }
         }
 
