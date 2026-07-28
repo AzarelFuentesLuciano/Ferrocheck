@@ -118,18 +118,30 @@ $test('vistas no contienen SQL y el formulario queda aislado en Consist Rail', s
     $consist = (string) file_get_contents($root . '/app/Views/rail/consist-rail.php');
     return substr_count($consist, '<form') === 1 && str_contains($consist, 'enctype="multipart/form-data"');
 });
-$test('CSS está acotado al prefijo Rail', static function () use ($css): bool {
+$test('CSS está acotado a Rail y las clases reutilizadas permanecen contextualizadas', static function () use ($css): bool {
     preg_match_all('/\\.([a-zA-Z_][a-zA-Z0-9_-]*)/', $css, $matches);
+    $sharedProgressClasses = ['progress-block', 'progress-labels', 'progress-bar', 'progress-bar-fill', 'status-message'];
     foreach ($matches[1] as $className) {
-        if (!str_starts_with($className, 'rail-')) {
+        if (!str_starts_with($className, 'rail-') && !in_array($className, $sharedProgressClasses, true)) {
             return false;
         }
     }
     return $matches[1] !== []
+        && !preg_match('/(^|[},])\\s*\\.(?:progress-block|progress-labels|progress-bar|progress-bar-fill|status-message)\\b/m', $css)
         && !preg_match('/(^|[},])\\s*(?::root|html|body|\\*)\\b/m', $css);
 });
 $test('CSS contiene overflow interno y soporte móvil', static fn (): bool => str_contains($css, 'overflow-x: auto') && str_contains($css, 'min-width: 0') && str_contains($css, '@media (max-width: 640px)') && str_contains($css, 'prefers-reduced-motion'));
-$test('módulo no agrega JavaScript', static fn (): bool => !is_dir($root . '/public/assets/js/rail'));
+$test('JavaScript de Rail queda aislado al progreso de Nuevo Consist', static function () use ($root): bool {
+    $directory = $root . '/public/assets/js/rail';
+    $files = is_dir($directory) ? array_values(array_diff(scandir($directory) ?: [], ['.', '..'])) : [];
+    if ($files !== ['consist-upload-progress.js']) {
+        return false;
+    }
+    $script = (string) file_get_contents($directory . '/consist-upload-progress.js');
+    return str_contains($script, '[data-consist-upload-form]')
+        && !str_contains($script, 'fetch(')
+        && !str_contains($script, 'preventDefault');
+});
 
 echo "\nResumen Rail Module Structure: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);

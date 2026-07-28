@@ -15,14 +15,46 @@
             </div>
         <?php endforeach; ?>
         <form class="rail-consist-form" method="post" enctype="multipart/form-data"
+              data-consist-upload-form
               action="<?php echo $railEscape($railBaseUrl); ?>/index.php?modulo=rail&amp;seccion=consist-rail&amp;subseccion=registrar">
             <input type="hidden" name="_csrf" value="<?php echo $railEscape($consistUpload->csrfToken); ?>">
             <div class="rail-consist-form__files">
                 <?php foreach ($consistUpload->configuration['files'] ?? [] as $field => $definition): ?>
-                    <label class="rail-consist-file">
+                    <?php
+                    $fileResult = $consistUpload->preview['files'][$field] ?? null;
+                    $backendError = '';
+                    foreach ($consistUpload->messages as $message) {
+                        if (($message['type'] ?? '') === 'error') {
+                            $backendError = (string) ($message['message'] ?? '');
+                            break;
+                        }
+                    }
+                    $progressState = is_array($fileResult)
+                        ? (!empty($fileResult['valid']) ? 'valid' : 'error')
+                        : ($backendError !== '' ? 'error' : 'pending');
+                    $progressValue = $progressState === 'valid' ? 100 : 0;
+                    $fileError = is_array($fileResult) && isset($fileResult['errors'][0])
+                        ? (string) $fileResult['errors'][0]
+                        : '';
+                    $progressMessage = $progressState === 'valid'
+                        ? 'Archivo validado correctamente.'
+                        : ($progressState === 'error' ? ($fileError !== '' ? $fileError : $backendError) : 'Pendiente de validación.');
+                    ?>
+                    <label class="rail-consist-file" data-consist-file data-state="<?php echo $railEscape($progressState); ?>">
                         <span><?php echo $railEscape($definition['label'] ?? $field); ?></span>
                         <input type="file" name="<?php echo $railEscape($field); ?>" accept=".xlsx,.xls,.csv" required>
-                        <small>XLSX, XLS o CSV · máximo 10 MB</small>
+                        <div class="progress-block" aria-live="polite">
+                            <div class="progress-labels">
+                                <span data-progress-state><?php echo $railEscape(ucfirst($progressState === 'valid' ? 'validado' : $progressState)); ?></span>
+                                <span data-progress-percent><?php echo $railEscape($progressValue); ?> %</span>
+                            </div>
+                            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                                 aria-valuenow="<?php echo $railEscape($progressValue); ?>">
+                                <div class="progress-bar-fill" data-progress-fill style="width: <?php echo $railEscape($progressValue); ?>%"></div>
+                            </div>
+                            <p class="status-message" data-progress-message><?php echo $railEscape($progressMessage); ?></p>
+                        </div>
+                        <small>XLSX · XLS · CSV<br>Máximo 10 MB</small>
                     </label>
                 <?php endforeach; ?>
             </div>

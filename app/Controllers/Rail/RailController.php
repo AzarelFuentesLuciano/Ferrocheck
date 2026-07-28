@@ -86,6 +86,9 @@ final class RailController
         $navigation = $this->navigationConfiguration();
         [$section, $subsection] = $this->resolveLocation($query, $navigation);
         [$moduleNavigation, $content] = $this->renderRailViews($section, $subsection, $navigation, $consistUpload);
+        $additionalScripts = $section === 'consist-rail' && $subsection === 'registrar'
+            ? [$this->baseUrl . '/assets/js/rail/consist-upload-progress.js']
+            : [];
         $header = AuthenticatedHeaderBuilder::build(
             $this->authenticatedUser,
             $this->baseUrl . '/index.php?modulo=auth&accion=logout',
@@ -108,7 +111,7 @@ final class RailController
             moduleNavigation: $moduleNavigation,
             content: $content,
             additionalStyles: [$this->baseUrl . '/assets/css/rail/rail.css'],
-            additionalScripts: [],
+            additionalScripts: $additionalScripts,
             header: $header,
             footer: [
                 'title' => 'VASCOR OPS v1.0',
