@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace App\Controllers\Rail;
 
 use App\Auth\AuthenticatedUser;
+use App\Auth\Csrf;
 use App\Core\Rendering\RenderAdapter;
 use App\Core\Rendering\RenderContext;
 use App\Services\ModuleNavigationBuilder;
+use App\Services\Rail\Consist\ConsistSpreadsheetPreviewer;
+use App\Services\Rail\Consist\ConsistTemporaryUploadStore;
+use App\Services\Rail\Consist\ConsistUploadValidator;
 use App\Support\AuthenticatedHeaderBuilder;
+use App\Support\Rail\RailFlashStore;
+use App\ViewModels\Rail\ConsistUploadViewModel;
 use RuntimeException;
 use Throwable;
 
@@ -22,17 +28,64 @@ final class RailController
         private ModuleNavigationBuilder $moduleNavigationBuilder,
         private ?RenderAdapter $renderAdapter = null,
         ?string $baseUrl = null,
+        private ?Csrf $csrf = null,
+        private ?RailFlashStore $flashStore = null,
+        private ?ConsistTemporaryUploadStore $temporaryStore = null,
+        private ?ConsistUploadValidator $uploadValidator = null,
+        private ?ConsistSpreadsheetPreviewer $spreadsheetPreviewer = null,
     ) {
         $this->baseUrl = $baseUrl !== null
             ? rtrim($baseUrl, '/')
             : (defined('BASE_URL') ? rtrim((string) BASE_URL, '/') : '');
     }
 
-    public function render(array $query = []): string
+    public function dispatch(string $method, array $query = [], array $post = [], array $files = []): ?string
+    {
+        if (strtoupper($method) !== 'POST') {
+            return $this->render($query, $this->uploadViewModel($query));
+        }
+
+        [$section, $subsection] = $this->resolveLocation($query, $this->navigationConfiguration());
+        if ($section !== 'consist-rail' || $subsection !== 'registrar') {
+            return $this->render($query, $this->uploadViewModel($query));
+        }
+        $this->requireUploadDependencies();
+        $redirect = $this->consistUploadUrl();
+        $stagedToken = null;
+
+        try {
+            if (!$this->csrf->validate((string) ($post['_csrf'] ?? ''))) {
+                throw new RuntimeException('La sesión del formulario expiró. Intenta nuevamente.');
+            }
+            $validated = $this->uploadValidator->validateBatch($files);
+            $staged = $this->temporaryStore->stageBatch($validated);
+            $stagedToken = (string) $staged['token'];
+            $preview = $this->spreadsheetPreviewer->previewBatch($staged['files']);
+            $this->temporaryStore->savePreview($stagedToken, $preview);
+            $this->csrf->rotate();
+            $this->flashStore->add(
+                $preview['valid'] ? 'success' : 'warning',
+                $preview['valid']
+                    ? 'Los tres archivos fueron cargados y validados.'
+                    : 'La carga fue procesada, pero contiene errores que impiden continuar.',
+            );
+            $redirect .= '&preview=' . rawurlencode($stagedToken);
+        } catch (Throwable $exception) {
+            if ($stagedToken !== null) {
+                $this->temporaryStore->discard($stagedToken);
+            }
+            $this->flashStore->add('error', $exception->getMessage());
+        }
+
+        header('Location: ' . $redirect, true, 303);
+        return null;
+    }
+
+    public function render(array $query = [], ?ConsistUploadViewModel $consistUpload = null): string
     {
         $navigation = $this->navigationConfiguration();
         [$section, $subsection] = $this->resolveLocation($query, $navigation);
-        [$moduleNavigation, $content] = $this->renderRailViews($section, $subsection, $navigation);
+        [$moduleNavigation, $content] = $this->renderRailViews($section, $subsection, $navigation, $consistUpload);
         $header = AuthenticatedHeaderBuilder::build(
             $this->authenticatedUser,
             $this->baseUrl . '/index.php?modulo=auth&accion=logout',
@@ -109,7 +162,12 @@ final class RailController
         return [$section, $subsection];
     }
 
-    private function renderRailViews(string $section, string $subsection, array $navigation): array
+    private function renderRailViews(
+        string $section,
+        string $subsection,
+        array $navigation,
+        ?ConsistUploadViewModel $consistUpload,
+    ): array
     {
         $railSection = $section;
         $railSubsection = $subsection;
@@ -132,5 +190,52 @@ final class RailController
             }
             throw $exception;
         }
+    }
+
+    private function uploadViewModel(array $query): ?ConsistUploadViewModel
+    {
+        if ($this->csrf === null || $this->flashStore === null) {
+            return null;
+        }
+
+        $preview = null;
+        $token = isset($query['preview']) && is_string($query['preview']) ? trim($query['preview']) : '';
+        if ($token !== '' && $this->temporaryStore !== null) {
+            try {
+                $preview = $this->temporaryStore->preview($token);
+            } catch (Throwable $exception) {
+                $this->flashStore->add('error', $exception->getMessage());
+            }
+        }
+
+        return new ConsistUploadViewModel(
+            $this->csrf->token(),
+            $this->flashStore->consume(),
+            $preview,
+            $this->importConfiguration(),
+        );
+    }
+
+    private function requireUploadDependencies(): void
+    {
+        if ($this->csrf === null
+            || $this->flashStore === null
+            || $this->temporaryStore === null
+            || $this->uploadValidator === null
+            || $this->spreadsheetPreviewer === null
+        ) {
+            throw new RuntimeException('El flujo de carga de Consist Rail no está disponible.');
+        }
+    }
+
+    private function consistUploadUrl(): string
+    {
+        return $this->baseUrl . '/index.php?modulo=rail&seccion=consist-rail&subseccion=registrar';
+    }
+
+    private function importConfiguration(): array
+    {
+        $configuration = require dirname(__DIR__, 3) . '/config/consist-rail-import.php';
+        return is_array($configuration) ? $configuration : [];
     }
 }

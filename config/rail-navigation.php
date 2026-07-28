@@ -29,7 +29,7 @@ return [
         'subsections' => [
             'dashboard' => ['key' => 'dashboard', 'label' => 'Dashboard'],
             'consultar' => ['key' => 'consultar', 'label' => 'Consultar'],
-            'registrar' => ['key' => 'registrar', 'label' => 'Registrar'],
+            'registrar' => ['key' => 'registrar', 'label' => 'Nuevo Consist'],
             'historial' => ['key' => 'historial', 'label' => 'Historial'],
             'reportes' => ['key' => 'reportes', 'label' => 'Reportes'],
         ],

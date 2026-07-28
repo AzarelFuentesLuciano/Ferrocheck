@@ -105,7 +105,19 @@ $test('vistas internas usan encabezado sencillo sin banners repetidos', static f
     return true;
 });
 $test('vistas no leen superglobales', static fn (): bool => !preg_match('/\\$_(?:GET|POST|SESSION|FILES|COOKIE|SERVER)/', $railSources));
-$test('vistas no contienen SQL ni lógica funcional', static fn (): bool => !preg_match('/\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b|<form|<table/i', $railSources));
+$test('vistas no contienen SQL y el formulario queda aislado en Consist Rail', static function () use ($railSources, $root): bool {
+    if (preg_match('/\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b/i', $railSources)) {
+        return false;
+    }
+    foreach (['ferro', 'facturacion', 'inventario', 'evidencias', 'configuracion'] as $view) {
+        $source = (string) file_get_contents($root . '/app/Views/rail/' . $view . '.php');
+        if (preg_match('/<form|<table/i', $source)) {
+            return false;
+        }
+    }
+    $consist = (string) file_get_contents($root . '/app/Views/rail/consist-rail.php');
+    return substr_count($consist, '<form') === 1 && str_contains($consist, 'enctype="multipart/form-data"');
+});
 $test('CSS está acotado al prefijo Rail', static function () use ($css): bool {
     preg_match_all('/\\.([a-zA-Z_][a-zA-Z0-9_-]*)/', $css, $matches);
     foreach ($matches[1] as $className) {

@@ -24,6 +24,8 @@ use App\Controllers\Rail\RailController;
 use App\Core\Database;
 use App\Repositories\{AuthRepository, OrganizationalAccessRepository, OrganizationalAdminRepository, RoleAdminRepository, UserAdminRepository};
 use App\Services\{AuthService, GeneralAuditService, ModuleNavigationBuilder, OrganizationalAdminService, RoleAdminService, UserAdminService};
+use App\Services\Rail\Consist\{ConsistSpreadsheetPreviewer, ConsistTemporaryUploadStore, ConsistUploadValidator};
+use App\Support\Rail\RailFlashStore;
 
 if (($_GET['modulo'] ?? '') === 'auth') {
     $pdo = Database::getConnection();
@@ -86,11 +88,35 @@ if (($_GET['modulo'] ?? '') === 'rail') {
         require __DIR__ . '/../app/Views/auth/403.php';
         return;
     }
-    echo (new RailController(
+    $railCsrf = new Csrf($_SESSION);
+    $consistConfiguration = require __DIR__ . '/../config/consist-rail-import.php';
+    $railController = new RailController(
         $currentUser,
-        (new Csrf($_SESSION))->token(),
+        $railCsrf->token(),
         $moduleNavigationBuilder,
-    ))->render($_GET);
+        null,
+        null,
+        $railCsrf,
+        new RailFlashStore($_SESSION),
+        new ConsistTemporaryUploadStore(
+            dirname(__DIR__) . '/storage/rail/consist/temp',
+            $_SESSION,
+            $currentUser->id,
+            session_id(),
+            (int) $consistConfiguration['expires_seconds'],
+        ),
+        new ConsistUploadValidator($consistConfiguration),
+        new ConsistSpreadsheetPreviewer($consistConfiguration),
+    );
+    $response = $railController->dispatch(
+        $_SERVER['REQUEST_METHOD'] ?? 'GET',
+        $_GET,
+        $_POST,
+        $_FILES,
+    );
+    if (is_string($response)) {
+        echo $response;
+    }
     return;
 }
 
