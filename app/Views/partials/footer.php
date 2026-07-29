@@ -15,5 +15,6 @@ $footerYear = (string) ($footer['year'] ?? date('Y'));
         <span class="app-footer__label"><?php echo $escape($footerCreditLabel); ?></span>
         <span class="app-footer__developer"><?php echo $escape($footerDeveloper); ?></span>
         <span class="app-footer__copyright">© <?php echo $escape($footerYear); ?> VASCOR OPS. Todos los derechos reservados.</span>
+        <button class="pwa-install-footer-button" type="button" data-pwa-install-button="app" hidden disabled>Instalar VASCOR OPS</button>
     </div>
 </footer>

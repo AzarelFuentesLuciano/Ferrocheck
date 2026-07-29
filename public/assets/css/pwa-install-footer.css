@@ -1,0 +1,34 @@
+.pwa-install-footer-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    margin-top: 9px;
+    padding: 7px 14px;
+    border: 1px solid #b9d4e5;
+    border-radius: 9px;
+    background: #edf7fb;
+    color: #155474;
+    font: 600 .76rem/1.2 Poppins, Arial, sans-serif;
+    cursor: pointer;
+}
+
+.pwa-install-footer-button[hidden] {
+    display: none;
+}
+
+.pwa-install-footer-button:hover {
+    border-color: #1769aa;
+    background: #e2f1f8;
+}
+
+.pwa-install-footer-button:focus-visible {
+    outline: 3px solid #72b7df;
+    outline-offset: 2px;
+}
+
+@media (display-mode: standalone) {
+    .pwa-install-footer-button {
+        display: none;
+    }
+}

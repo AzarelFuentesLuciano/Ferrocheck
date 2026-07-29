@@ -1,0 +1,27 @@
+{
+  "name": "VASCOR OPS",
+  "short_name": "VASCOR OPS",
+  "description": "Plataforma operativa para la gestión segura y centralizada de procesos VASCOR.",
+  "start_url": "./index.php",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f5f8",
+  "theme_color": "#155474",
+  "lang": "es-MX",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "assets/icons/vascor-ops-app-final-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/vascor-ops-app-final-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

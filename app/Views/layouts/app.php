@@ -28,15 +28,25 @@ $footer = isset($footer) && is_array($footer) ? $footer : [];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#155474">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title><?php echo $escape($pageTitle); ?></title>
+    <link rel="manifest" href="<?php echo $escape($assetBaseUrl . '/manifest.webmanifest?v=2'); ?>">
+    <link rel="apple-touch-icon" href="<?php echo $escape($assetBaseUrl . '/assets/icons/vascor-ops-app-final-192.png'); ?>">
+    <link rel="icon" type="image/png" href="<?php echo $escape($assetBaseUrl . '/assets/icons/vascor-ops-app-final-192.png'); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/vascor-design-system.css'); ?>">
     <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/app-shell.css'); ?>">
+    <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/pwa.css?v=2'); ?>">
+    <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/pwa-install-footer.css?v=2'); ?>">
     <?php foreach ($additionalStyles as $styleUrl): ?>
         <link rel="stylesheet" href="<?php echo $escape($styleUrl); ?>">
     <?php endforeach; ?>
+    <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/pwa-update.css?v=2'); ?>">
 </head>
 <body class="app-shell-page">
     <div class="app-shell" data-app-shell>
@@ -60,5 +70,12 @@ $footer = isset($footer) && is_array($footer) ? $footer : [];
     <?php foreach ($additionalScripts as $scriptUrl): ?>
         <script src="<?php echo $escape($scriptUrl); ?>" defer></script>
     <?php endforeach; ?>
+    <script
+        src="<?php echo $escape($assetBaseUrl . '/assets/js/pwa.js?v=2'); ?>"
+        data-service-worker-url="<?php echo $escape($assetBaseUrl . '/service-worker.js'); ?>"
+        data-pwa-base-url="<?php echo $escape($assetBaseUrl . '/'); ?>"
+        defer
+    ></script>
+    <script src="<?php echo $escape($assetBaseUrl . '/assets/js/pwa-install-footer.js?v=2'); ?>" defer></script>
 </body>
 </html>

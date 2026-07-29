@@ -1,0 +1,35 @@
+.pwa-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    place-items: center;
+    background: #f2f5f8;
+    color: #155474;
+    opacity: 1;
+    transition: opacity .25s ease;
+}
+
+.pwa-splash strong {
+    font: 700 clamp(1.5rem, 7vw, 2.4rem)/1.2 Poppins, Arial, sans-serif;
+    letter-spacing: .06em;
+    animation: pwa-splash-pulse .8s ease-in-out infinite alternate;
+}
+
+.pwa-splash--closing {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes pwa-splash-pulse {
+    from { opacity: .62; transform: scale(.985); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pwa-splash,
+    .pwa-splash strong {
+        transition: none;
+        animation: none;
+    }
+}

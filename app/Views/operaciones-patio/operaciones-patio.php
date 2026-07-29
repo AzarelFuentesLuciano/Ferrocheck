@@ -7,7 +7,11 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#155474">
     <title>VASCOR OPS | Inventario de Patio</title>
+    <link rel="manifest" href="<?php echo $escape(BASE_URL); ?>/manifest.webmanifest?v=2">
+    <link rel="apple-touch-icon" href="<?php echo $escape(BASE_URL); ?>/assets/icons/vascor-ops-app-final-192.png">
+    <link rel="icon" type="image/png" href="<?php echo $escape(BASE_URL); ?>/assets/icons/vascor-ops-app-final-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,6 +19,9 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/importador.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-design-system.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/shell-coherence.css">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa.css?v=2">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-install-footer.css?v=2">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-update.css?v=2">
 </head>
 <body>
     <div class="dashboard-shell">
@@ -52,5 +59,7 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
     </div>
 
     <script src="<?php echo BASE_URL; ?>/assets/js/operaciones-patio.js"></script>
+    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa.js?v=2" data-service-worker-url="<?php echo $escape(BASE_URL); ?>/service-worker.js" data-pwa-base-url="<?php echo $escape(BASE_URL); ?>/" defer></script>
+    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa-install-footer.js?v=2" defer></script>
 </body>
 </html>
