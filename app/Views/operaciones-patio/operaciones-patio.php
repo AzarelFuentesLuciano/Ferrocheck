@@ -7,9 +7,9 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#155474">
+    <meta name="theme-color" content="#ffffff">
     <title>VASCOR OPS | Inventario de Patio</title>
-    <link rel="manifest" href="<?php echo $escape(BASE_URL); ?>/manifest.webmanifest?v=4">
+    <link rel="manifest" href="<?php echo $escape(BASE_URL); ?>/manifest.webmanifest?v=5">
     <link rel="apple-touch-icon" href="<?php echo $escape(BASE_URL); ?>/assets/icons/vascor-ops-minimal-v4-192.png">
     <link rel="icon" type="image/png" href="<?php echo $escape(BASE_URL); ?>/assets/icons/vascor-ops-minimal-v4-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,11 +19,12 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/importador.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-design-system.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/shell-coherence.css">
-    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa.css?v=4">
-    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-install-footer.css?v=4">
-    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-update.css?v=4">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa.css?v=5">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-install-footer.css?v=5">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-update.css?v=5">
 </head>
 <body>
+    <div class="pwa-splash" data-pwa-splash role="status" aria-label="Iniciando VASCOR OPS"><strong><span>VASCOR</span><span>OPS</span></strong></div>
     <div class="dashboard-shell">
         <div class="sidebar-backdrop" aria-hidden="true"></div>
 
@@ -59,7 +60,7 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
     </div>
 
     <script src="<?php echo BASE_URL; ?>/assets/js/operaciones-patio.js"></script>
-    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa.js?v=4" data-service-worker-url="<?php echo $escape(BASE_URL); ?>/service-worker.js" data-pwa-base-url="<?php echo $escape(BASE_URL); ?>/" defer></script>
-    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa-install-footer.js?v=4" defer></script>
+    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa.js?v=5" data-service-worker-url="<?php echo $escape(BASE_URL); ?>/service-worker.js" data-pwa-base-url="<?php echo $escape(BASE_URL); ?>/" defer></script>
+    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa-install-footer.js?v=5" defer></script>
 </body>
 </html>

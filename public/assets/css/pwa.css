@@ -2,7 +2,7 @@
     position: fixed;
     inset: 0;
     z-index: 10000;
-    display: grid;
+    display: none;
     place-items: center;
     background: #fff;
     color: #3a3a3a;
@@ -19,7 +19,7 @@
     line-height: 1.02;
     letter-spacing: .04em;
     text-align: center;
-    animation: pwa-splash-pulse .8s ease-in-out infinite alternate;
+    animation: pwa-splash-pulse .8s ease-in-out alternate;
 }
 
 .pwa-splash strong span {
@@ -34,6 +34,12 @@
 @keyframes pwa-splash-pulse {
     from { opacity: .62; transform: scale(.985); }
     to { opacity: 1; transform: scale(1); }
+}
+
+@media (display-mode: standalone) {
+    .pwa-splash {
+        display: grid;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

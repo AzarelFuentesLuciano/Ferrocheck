@@ -61,18 +61,23 @@
     );
 
     const showSplash = () => {
-        if (!isStandalone() || safeSessionGet(splashGuardKey) === '1') return;
+        const splash = document.querySelector('[data-pwa-splash]');
+        if (!splash) return;
+        if (!isStandalone() || safeSessionGet(splashGuardKey) === '1') {
+            splash.remove();
+            return;
+        }
         safeSessionSet(splashGuardKey, '1');
-        const splash = document.createElement('div');
-        splash.className = 'pwa-splash';
-        splash.setAttribute('role', 'status');
-        splash.setAttribute('aria-label', 'Iniciando VASCOR OPS');
-        splash.innerHTML = '<strong><span>VASCOR</span><span>OPS</span></strong>';
-        document.body.append(splash);
-        window.setTimeout(() => {
+        const closeSplash = () => {
             splash.classList.add('pwa-splash--closing');
             window.setTimeout(() => splash.remove(), 260);
-        }, 850);
+        };
+        const wordmark = splash.querySelector('strong');
+        if (wordmark && window.getComputedStyle(wordmark).animationName !== 'none') {
+            wordmark.addEventListener('animationend', closeSplash, { once: true });
+        } else {
+            window.requestAnimationFrame(closeSplash);
+        }
     };
 
     const removeUpdateNotice = () => {
@@ -201,7 +206,7 @@
         window.location.reload();
     });
 
-    window.addEventListener('DOMContentLoaded', showSplash, { once: true });
+    showSplash();
     window.addEventListener('load', async () => {
         try {
             const registration = await navigator.serviceWorker.register(serviceWorkerUrl, {
