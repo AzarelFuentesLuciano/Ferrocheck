@@ -1,0 +1,45 @@
+.pwa-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    place-items: center;
+    background: #fff;
+    color: #3a3a3a;
+    opacity: 1;
+    transition: opacity .25s ease;
+}
+
+.pwa-splash strong {
+    display: grid;
+    justify-items: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(1.75rem, 7vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: .04em;
+    text-align: center;
+    animation: pwa-splash-pulse .8s ease-in-out infinite alternate;
+}
+
+.pwa-splash strong span {
+    display: block;
+}
+
+.pwa-splash--closing {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes pwa-splash-pulse {
+    from { opacity: .62; transform: scale(.985); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pwa-splash,
+    .pwa-splash strong {
+        transition: none;
+        animation: none;
+    }
+}
