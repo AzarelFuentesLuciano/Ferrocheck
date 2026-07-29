@@ -41,7 +41,6 @@ $footer = isset($footer) && is_array($footer) ? $footer : [];
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/vascor-design-system.css'); ?>">
     <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/app-shell.css'); ?>">
-    <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/pwa.css?v=2'); ?>">
     <link rel="stylesheet" href="<?php echo $escape($assetBaseUrl . '/assets/css/pwa-install-footer.css?v=2'); ?>">
     <?php foreach ($additionalStyles as $styleUrl): ?>
         <link rel="stylesheet" href="<?php echo $escape($styleUrl); ?>">

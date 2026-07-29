@@ -19,7 +19,6 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/importador.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-design-system.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/shell-coherence.css">
-    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa.css?v=2">
     <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-install-footer.css?v=2">
     <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-update.css?v=2">
 </head>

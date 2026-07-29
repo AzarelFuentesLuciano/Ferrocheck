@@ -7,7 +7,6 @@ const OFFLINE_URL = './offline.html';
 const PRECACHE_RESOURCES = [
     OFFLINE_URL,
     './manifest.webmanifest?v=2',
-    './assets/css/pwa.css?v=2',
     './assets/css/pwa-update.css?v=2',
     './assets/css/pwa-install-footer.css?v=2',
     './assets/js/pwa.js?v=2',
