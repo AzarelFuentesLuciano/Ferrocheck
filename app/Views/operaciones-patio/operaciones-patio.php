@@ -9,9 +9,9 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#155474">
     <title>VASCOR OPS | Inventario de Patio</title>
-    <link rel="manifest" href="<?php echo $escape(BASE_URL); ?>/manifest.webmanifest?v=3">
-    <link rel="apple-touch-icon" href="<?php echo $escape(BASE_URL); ?>/assets/icons/vascor-ops-app-final-192.png?v=3">
-    <link rel="icon" type="image/png" href="<?php echo $escape(BASE_URL); ?>/assets/icons/vascor-ops-app-final-192.png?v=3">
+    <link rel="manifest" href="<?php echo $escape(BASE_URL); ?>/manifest.webmanifest?v=4">
+    <link rel="apple-touch-icon" href="<?php echo $escape(BASE_URL); ?>/assets/icons/vascor-ops-minimal-v4-192.png">
+    <link rel="icon" type="image/png" href="<?php echo $escape(BASE_URL); ?>/assets/icons/vascor-ops-minimal-v4-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,9 +19,9 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/importador.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/vascor-design-system.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/shell-coherence.css">
-    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa.css?v=3">
-    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-install-footer.css?v=3">
-    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-update.css?v=3">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa.css?v=4">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-install-footer.css?v=4">
+    <link rel="stylesheet" href="<?php echo $escape(BASE_URL); ?>/assets/css/pwa-update.css?v=4">
 </head>
 <body>
     <div class="dashboard-shell">
@@ -59,7 +59,7 @@ $escape = static fn(mixed $value): string => htmlspecialchars((string) $value, E
     </div>
 
     <script src="<?php echo BASE_URL; ?>/assets/js/operaciones-patio.js"></script>
-    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa.js?v=3" data-service-worker-url="<?php echo $escape(BASE_URL); ?>/service-worker.js" data-pwa-base-url="<?php echo $escape(BASE_URL); ?>/" defer></script>
-    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa-install-footer.js?v=3" defer></script>
+    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa.js?v=4" data-service-worker-url="<?php echo $escape(BASE_URL); ?>/service-worker.js" data-pwa-base-url="<?php echo $escape(BASE_URL); ?>/" defer></script>
+    <script src="<?php echo $escape(BASE_URL); ?>/assets/js/pwa-install-footer.js?v=4" defer></script>
 </body>
 </html>
