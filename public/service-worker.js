@@ -1,16 +1,17 @@
 // PWA_VERSION must stay aligned with view asset query strings and pwa-version.json.
-const PWA_VERSION = '2';
+const PWA_VERSION = '3';
 const CACHE_VERSION = `vascor-ops-v${PWA_VERSION}`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const CACHE_PREFIX = 'vascor-ops-';
 const OFFLINE_URL = './offline.html';
 const PRECACHE_RESOURCES = [
     OFFLINE_URL,
-    './manifest.webmanifest?v=2',
-    './assets/css/pwa-update.css?v=2',
-    './assets/css/pwa-install-footer.css?v=2',
-    './assets/js/pwa.js?v=2',
-    './assets/js/pwa-install-footer.js?v=2'
+    './manifest.webmanifest?v=3',
+    './assets/css/pwa.css?v=3',
+    './assets/css/pwa-update.css?v=3',
+    './assets/css/pwa-install-footer.css?v=3',
+    './assets/js/pwa.js?v=3',
+    './assets/js/pwa-install-footer.js?v=3'
 ];
 const ALWAYS_FRESH_PATHS = new Set([
     'manifest.webmanifest',

@@ -16,6 +16,7 @@
         : new URL('service-worker.js', pwaBaseUrl);
     const serviceWorkerScope = pwaBaseUrl.pathname;
     const reloadGuardKey = 'vascor-pwa-controller-reload';
+    const splashGuardKey = 'vascor-pwa-splash-shown';
     const updateCheckKey = 'vascor-pwa-last-update-check';
     const updateCheckInterval = 30 * 60 * 1000;
     const activationTimeoutMs = 12000;
@@ -53,6 +54,26 @@
     if (safeSessionGet(reloadGuardKey) === '1') {
         safeSessionRemove(reloadGuardKey);
     }
+
+    const isStandalone = () => (
+        window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true
+    );
+
+    const showSplash = () => {
+        if (!isStandalone() || safeSessionGet(splashGuardKey) === '1') return;
+        safeSessionSet(splashGuardKey, '1');
+        const splash = document.createElement('div');
+        splash.className = 'pwa-splash';
+        splash.setAttribute('role', 'status');
+        splash.setAttribute('aria-label', 'Iniciando VASCOR OPS');
+        splash.innerHTML = '<strong><span>VASCOR</span><span>OPS</span></strong>';
+        document.body.append(splash);
+        window.setTimeout(() => {
+            splash.classList.add('pwa-splash--closing');
+            window.setTimeout(() => splash.remove(), 260);
+        }, 850);
+    };
 
     const removeUpdateNotice = () => {
         updateNotice?.remove();
@@ -180,6 +201,7 @@
         window.location.reload();
     });
 
+    window.addEventListener('DOMContentLoaded', showSplash, { once: true });
     window.addEventListener('load', async () => {
         try {
             const registration = await navigator.serviceWorker.register(serviceWorkerUrl, {
