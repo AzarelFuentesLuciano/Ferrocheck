@@ -10,7 +10,8 @@
             <p>Carga los tres archivos del mismo lote. En esta fase solo se validarán y resguardarán temporalmente.</p>
         </div>
         <?php foreach ($consistUpload->messages as $message): ?>
-            <div class="rail-consist-message rail-consist-message--<?php echo $railEscape($message['type'] ?? 'error'); ?>" role="status">
+            <div class="rail-consist-message rail-consist-message--<?php echo $railEscape($message['type'] ?? 'error'); ?>"
+                 role="<?php echo ($message['type'] ?? 'error') === 'error' ? 'alert' : 'status'; ?>">
                 <?php echo $railEscape($message['message'] ?? ''); ?>
             </div>
         <?php endforeach; ?>

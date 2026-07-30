@@ -11,7 +11,7 @@ use PhpOffice\PhpSpreadsheet\Reader\IReadFilter;
 use PhpOffice\PhpSpreadsheet\Reader\IReader;
 use RuntimeException;
 
-final class ConsistVinExtractor
+class ConsistVinExtractor
 {
     private ConsistHeaderNormalizer $headerNormalizer;
 
@@ -22,7 +22,7 @@ final class ConsistVinExtractor
         $this->headerNormalizer = $headerNormalizer ?? new ConsistHeaderNormalizer();
     }
 
-    public function extract(array $file, array $definition): array
+    public function extract(array $file, array $definition, ?array $validatedHeader = null): array
     {
         $path = (string) ($file['path'] ?? '');
         if ($path === '' || !is_file($path) || !is_readable($path)) {
@@ -31,14 +31,26 @@ final class ConsistVinExtractor
 
         $readerType = (string) ($file['reader_type'] ?? IOFactory::identify($path));
         $worksheets = $this->reader($readerType, $path)->listWorksheetInfo($path);
-        $header = $this->detectHeader($readerType, $path, $worksheets, $definition['required_headers']);
+        $header = $validatedHeader
+            ?? $this->detectHeader($readerType, $path, $worksheets, $definition['required_headers']);
         if ($header === null || !isset($header['columns']['vin'])) {
             throw new RuntimeException(sprintf('No se localizó la columna VIN en %s.', $definition['label']));
         }
 
         $sheetInfo = $worksheets[$header['sheet_index']];
         $lastRow = (int) ($sheetInfo['totalRows'] ?? 0);
-        $lastColumn = Coordinate::columnIndexFromString((string) ($sheetInfo['lastColumnLetter'] ?? 'A'));
+        if ($lastRow < 1 || $lastRow > (int) ($this->configuration['max_worksheet_rows'] ?? 250000)) {
+            throw new RuntimeException(sprintf('%s reporta dimensiones no válidas.', $definition['label']));
+        }
+        try {
+            $lastColumn = Coordinate::columnIndexFromString((string) ($sheetInfo['lastColumnLetter'] ?? 'A'));
+        } catch (\Throwable) {
+            throw new RuntimeException(sprintf('%s reporta columnas no válidas.', $definition['label']));
+        }
+        $maxColumns = max(1, (int) ($this->configuration['header_scan_max_columns'] ?? 100));
+        if ($lastColumn < 1 || $lastColumn > $maxColumns) {
+            throw new RuntimeException(sprintf('%s reporta dimensiones de columnas no válidas.', $definition['label']));
+        }
         $vinColumn = (int) $header['columns']['vin'];
         $chunkSize = max(1, (int) $this->configuration['chunk_rows']);
         $vins = [];
@@ -49,35 +61,41 @@ final class ConsistVinExtractor
 
         for ($start = $header['row'] + 1; $start <= $lastRow; $start += $chunkSize) {
             $end = min($lastRow, $start + $chunkSize - 1);
-            $spreadsheet = $this->loadRange($readerType, $path, $header['sheet'], $start, $end);
-            $sheet = $spreadsheet->getSheetByName($header['sheet']) ?? $spreadsheet->getActiveSheet();
-            for ($row = $start; $row <= $end; $row++) {
-                $rowEmpty = true;
-                for ($column = 1; $column <= $lastColumn; $column++) {
-                    if (trim((string) $sheet->getCell([$column, $row])->getFormattedValue()) !== '') {
-                        $rowEmpty = false;
-                        break;
+            $spreadsheet = null;
+            try {
+                $spreadsheet = $this->loadRange($readerType, $path, $header['sheet'], $start, $end, $lastColumn);
+                $sheet = $spreadsheet->getSheetByName($header['sheet']) ?? $spreadsheet->getActiveSheet();
+                for ($row = $start; $row <= $end; $row++) {
+                    $rowEmpty = true;
+                    for ($column = 1; $column <= $lastColumn; $column++) {
+                        if (trim((string) $sheet->getCell([$column, $row])->getFormattedValue()) !== '') {
+                            $rowEmpty = false;
+                            break;
+                        }
                     }
-                }
-                if ($rowEmpty) {
-                    $emptyRows++;
-                    continue;
-                }
+                    if ($rowEmpty) {
+                        $emptyRows++;
+                        continue;
+                    }
 
-                $vin = $this->normalizeVin($sheet->getCell([$vinColumn, $row])->getFormattedValue());
-                if ($vin === '') {
-                    $emptyVins++;
-                    continue;
+                    $vin = $this->normalizeVin($sheet->getCell([$vinColumn, $row])->getFormattedValue());
+                    if ($vin === '') {
+                        $emptyVins++;
+                        continue;
+                    }
+                    $validRecords++;
+                    if (isset($vins[$vin])) {
+                        $duplicates[$vin] = ($duplicates[$vin] ?? 0) + 1;
+                        continue;
+                    }
+                    $vins[$vin] = true;
                 }
-                $validRecords++;
-                if (isset($vins[$vin])) {
-                    $duplicates[$vin] = ($duplicates[$vin] ?? 0) + 1;
-                    continue;
+            } finally {
+                if ($spreadsheet !== null) {
+                    $spreadsheet->disconnectWorksheets();
                 }
-                $vins[$vin] = true;
+                unset($spreadsheet);
             }
-            $spreadsheet->disconnectWorksheets();
-            unset($spreadsheet);
         }
 
         return [
@@ -104,28 +122,37 @@ final class ConsistVinExtractor
         $scanRows = max(1, (int) $this->configuration['header_scan_rows']);
         foreach ($worksheets as $sheetIndex => $info) {
             $sheetName = (string) ($info['worksheetName'] ?? '');
-            $lastColumn = Coordinate::columnIndexFromString((string) ($info['lastColumnLetter'] ?? 'A'));
+            $lastColumn = min(
+                Coordinate::columnIndexFromString((string) ($info['lastColumnLetter'] ?? 'A')),
+                max(1, (int) ($this->configuration['header_scan_max_columns'] ?? 100)),
+            );
             $lastRow = min($scanRows, (int) ($info['totalRows'] ?? 0));
-            $spreadsheet = $this->loadRange($readerType, $path, $sheetName, 1, $lastRow);
-            $sheet = $spreadsheet->getSheetByName($sheetName) ?? $spreadsheet->getActiveSheet();
-            for ($row = 1; $row <= $lastRow; $row++) {
-                $columns = [];
-                foreach ($required as $canonical => $aliases) {
-                    $normalizedAliases = array_map([$this, 'normalizeHeader'], $aliases);
-                    for ($column = 1; $column <= $lastColumn; $column++) {
-                        $candidate = $this->normalizeHeader($sheet->getCell([$column, $row])->getFormattedValue());
-                        if ($candidate !== '' && in_array($candidate, $normalizedAliases, true)) {
-                            $columns[$canonical] = $column;
-                            break;
+            $spreadsheet = null;
+            try {
+                $spreadsheet = $this->loadRange($readerType, $path, $sheetName, 1, $lastRow, $lastColumn);
+                $sheet = $spreadsheet->getSheetByName($sheetName) ?? $spreadsheet->getActiveSheet();
+                for ($row = 1; $row <= $lastRow; $row++) {
+                    $columns = [];
+                    foreach ($required as $canonical => $aliases) {
+                        $normalizedAliases = array_map([$this, 'normalizeHeader'], $aliases);
+                        for ($column = 1; $column <= $lastColumn; $column++) {
+                            $candidate = $this->normalizeHeader($sheet->getCell([$column, $row])->getFormattedValue());
+                            if ($candidate !== '' && in_array($candidate, $normalizedAliases, true)) {
+                                $columns[$canonical] = $column;
+                                break;
+                            }
                         }
                     }
+                    if (isset($columns['vin'])) {
+                        return ['sheet_index' => $sheetIndex, 'sheet' => $sheetName, 'row' => $row, 'columns' => $columns];
+                    }
                 }
-                if (isset($columns['vin'])) {
+            } finally {
+                if ($spreadsheet !== null) {
                     $spreadsheet->disconnectWorksheets();
-                    return ['sheet_index' => $sheetIndex, 'sheet' => $sheetName, 'row' => $row, 'columns' => $columns];
                 }
+                unset($spreadsheet);
             }
-            $spreadsheet->disconnectWorksheets();
         }
         return null;
     }
@@ -135,11 +162,18 @@ final class ConsistVinExtractor
         return $this->headerNormalizer->normalize($value);
     }
 
-    private function loadRange(string $readerType, string $path, string $sheet, int $start, int $end): \PhpOffice\PhpSpreadsheet\Spreadsheet
+    private function loadRange(
+        string $readerType,
+        string $path,
+        string $sheet,
+        int $start,
+        int $end,
+        int $maxColumn,
+    ): \PhpOffice\PhpSpreadsheet\Spreadsheet
     {
         $reader = $this->reader($readerType, $path);
         $reader->setLoadSheetsOnly([$sheet]);
-        $reader->setReadFilter(new ConsistVinReadFilter($start, $end));
+        $reader->setReadFilter(new ConsistVinReadFilter($start, $end, $maxColumn));
         $reader->setReadDataOnly(true);
         return $reader->load($path);
     }
@@ -169,12 +203,23 @@ final class ConsistVinExtractor
 
 final class ConsistVinReadFilter implements IReadFilter
 {
-    public function __construct(private int $startRow, private int $endRow)
-    {
+    public function __construct(
+        private int $startRow,
+        private int $endRow,
+        private int $maxColumn,
+    ) {
     }
 
     public function readCell(string $columnAddress, int $row, string $worksheetName = ''): bool
     {
-        return $row >= $this->startRow && $row <= $this->endRow;
+        if ($row < $this->startRow || $row > $this->endRow) {
+            return false;
+        }
+
+        try {
+            return Coordinate::columnIndexFromString($columnAddress) <= $this->maxColumn;
+        } catch (\Throwable) {
+            return false;
+        }
     }
 }

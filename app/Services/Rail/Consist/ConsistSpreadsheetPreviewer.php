@@ -9,36 +9,40 @@ use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\IReadFilter;
 use PhpOffice\PhpSpreadsheet\Reader\IReader;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use RuntimeException;
 
-final class ConsistSpreadsheetPreviewer
+class ConsistSpreadsheetPreviewer
 {
     private ConsistHeaderNormalizer $headerNormalizer;
-    private ConsistFileTypeDetector $fileTypeDetector;
 
     public function __construct(
         private array $configuration,
         ?ConsistHeaderNormalizer $headerNormalizer = null,
-        ?ConsistFileTypeDetector $fileTypeDetector = null,
     ) {
         $this->headerNormalizer = $headerNormalizer ?? new ConsistHeaderNormalizer();
-        $this->fileTypeDetector = $fileTypeDetector
-            ?? new ConsistFileTypeDetector($configuration, $this->headerNormalizer);
     }
 
-    public function previewBatch(array $stagedFiles): array
+    public function previewBatch(array $stagedFiles, ?array $validatedIdentities = null): array
     {
+        $validatedIdentities ??= (new ConsistSpreadsheetIdentityValidator(
+            $this->configuration,
+            $this->headerNormalizer,
+        ))->validateBatch($stagedFiles);
         $files = [];
-        $valid = true;
         foreach ($this->configuration['files'] as $field => $definition) {
-            if (!isset($stagedFiles[$field])) {
-                throw new RuntimeException(sprintf('No existe el archivo temporal %s.', $definition['label']));
+            if (!isset($stagedFiles[$field], $validatedIdentities[$field])) {
+                throw new ConsistUploadValidationException(
+                    sprintf('No fue posible validar el archivo temporal %s.', $definition['label']),
+                );
             }
-            $files[$field] = $this->previewFile($field, $stagedFiles[$field], $definition);
-            $valid = $valid && $files[$field]['valid'];
+            $files[$field] = $this->previewFile(
+                $field,
+                $stagedFiles[$field],
+                $definition,
+                $validatedIdentities[$field],
+            );
         }
 
-        return ['valid' => $valid, 'files' => $files];
+        return ['valid' => true, 'files' => $files];
     }
 
     public function normalizeHeader(mixed $value): string
@@ -51,40 +55,40 @@ final class ConsistSpreadsheetPreviewer
         return mb_strtoupper(trim((string) $value), 'UTF-8');
     }
 
-    private function previewFile(string $expectedType, array $file, array $definition): array
+    private function previewFile(string $expectedType, array $file, array $definition, array $header): array
     {
         $path = (string) $file['path'];
         $readerType = (string) $file['reader_type'];
         $reader = $this->reader($readerType, $path);
         $worksheets = $reader->listWorksheetInfo($path);
-        $required = $definition['required_headers'];
-        $header = $this->detectHeader($readerType, $path, $worksheets);
-        $typeDetection = $header !== null
-            ? $this->fileTypeDetector->detect($expectedType, $header['headers'])
-            : null;
-        $expectedColumns = $header !== null
-            ? $this->matchRequiredColumns($header['normalized'], $header['original'], $required)
-            : ['columns' => [], 'found' => [], 'missing' => array_keys($required)];
+        unset($reader);
+        $detection = $header['detection'] ?? [];
 
         $result = [
             'label' => $definition['label'],
             'original_name' => $file['original_name'],
             'extension' => $file['extension'],
             'detected_type' => $readerType,
-            'detected_file_type' => $typeDetection?->detectedType,
+            'detected_file_type' => $detection['detected_type'] ?? null,
             'expected_file_type' => $expectedType,
             'mime' => $file['mime'],
             'size' => $file['size'],
             'sheet' => $header['sheet'] ?? null,
             'header_row' => $header['row'] ?? null,
-            'found_columns' => $expectedColumns['found'],
-            'missing_required' => $expectedColumns['missing'],
-            'identity_matches' => $typeDetection?->matches ?? [],
-            'matched_identity_headers' => $typeDetection?->matchedIdentityHeaders ?? 0,
-            'total_identity_headers' => $typeDetection?->totalIdentityHeaders ?? count($definition['identity_headers'] ?? []),
-            'missing_identity_headers' => $typeDetection?->missingIdentityHeaders ?? ($definition['identity_headers'] ?? []),
-            'identity_ambiguous' => $typeDetection?->isAmbiguous ?? false,
-            'identity_unknown' => $typeDetection?->isUnknown ?? true,
+            'validated_header' => [
+                'sheet_index' => $header['sheet_index'],
+                'sheet' => $header['sheet'],
+                'row' => $header['row'],
+                'columns' => $header['columns'],
+            ],
+            'found_columns' => $header['found'] ?? [],
+            'missing_required' => [],
+            'identity_matches' => $detection['matches'] ?? [],
+            'matched_identity_headers' => $detection['matched_identity_headers'] ?? 0,
+            'total_identity_headers' => $detection['total_identity_headers'] ?? count($definition['identity_headers'] ?? []),
+            'missing_identity_headers' => $detection['missing_identity_headers'] ?? [],
+            'identity_ambiguous' => false,
+            'identity_unknown' => false,
             'empty_rows' => 0,
             'empty_vin' => 0,
             'duplicate_vin' => 0,
@@ -93,163 +97,101 @@ final class ConsistSpreadsheetPreviewer
             'sample' => [],
             'valid' => false,
         ];
-        if ($header === null || $result['missing_required'] !== []) {
-            $result['errors'][] = 'No se encontró una columna VIN reconocible.';
-            return $result;
+        $sheetInfo = $worksheets[$header['sheet_index']] ?? null;
+        if (!is_array($sheetInfo)) {
+            throw new ConsistUploadValidationException(
+                sprintf('La primera hoja de “%s” no tiene una estructura válida.', $definition['label']),
+            );
         }
-        if ($typeDetection === null || !$typeDetection->isValid) {
-            $result['errors'][] = $this->identityErrorMessage($definition, $typeDetection);
-            return $result;
-        }
-
-        $sheetInfo = $worksheets[$header['sheet_index']];
         $lastRow = (int) ($sheetInfo['totalRows'] ?? 0);
-        $lastColumnIndex = Coordinate::columnIndexFromString((string) ($sheetInfo['lastColumnLetter'] ?? 'A'));
-        $vinColumn = (int) $expectedColumns['columns']['vin'];
+        if ($lastRow < 1 || $lastRow > (int) ($this->configuration['max_worksheet_rows'] ?? 250000)) {
+            throw new ConsistUploadValidationException(
+                sprintf('El archivo cargado en “%s” reporta dimensiones no válidas.', $definition['label']),
+            );
+        }
+        try {
+            $reportedLastColumn = Coordinate::columnIndexFromString((string) ($sheetInfo['lastColumnLetter'] ?? 'A'));
+        } catch (\Throwable) {
+            throw new ConsistUploadValidationException(
+                sprintf('El archivo cargado en “%s” reporta columnas no válidas.', $definition['label']),
+            );
+        }
+        $maxColumns = max(1, (int) ($this->configuration['header_scan_max_columns'] ?? 100));
+        if ($reportedLastColumn < 1 || $reportedLastColumn > $maxColumns) {
+            throw new ConsistUploadValidationException(
+                sprintf('El archivo cargado en “%s” reporta dimensiones de columnas no válidas.', $definition['label']),
+            );
+        }
+        $lastColumnIndex = $reportedLastColumn;
+        $vinColumn = (int) $header['columns']['vin'];
+        if ($vinColumn < 1 || $vinColumn > $lastColumnIndex) {
+            throw new ConsistUploadValidationException(
+                sprintf('El archivo cargado en “%s” reporta una columna VIN no válida.', $definition['label']),
+            );
+        }
         $seen = [];
         $chunkSize = max(1, (int) $this->configuration['chunk_rows']);
 
         for ($start = $header['row'] + 1; $start <= $lastRow; $start += $chunkSize) {
             $end = min($lastRow, $start + $chunkSize - 1);
-            $spreadsheet = $this->loadRange($readerType, $path, $header['sheet'], $start, $end);
-            $sheet = $spreadsheet->getSheetByName($header['sheet']) ?? $spreadsheet->getActiveSheet();
-            for ($row = $start; $row <= $end; $row++) {
-                $values = [];
-                $isEmpty = true;
-                for ($column = 1; $column <= $lastColumnIndex; $column++) {
-                    $value = trim((string) $sheet->getCell([$column, $row])->getFormattedValue());
-                    $values[$column] = $value;
-                    $isEmpty = $isEmpty && $value === '';
-                }
-                if ($isEmpty) {
-                    $result['empty_rows']++;
-                    continue;
-                }
+            $spreadsheet = null;
+            try {
+                $spreadsheet = $this->loadRange($readerType, $path, $header['sheet'], $start, $end, $lastColumnIndex);
+                $sheet = $spreadsheet->getSheetByName($header['sheet']) ?? $spreadsheet->getActiveSheet();
+                for ($row = $start; $row <= $end; $row++) {
+                    $values = [];
+                    $isEmpty = true;
+                    for ($column = 1; $column <= $lastColumnIndex; $column++) {
+                        $value = trim((string) $sheet->getCell([$column, $row])->getFormattedValue());
+                        $values[$column] = $value;
+                        $isEmpty = $isEmpty && $value === '';
+                    }
+                    if ($isEmpty) {
+                        $result['empty_rows']++;
+                        continue;
+                    }
 
-                $vin = $this->normalizeVin($values[$vinColumn] ?? '');
-                if ($vin === '') {
-                    $result['empty_vin']++;
-                    $this->addError($result['errors'], sprintf('Fila %d: VIN vacío.', $row));
-                    continue;
+                    $vin = $this->normalizeVin($values[$vinColumn] ?? '');
+                    if ($vin === '') {
+                        $result['empty_vin']++;
+                        $this->addError($result['errors'], sprintf('Fila %d: VIN vacío.', $row));
+                        continue;
+                    }
+                    if (isset($seen[$vin])) {
+                        $result['duplicate_vin']++;
+                        $this->addError($result['errors'], sprintf('Fila %d: VIN duplicado %s.', $row, $vin));
+                        continue;
+                    }
+                    $seen[$vin] = true;
+                    $result['valid_records']++;
+                    if (count($result['sample']) < (int) $this->configuration['sample_limit']) {
+                        $result['sample'][] = ['row' => $row, 'vin' => $vin];
+                    }
                 }
-                if (isset($seen[$vin])) {
-                    $result['duplicate_vin']++;
-                    $this->addError($result['errors'], sprintf('Fila %d: VIN duplicado %s.', $row, $vin));
-                    continue;
+            } finally {
+                if ($spreadsheet !== null) {
+                    $spreadsheet->disconnectWorksheets();
                 }
-                $seen[$vin] = true;
-                $result['valid_records']++;
-                if (count($result['sample']) < (int) $this->configuration['sample_limit']) {
-                    $result['sample'][] = ['row' => $row, 'vin' => $vin];
-                }
+                unset($spreadsheet);
             }
-            $spreadsheet->disconnectWorksheets();
-            unset($spreadsheet);
         }
 
-        $result['valid'] = $result['missing_required'] === [] && $typeDetection->isValid;
+        $result['valid'] = true;
         return $result;
     }
 
-    private function detectHeader(string $readerType, string $path, array $worksheets): ?array
-    {
-        $configuredAliases = $this->configuration['vin_aliases'] ?? ['vin'];
-        foreach ($this->configuration['files'] ?? [] as $definition) {
-            $configuredAliases = [
-                ...$configuredAliases,
-                ...($definition['required_headers']['vin'] ?? []),
-            ];
-        }
-        $vinAliases = array_values(array_unique(array_map(
-            fn (mixed $alias): string => $this->normalizeHeader($alias),
-            $configuredAliases,
-        )));
-        $scanRows = max(1, (int) $this->configuration['header_scan_rows']);
-        foreach ($worksheets as $sheetIndex => $info) {
-            $sheetName = (string) ($info['worksheetName'] ?? '');
-            $lastColumnIndex = Coordinate::columnIndexFromString((string) ($info['lastColumnLetter'] ?? 'A'));
-            $lastRow = min($scanRows, (int) ($info['totalRows'] ?? 0));
-            $spreadsheet = $this->loadRange($readerType, $path, $sheetName, 1, $lastRow);
-            $sheet = $spreadsheet->getSheetByName($sheetName) ?? $spreadsheet->getActiveSheet();
-            for ($row = 1; $row <= $lastRow; $row++) {
-                $normalized = [];
-                $original = [];
-                for ($column = 1; $column <= $lastColumnIndex; $column++) {
-                    $raw = trim((string) $sheet->getCell([$column, $row])->getFormattedValue());
-                    $original[$column] = $raw;
-                    $normalized[$column] = $this->normalizeHeader($raw);
-                }
-                if (array_intersect($vinAliases, $normalized) !== []) {
-                    $spreadsheet->disconnectWorksheets();
-                    return [
-                        'sheet_index' => $sheetIndex,
-                        'sheet' => $sheetName,
-                        'row' => $row,
-                        'headers' => array_values($original),
-                        'original' => $original,
-                        'normalized' => $normalized,
-                    ];
-                }
-            }
-            $spreadsheet->disconnectWorksheets();
-        }
-
-        return null;
-    }
-
-    private function matchRequiredColumns(array $normalized, array $original, array $required): array
-    {
-        $columns = [];
-        $found = [];
-        foreach ($required as $canonical => $aliases) {
-            $normalizedAliases = array_map(fn (mixed $alias): string => $this->normalizeHeader($alias), $aliases);
-            foreach ($normalized as $column => $candidate) {
-                if ($candidate !== '' && in_array($candidate, $normalizedAliases, true)) {
-                    $columns[$canonical] = $column;
-                    $found[$canonical] = $original[$column];
-                    break;
-                }
-            }
-        }
-
-        return [
-            'columns' => $columns,
-            'found' => $found,
-            'missing' => array_values(array_diff(array_keys($required), array_keys($columns))),
-        ];
-    }
-
-    private function identityErrorMessage(array $expectedDefinition, ?ConsistFileTypeDetection $detection): string
-    {
-        $expectedLabel = (string) ($expectedDefinition['label'] ?? 'archivo');
-        if ($detection?->isAmbiguous) {
-            return 'No fue posible identificar de forma segura el tipo del archivo cargado.';
-        }
-        if ($detection === null || $detection->isUnknown) {
-            return sprintf(
-                'El archivo cargado en “%s” no coincide con ninguna estructura reconocida. Verifique que sea el archivo original generado por el sistema correspondiente.',
-                $expectedLabel,
-            );
-        }
-
-        $detectedLabel = (string) (
-            $this->configuration['files'][$detection->detectedType]['label']
-            ?? $detection->detectedType
-            ?? 'otro tipo'
-        );
-
-        return sprintf(
-            'El archivo cargado en “%s” no corresponde al formato esperado. El sistema detectó que parece ser un archivo “%s”. Seleccione el archivo correcto y vuelva a intentarlo.',
-            $expectedLabel,
-            $detectedLabel,
-        );
-    }
-
-    private function loadRange(string $readerType, string $path, string $sheet, int $start, int $end): \PhpOffice\PhpSpreadsheet\Spreadsheet
+    private function loadRange(
+        string $readerType,
+        string $path,
+        string $sheet,
+        int $start,
+        int $end,
+        int $maxColumn,
+    ): \PhpOffice\PhpSpreadsheet\Spreadsheet
     {
         $reader = $this->reader($readerType, $path);
         $reader->setLoadSheetsOnly([$sheet]);
-        $reader->setReadFilter(new ConsistChunkReadFilter($start, $end));
+        $reader->setReadFilter(new ConsistChunkReadFilter($start, $end, $maxColumn));
         $reader->setReadDataOnly(true);
         return $reader->load($path);
     }
@@ -287,12 +229,23 @@ final class ConsistSpreadsheetPreviewer
 
 final class ConsistChunkReadFilter implements IReadFilter
 {
-    public function __construct(private int $startRow, private int $endRow)
-    {
+    public function __construct(
+        private int $startRow,
+        private int $endRow,
+        private int $maxColumn,
+    ) {
     }
 
     public function readCell(string $columnAddress, int $row, string $worksheetName = ''): bool
     {
-        return $row >= $this->startRow && $row <= $this->endRow;
+        if ($row < $this->startRow || $row > $this->endRow) {
+            return false;
+        }
+
+        try {
+            return Coordinate::columnIndexFromString($columnAddress) <= $this->maxColumn;
+        } catch (\Throwable) {
+            return false;
+        }
     }
 }

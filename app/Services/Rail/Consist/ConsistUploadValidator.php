@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Rail\Consist;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use RuntimeException;
 
 final class ConsistUploadValidator
 {
@@ -25,30 +24,30 @@ final class ConsistUploadValidator
         foreach ($this->configuration['files'] as $field => $definition) {
             $file = $files[$field] ?? null;
             if (!is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-                throw new RuntimeException(sprintf('El archivo %s es obligatorio.', $definition['label']));
+                throw new ConsistUploadValidationException(sprintf('El archivo %s es obligatorio.', $definition['label']));
             }
             if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
-                throw new RuntimeException(sprintf('No fue posible recibir %s.', $definition['label']));
+                throw new ConsistUploadValidationException(sprintf('No fue posible recibir %s.', $definition['label']));
             }
 
             $temporaryPath = (string) ($file['tmp_name'] ?? '');
             if ($temporaryPath === '' || !is_file($temporaryPath) || !is_readable($temporaryPath)) {
-                throw new RuntimeException(sprintf('El archivo temporal de %s no es válido.', $definition['label']));
+                throw new ConsistUploadValidationException(sprintf('El archivo temporal de %s no es válido.', $definition['label']));
             }
             if (!(($this->uploadedFileCheck)($temporaryPath))) {
-                throw new RuntimeException(sprintf('La carga de %s no fue recibida por HTTP.', $definition['label']));
+                throw new ConsistUploadValidationException(sprintf('La carga de %s no fue recibida por HTTP.', $definition['label']));
             }
 
             $size = (int) ($file['size'] ?? filesize($temporaryPath));
             if ($size <= 0 || $size > (int) $this->configuration['max_file_size']) {
-                throw new RuntimeException(sprintf('%s excede el límite permitido o está vacío.', $definition['label']));
+                throw new ConsistUploadValidationException(sprintf('%s excede el límite permitido o está vacío.', $definition['label']));
             }
             $totalSize += $size;
 
             $originalName = basename((string) ($file['name'] ?? ''));
             $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
             if (!in_array($extension, $this->configuration['allowed_extensions'], true)) {
-                throw new RuntimeException(sprintf('%s debe ser XLSX, XLS o CSV.', $definition['label']));
+                throw new ConsistUploadValidationException(sprintf('%s debe ser XLSX, XLS o CSV.', $definition['label']));
             }
 
             $mime = (new \finfo(FILEINFO_MIME_TYPE))->file($temporaryPath) ?: 'application/octet-stream';
@@ -58,12 +57,12 @@ final class ConsistUploadValidator
                 'csv' => ['text/plain', 'text/csv', 'application/csv', 'text/x-csv', 'application/vnd.ms-excel'],
             ];
             if (!in_array($mime, $allowedMimes[$extension], true)) {
-                throw new RuntimeException(sprintf('El tipo MIME de %s no está permitido.', $definition['label']));
+                throw new ConsistUploadValidationException(sprintf('El tipo MIME de %s no está permitido.', $definition['label']));
             }
             $readerType = IOFactory::identify($temporaryPath);
             $expectedReader = ['xlsx' => 'Xlsx', 'xls' => 'Xls', 'csv' => 'Csv'][$extension];
             if ($readerType !== $expectedReader) {
-                throw new RuntimeException(sprintf('El contenido de %s no coincide con su extensión.', $definition['label']));
+                throw new ConsistUploadValidationException(sprintf('El contenido de %s no coincide con su extensión.', $definition['label']));
             }
 
             $validated[$field] = [
@@ -79,7 +78,7 @@ final class ConsistUploadValidator
         }
 
         if ($totalSize > (int) $this->configuration['max_batch_size']) {
-            throw new RuntimeException('El lote supera el límite total permitido.');
+            throw new ConsistUploadValidationException('El lote supera el límite total permitido.');
         }
 
         return $validated;

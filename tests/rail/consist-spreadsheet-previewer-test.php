@@ -5,6 +5,7 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 use App\Services\Rail\Consist\ConsistSpreadsheetPreviewer;
+use App\Services\Rail\Consist\ConsistUploadValidationException;
 
 $configuration = require dirname(__DIR__, 2) . '/config/consist-rail-import.php';
 $passed = 0;
@@ -49,20 +50,25 @@ $test('normaliza encabezados con acentos, espacios y slash', static fn (): bool 
 $withoutVin = $makeCsv("InvoiceNo;NumRemesa;BrokerId;H/SCODE\nfac;rem;bro;hs\n");
 $invalidBatch = $batch;
 $invalidBatch['cnacs'] = $meta('cnacs', $withoutVin);
-$invalidPreview = $previewer->previewBatch($invalidBatch);
-$test('rechaza archivo sin VIN', static fn (): bool =>
-    $invalidPreview['valid'] === false
-    && str_contains($invalidPreview['files']['cnacs']['errors'][0] ?? '', 'VIN')
-);
+$test('rechaza archivo sin VIN antes de generar vista previa', static function () use ($previewer, $invalidBatch): bool {
+    try {
+        $previewer->previewBatch($invalidBatch);
+    } catch (ConsistUploadValidationException $exception) {
+        return str_contains($exception->getMessage(), 'VIN');
+    }
+    return false;
+});
 
 $swappedBatch = $batch;
 $swappedBatch['shippers'] = $meta('shippers', $paths['cnacs']);
-$swappedPreview = $previewer->previewBatch($swappedBatch);
-$test('rechaza CNACS cargado en Shippers con mensaje específico', static fn (): bool =>
-    $swappedPreview['valid'] === false
-    && $swappedPreview['files']['shippers']['detected_file_type'] === 'cnacs'
-    && str_contains($swappedPreview['files']['shippers']['errors'][0] ?? '', 'parece ser un archivo “CNACS”')
-);
+$test('rechaza CNACS cargado en Shippers con mensaje específico', static function () use ($previewer, $swappedBatch): bool {
+    try {
+        $previewer->previewBatch($swappedBatch);
+    } catch (ConsistUploadValidationException $exception) {
+        return str_contains($exception->getMessage(), 'parece ser un archivo “CNACS”');
+    }
+    return false;
+});
 
 foreach ([...array_values($paths), $withoutVin] as $path) {
     unlink($path);

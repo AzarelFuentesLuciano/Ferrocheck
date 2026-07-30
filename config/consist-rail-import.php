@@ -19,6 +19,8 @@ return [
     'max_batch_size' => 30 * 1024 * 1024,
     'expires_seconds' => 30 * 60,
     'header_scan_rows' => 50,
+    'header_scan_max_columns' => 100,
+    'max_worksheet_rows' => 250000,
     'chunk_rows' => 500,
     'sample_limit' => 20,
     'analysis_sample_limit' => 50,

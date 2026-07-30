@@ -11,7 +11,9 @@ use App\Core\Rendering\RenderContext;
 use App\Services\ModuleNavigationBuilder;
 use App\Services\Rail\Consist\ConsistAnalysisResultStore;
 use App\Services\Rail\Consist\ConsistSpreadsheetPreviewer;
+use App\Services\Rail\Consist\ConsistSpreadsheetIdentityValidator;
 use App\Services\Rail\Consist\ConsistTemporaryUploadStore;
+use App\Services\Rail\Consist\ConsistUploadValidationException;
 use App\Services\Rail\Consist\ConsistUploadValidator;
 use App\Services\Rail\Consist\ConsistVinCrossAnalyzer;
 use App\Services\Rail\Consist\ConsistVinExtractor;
@@ -40,6 +42,7 @@ final class RailController
         private ?ConsistVinExtractor $vinExtractor = null,
         private ?ConsistVinCrossAnalyzer $vinCrossAnalyzer = null,
         private ?ConsistAnalysisResultStore $analysisResultStore = null,
+        private ?ConsistSpreadsheetIdentityValidator $identityValidator = null,
     ) {
         $this->baseUrl = $baseUrl !== null
             ? rtrim($baseUrl, '/')
@@ -74,7 +77,8 @@ final class RailController
             $validated = $this->uploadValidator->validateBatch($files);
             $staged = $this->temporaryStore->stageBatch($validated);
             $stagedToken = (string) $staged['token'];
-            $preview = $this->spreadsheetPreviewer->previewBatch($staged['files']);
+            $identities = $this->identityValidator()->validateBatch($staged['files']);
+            $preview = $this->spreadsheetPreviewer->previewBatch($staged['files'], $identities);
             $this->temporaryStore->savePreview($stagedToken, $preview);
             $this->csrf->rotate();
             $this->flashStore->add(
@@ -84,6 +88,14 @@ final class RailController
                     : 'La carga fue procesada, pero contiene errores que impiden continuar.',
             );
             $redirect .= '&preview=' . rawurlencode($stagedToken);
+        } catch (ConsistUploadValidationException $exception) {
+            if ($stagedToken !== null) {
+                $this->temporaryStore->discard($stagedToken);
+            }
+            $this->flashStore->add(
+                'error',
+                'No se pudo validar el lote. ' . $exception->getMessage(),
+            );
         } catch (Throwable $exception) {
             if ($stagedToken !== null) {
                 $this->temporaryStore->discard($stagedToken);
@@ -267,6 +279,13 @@ final class RailController
         return $this->baseUrl . '/index.php?modulo=rail&seccion=consist-rail&subseccion=registrar';
     }
 
+    private function identityValidator(): ConsistSpreadsheetIdentityValidator
+    {
+        return $this->identityValidator ??= new ConsistSpreadsheetIdentityValidator(
+            $this->importConfiguration(),
+        );
+    }
+
     private function importConfiguration(): array
     {
         $configuration = require dirname(__DIR__, 3) . '/config/consist-rail-import.php';
@@ -295,7 +314,12 @@ final class RailController
             if (!isset($entry['files'][$field])) {
                 throw new RuntimeException(sprintf('Falta el archivo %s en el lote.', $definition['label']));
             }
-            $extracted[$field] = $this->vinExtractor->extract($entry['files'][$field], $definition);
+            $validatedHeader = $preview['files'][$field]['validated_header'] ?? null;
+            $extracted[$field] = $this->vinExtractor->extract(
+                $entry['files'][$field],
+                $definition,
+                is_array($validatedHeader) ? $validatedHeader : null,
+            );
         }
         $result = $this->vinCrossAnalyzer->analyze(
             $extracted['vehicle_load_report'],
