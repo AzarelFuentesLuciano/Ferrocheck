@@ -13,8 +13,13 @@ use RuntimeException;
 
 final class ConsistVinExtractor
 {
-    public function __construct(private array $configuration)
-    {
+    private ConsistHeaderNormalizer $headerNormalizer;
+
+    public function __construct(
+        private array $configuration,
+        ?ConsistHeaderNormalizer $headerNormalizer = null,
+    ) {
+        $this->headerNormalizer = $headerNormalizer ?? new ConsistHeaderNormalizer();
     }
 
     public function extract(array $file, array $definition): array
@@ -127,11 +132,7 @@ final class ConsistVinExtractor
 
     private function normalizeHeader(mixed $value): string
     {
-        $header = str_replace(["\xEF\xBB\xBF", "\xC2\xA0"], ['', ' '], trim((string) $value));
-        $header = mb_strtolower($header, 'UTF-8');
-        $header = strtr($header, ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n','ç'=>'c']);
-        $header = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $header) ?: $header;
-        return trim(preg_replace('/\s+/', ' ', preg_replace('/[^a-z0-9]+/', ' ', $header) ?? '') ?? '');
+        return $this->headerNormalizer->normalize($value);
     }
 
     private function loadRange(string $readerType, string $path, string $sheet, int $start, int $end): \PhpOffice\PhpSpreadsheet\Spreadsheet

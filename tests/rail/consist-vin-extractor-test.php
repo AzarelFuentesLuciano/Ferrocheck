@@ -27,7 +27,7 @@ foreach (['Xlsx'=>Xlsx::class, 'Xls'=>Xls::class, 'Csv'=>Csv::class] as $type =>
     $sheet->fromArray([
         ['Reporte introductorio'],
         ['Fecha', 'sin encabezado'],
-        ['Vehicle Identification Number', 'Dato'],
+        ['VIN', 'Dato'],
         [' abc123 ', 'uno'],
         ['ABC123', 'duplicado'],
         ['', 'sin vin'],

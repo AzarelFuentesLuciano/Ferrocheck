@@ -61,7 +61,12 @@ $paths = [];
 $files = [];
 foreach (['vehicle_load_report', 'shippers', 'cnacs'] as $field) {
     $path = tempnam(sys_get_temp_dir(), 'crf_');
-    file_put_contents($path, "Notas\nVIN\n " . strtoupper($field) . " \n");
+    $headers = [
+        'vehicle_load_report' => 'fdWholeVIN,fdTransportationName1,fdLoadId,fdTrack,fdDestinationLocation',
+        'shippers' => 'fdWholeVIN1,fdPedimentoType,fdPortCode,fdBillNumber,fdBillDate',
+        'cnacs' => 'VIN,InvoiceNo,NumRemesa,BrokerId,H/SCODE',
+    ];
+    file_put_contents($path, "Notas\n{$headers[$field]}\n" . strtoupper($field) . ",uno,dos,tres,cuatro\n");
     $paths[] = $path;
     $files[$field] = ['name'=>$field . '.csv','tmp_name'=>$path,'size'=>filesize($path),'error'=>UPLOAD_ERR_OK];
 }

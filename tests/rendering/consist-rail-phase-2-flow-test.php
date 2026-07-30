@@ -66,7 +66,14 @@ $makeFiles = static function (bool $valid) use (&$paths): array {
     $files = [];
     foreach ($values as $field => $vins) {
         $path = tempnam(sys_get_temp_dir(), 'phase2_file_');
-        file_put_contents($path, ($valid ? "VIN\n" : "OTRA\n") . implode("\n", $vins) . "\n");
+        $headers = [
+            'vehicle_load_report' => 'fdWholeVIN,fdTransportationName1,fdLoadId,fdTrack,fdDestinationLocation',
+            'shippers' => 'fdWholeVIN1,fdPedimentoType,fdPortCode,fdBillNumber,fdBillDate',
+            'cnacs' => 'VIN,InvoiceNo,NumRemesa,BrokerId,H/SCODE',
+        ];
+        $header = $valid ? $headers[$field] : 'OTRA,DATO1,DATO2,DATO3,DATO4';
+        $rows = array_map(static fn (string $vin): string => "{$vin},uno,dos,tres,cuatro", $vins);
+        file_put_contents($path, $header . "\n" . implode("\n", $rows) . "\n");
         $paths[] = $path;
         $files[$field] = ['name'=>$field.'.csv','tmp_name'=>$path,'size'=>filesize($path),'error'=>UPLOAD_ERR_OK];
     }

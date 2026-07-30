@@ -79,6 +79,34 @@
                         <dl class="rail-consist-meta">
                             <div><dt>Archivo</dt><dd><?php echo $railEscape($file['original_name'] ?? ''); ?></dd></div>
                             <div><dt>Tipo</dt><dd><?php echo $railEscape($file['detected_type'] ?? ''); ?></dd></div>
+                            <div>
+                                <dt>Identidad</dt>
+                                <dd>
+                                    <?php if (!empty($file['valid'])): ?>
+                                        Archivo correcto · Tipo verificado:
+                                        <?php echo $railEscape(
+                                            $consistUpload->configuration['files'][$file['detected_file_type']]['label']
+                                            ?? $file['detected_file_type']
+                                            ?? '',
+                                        ); ?>
+                                    <?php elseif (!empty($file['identity_ambiguous'])): ?>
+                                        Tipo ambiguo
+                                    <?php elseif (!empty($file['identity_unknown'])): ?>
+                                        Estructura desconocida
+                                    <?php else: ?>
+                                        Tipo no correspondiente
+                                    <?php endif; ?>
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Firma validada</dt>
+                                <dd>
+                                    <?php echo $railEscape($file['matched_identity_headers'] ?? 0); ?>
+                                    de
+                                    <?php echo $railEscape($file['total_identity_headers'] ?? 0); ?>
+                                    columnas
+                                </dd>
+                            </div>
                             <div><dt>Tamaño</dt><dd><?php echo $railEscape(number_format(((int) ($file['size'] ?? 0)) / 1024, 1)); ?> KB</dd></div>
                             <div><dt>Hoja</dt><dd><?php echo $railEscape($file['sheet'] ?? 'No detectada'); ?></dd></div>
                             <div><dt>Fila de encabezado</dt><dd><?php echo $railEscape($file['header_row'] ?? 'No detectada'); ?></dd></div>
