@@ -12,12 +12,13 @@ final class RailFlashStore
     {
     }
 
-    public function add(string $type, string $message): void
+    public function add(string $type, string $message, ?string $field = null): void
     {
         $allowed = ['success', 'warning', 'error'];
         $this->session[self::KEY][] = [
             'type' => in_array($type, $allowed, true) ? $type : 'error',
             'message' => $message,
+            'field' => $field,
         ];
     }
 

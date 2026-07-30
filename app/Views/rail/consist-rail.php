@@ -23,16 +23,16 @@
                 <?php foreach ($consistUpload->configuration['files'] ?? [] as $field => $definition): ?>
                     <?php
                     $fileResult = $consistUpload->preview['files'][$field] ?? null;
-                    $backendError = '';
-                    foreach ($consistUpload->messages as $message) {
-                        if (($message['type'] ?? '') === 'error') {
-                            $backendError = (string) ($message['message'] ?? '');
-                            break;
-                        }
-                    }
+                    $fileMessage = $consistUpload->fileMessages[$field][0] ?? null;
+                    $backendError = is_array($fileMessage)
+                        ? (string) ($fileMessage['message'] ?? '')
+                        : '';
+                    $backendState = is_array($fileMessage)
+                        ? (string) ($fileMessage['type'] ?? 'error')
+                        : 'pending';
                     $progressState = is_array($fileResult)
                         ? (!empty($fileResult['valid']) ? 'valid' : 'error')
-                        : ($backendError !== '' ? 'error' : 'pending');
+                        : ($backendError !== '' ? $backendState : 'pending');
                     $progressValue = $progressState === 'valid' ? 100 : 0;
                     $fileError = is_array($fileResult) && isset($fileResult['errors'][0])
                         ? (string) $fileResult['errors'][0]

@@ -95,6 +95,7 @@ final class RailController
             $this->flashStore->add(
                 'error',
                 'No se pudo validar el lote. ' . $exception->getMessage(),
+                $exception->field,
             );
         } catch (Throwable $exception) {
             if ($stagedToken !== null) {

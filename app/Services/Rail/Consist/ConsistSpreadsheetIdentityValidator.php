@@ -32,9 +32,18 @@ class ConsistSpreadsheetIdentityValidator
             if (!isset($stagedFiles[$field])) {
                 throw new ConsistUploadValidationException(
                     sprintf('El archivo %s es obligatorio.', $definition['label']),
+                    $field,
                 );
             }
-            $validated[$field] = $this->validateFile($field, $stagedFiles[$field], $definition);
+            try {
+                $validated[$field] = $this->validateFile($field, $stagedFiles[$field], $definition);
+            } catch (ConsistUploadValidationException $exception) {
+                throw new ConsistUploadValidationException(
+                    $exception->getMessage(),
+                    $field,
+                    $exception,
+                );
+            }
         }
 
         return $validated;
