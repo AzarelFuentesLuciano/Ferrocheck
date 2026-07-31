@@ -22,7 +22,7 @@ return [
     'consist-rail' => [
         'key' => 'consist-rail',
         'label' => 'Consist Rail',
-        'description' => 'Administración futura de composiciones ferroviarias.',
+        'description' => 'Generación y trazabilidad de borradores ferroviarios.',
         'icon' => '≋',
         'badge' => 'En desarrollo',
         'default_subsection' => 'dashboard',

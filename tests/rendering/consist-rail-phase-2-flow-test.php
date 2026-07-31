@@ -124,7 +124,7 @@ $test('renderiza las siete categorías', substr_count((string) $resultHtml, 'rai
 $test('refrescar GET no repite análisis', $analysisHash !== '' && $analysisHash === $refreshHash && str_contains((string) $refreshHtml, 'Cruce completado'));
 $test('mantiene resultado ligado al lote', str_contains((string) $resultHtml, 'ONLY-V') && !str_contains((string) $resultHtml, $root));
 $test('no consulta ni escribe base de datos', !str_contains((string) $resultHtml, 'PDO') && !str_contains((string) $resultHtml, 'SQL'));
-$test('no genera Excel ni Consist final', !str_contains((string) $resultHtml, 'Generar Consist') && !str_contains((string) $resultHtml, 'Exportar Excel'));
+$test('ofrece borrador productivo sin exportar Excel', str_contains((string) $resultHtml, 'Generar Consist') && !str_contains((string) $resultHtml, 'Exportar Excel'));
 $test('conserva App Shell y formulario sin JavaScript', str_contains((string) $resultHtml, 'data-app-shell') && str_contains((string) $resultHtml, 'name="action" value="analyze_vin_cross"'));
 
 foreach (array_keys($session['_consist_rail_uploads'] ?? []) as $token) { $temporaryStore->discard((string) $token); }

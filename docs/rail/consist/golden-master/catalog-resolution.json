@@ -1,0 +1,640 @@
+{
+  "consist_rows": 624,
+  "rows_matching_current_master_physical_c_d": 624,
+  "conclusion": "La plantilla consulta físicamente route_codes A:C/A:D. Los encabezados Bloque/Cruce de Consist son etiquetas históricas; los valores almacenados corresponden a Market/Shipping Destination.",
+  "certainty": "alta",
+  "routes": [
+    {
+      "route_code": "20IL",
+      "uses": 74,
+      "master_candidate_rows": [
+        4,
+        11
+      ],
+      "vlookup_first_row": 4,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LOGISTICS PARK, IL",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LOGISTICS PARK, IL",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "20MI",
+      "uses": 68,
+      "master_candidate_rows": [
+        6,
+        13
+      ],
+      "vlookup_first_row": 6,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LOGISTICS PARK, IL",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LOGISTICS PARK, IL",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "20IN",
+      "uses": 50,
+      "master_candidate_rows": [
+        5,
+        12
+      ],
+      "vlookup_first_row": 5,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LOGISTICS PARK, IL",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LOGISTICS PARK, IL",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "20MN",
+      "uses": 25,
+      "master_candidate_rows": [
+        7,
+        14
+      ],
+      "vlookup_first_row": 7,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LOGISTICS PARK, IL",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LOGISTICS PARK, IL",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "20WI",
+      "uses": 32,
+      "master_candidate_rows": [
+        9,
+        15
+      ],
+      "vlookup_first_row": 9,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LOGISTICS PARK, IL",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LOGISTICS PARK, IL",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "68",
+      "uses": 48,
+      "master_candidate_rows": [
+        42,
+        43
+      ],
+      "vlookup_first_row": 42,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "ALLIANCE, TX",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "ALLIANCE, TX",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "20OH",
+      "uses": 2,
+      "master_candidate_rows": [
+        8,
+        40
+      ],
+      "vlookup_first_row": 8,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LOGISTICS PARK, IL",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LOGISTICS PARK, IL",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "20IA",
+      "uses": 5,
+      "master_candidate_rows": [
+        3,
+        10
+      ],
+      "vlookup_first_row": 3,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LOGISTICS PARK, IL",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LOGISTICS PARK, IL",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "85",
+      "uses": 9,
+      "master_candidate_rows": [
+        47,
+        48,
+        54
+      ],
+      "vlookup_first_row": 47,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "big lift",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "big lift",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "85B",
+      "uses": 7,
+      "master_candidate_rows": [
+        46,
+        53
+      ],
+      "vlookup_first_row": 46,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "big lift",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "big lift",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "27",
+      "uses": 8,
+      "master_candidate_rows": [
+        68,
+        69
+      ],
+      "vlookup_first_row": 68,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "COUNCIL BLUFFS, IA",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "COUNCIL BLUFFS, IA",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "79",
+      "uses": 8,
+      "master_candidate_rows": [
+        144,
+        145
+      ],
+      "vlookup_first_row": 144,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "JEFFERSON ASSY",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "JEFFERSON ASSY",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "44",
+      "uses": 8,
+      "master_candidate_rows": [
+        93
+      ],
+      "vlookup_first_row": 93,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "Miami",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "Miami",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "D4",
+      "uses": 8,
+      "master_candidate_rows": [
+        199
+      ],
+      "vlookup_first_row": 199,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "MONTREAL  CHRYSLER",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "MONTREAL  CHRYSLER",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "98",
+      "uses": 8,
+      "master_candidate_rows": [
+        182,
+        184
+      ],
+      "vlookup_first_row": 182,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "EL MIRAGE, AZ",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "EL MIRAGE, AZ",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "24",
+      "uses": 8,
+      "master_candidate_rows": [
+        60,
+        61
+      ],
+      "vlookup_first_row": 60,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "ROLLA, CO UP RAILHEAD",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "ROLLA, CO UP RAILHEAD",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "25",
+      "uses": 8,
+      "master_candidate_rows": [
+        64
+      ],
+      "vlookup_first_row": 64,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "WINSTON SALEM,NC",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "WINSTON SALEM,NC",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "W2",
+      "uses": 32,
+      "master_candidate_rows": [
+        227
+      ],
+      "vlookup_first_row": 227,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "EDMONTON CHRYSLER",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "EDMONTON CHRYSLER",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "F5",
+      "uses": 20,
+      "master_candidate_rows": [
+        209
+      ],
+      "vlookup_first_row": 209,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "AGINCOURT, ON",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "AGINCOURT, ON",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "F5B",
+      "uses": 12,
+      "master_candidate_rows": [
+        210
+      ],
+      "vlookup_first_row": 210,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "AGINCOURT, ON",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "AGINCOURT, ON",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "56",
+      "uses": 24,
+      "master_candidate_rows": [
+        123
+      ],
+      "vlookup_first_row": 123,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "Hapeville",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "Hapeville",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "40",
+      "uses": 16,
+      "master_candidate_rows": [
+        89
+      ],
+      "vlookup_first_row": 89,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "SALT LAKE CITY MM",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "SALT LAKE CITY MM",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "73",
+      "uses": 8,
+      "master_candidate_rows": [
+        149
+      ],
+      "vlookup_first_row": 149,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LORDSTOWN",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LORDSTOWN",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "62",
+      "uses": 24,
+      "master_candidate_rows": [
+        131,
+        132
+      ],
+      "vlookup_first_row": 131,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "NASHVILLE",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "NASHVILLE",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "30",
+      "uses": 8,
+      "master_candidate_rows": [
+        78
+      ],
+      "vlookup_first_row": 78,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "KANSAS CITY, KS",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "KANSAS CITY, KS",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "95",
+      "uses": 8,
+      "master_candidate_rows": [
+        296,
+        297
+      ],
+      "vlookup_first_row": 296,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "Ayer",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "Ayer",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "81",
+      "uses": 16,
+      "master_candidate_rows": [
+        151
+      ],
+      "vlookup_first_row": 151,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "CENTERVILLE RAIL HEAD",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "CENTERVILLE RAIL HEAD",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "71",
+      "uses": 8,
+      "master_candidate_rows": [
+        146
+      ],
+      "vlookup_first_row": 146,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "LAUREL",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "LAUREL",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "99",
+      "uses": 8,
+      "master_candidate_rows": [
+        187,
+        188
+      ],
+      "vlookup_first_row": 187,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "PORT ALLEN,LA",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "PORT ALLEN,LA",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "26",
+      "uses": 8,
+      "master_candidate_rows": [
+        66
+      ],
+      "vlookup_first_row": 66,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "TAMPA",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "TAMPA",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "48",
+      "uses": 8,
+      "master_candidate_rows": [
+        113
+      ],
+      "vlookup_first_row": 113,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "MIRA LOMA CALIFORNIA",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "MIRA LOMA CALIFORNIA",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "87",
+      "uses": 16,
+      "master_candidate_rows": [
+        292,
+        293
+      ],
+      "vlookup_first_row": 292,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "SAN ANTONIO TX",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "SAN ANTONIO TX",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "88",
+      "uses": 8,
+      "master_candidate_rows": [
+        171
+      ],
+      "vlookup_first_row": 171,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "PORTLAND",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "PORTLAND",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "21",
+      "uses": 8,
+      "master_candidate_rows": [
+        55
+      ],
+      "vlookup_first_row": 55,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "JACKSONVILLE",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "JACKSONVILLE",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "L1",
+      "uses": 8,
+      "master_candidate_rows": [
+        217
+      ],
+      "vlookup_first_row": 217,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "VANCOUVER",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "VANCOUVER",
+      "matches_physical_c_d": true
+    },
+    {
+      "route_code": "63",
+      "uses": 8,
+      "master_candidate_rows": [
+        272,
+        273
+      ],
+      "vlookup_first_row": 272,
+      "current_column_c_header": "Market",
+      "current_column_c_value": "NAFTA",
+      "consist_header_e": "Bloque",
+      "consist_cached_e": "NAFTA",
+      "current_column_d_header": "Shipping Destination",
+      "current_column_d_value": "TWIN OAKS",
+      "consist_header_j": "Cruce",
+      "consist_cached_j": "TWIN OAKS",
+      "matches_physical_c_d": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "vehicle_load_report": {
+    "sheet": "  Vehicle Load Report",
+    "records_with_vin": 624,
+    "unique_vins": 624,
+    "duplicate_occurrences": 0,
+    "duplicate_vins": 0,
+    "first_data_row": 2,
+    "last_data_row": 625
+  },
+  "shippers": {
+    "sheet": "Shippers",
+    "records_with_vin": 624,
+    "unique_vins": 624,
+    "duplicate_occurrences": 0,
+    "duplicate_vins": 0,
+    "first_data_row": 2,
+    "last_data_row": 625
+  },
+  "cnacs": {
+    "sheet": "CNACS",
+    "records_with_vin": 648,
+    "unique_vins": 624,
+    "duplicate_occurrences": 24,
+    "duplicate_vins": 24,
+    "first_data_row": 2,
+    "last_data_row": 649
+  }
+}

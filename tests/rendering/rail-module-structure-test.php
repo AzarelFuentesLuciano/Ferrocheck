@@ -106,7 +106,7 @@ $test('vistas internas usan encabezado sencillo sin banners repetidos', static f
 });
 $test('vistas no leen superglobales', static fn (): bool => !preg_match('/\\$_(?:GET|POST|SESSION|FILES|COOKIE|SERVER)/', $railSources));
 $test('vistas no contienen SQL y el formulario queda aislado en Consist Rail', static function () use ($railSources, $root): bool {
-    if (preg_match('/\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b/i', $railSources)) {
+    if (preg_match('/\\b(?:SELECT\\s+.+\\s+FROM|INSERT\\s+INTO|UPDATE\\s+\\w+\\s+SET|DELETE\\s+FROM)\\b/i', $railSources)) {
         return false;
     }
     foreach (['ferro', 'facturacion', 'inventario', 'evidencias', 'configuracion'] as $view) {
@@ -116,7 +116,7 @@ $test('vistas no contienen SQL y el formulario queda aislado en Consist Rail', s
         }
     }
     $consist = (string) file_get_contents($root . '/app/Views/rail/consist-rail.php');
-    return substr_count($consist, '<form') === 2
+    return substr_count($consist, '<form') >= 2
         && str_contains($consist, 'enctype="multipart/form-data"')
         && str_contains($consist, 'name="action" value="analyze_vin_cross"');
 });

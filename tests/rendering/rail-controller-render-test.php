@@ -80,6 +80,10 @@ $access = new OrganizationalAccess($user, new RailControllerAccessRepository());
 $controller = new RailController($user, 'csrf-rail', new ModuleNavigationBuilder($access), null, '/Ferrocheck/public');
 $html = $controller->render(['seccion'=>'ferrocheck','subseccion'=>'incidencias']);
 $fallback = $controller->render(['seccion'=>'../../invalid','subseccion'=>'../../invalid']);
+http_response_code(200);
+$invalidDownload = $controller->dispatch('GET', ['accion'=>'exportar_consist','id'=>'invalid']);
+$invalidDownloadStatus = http_response_code();
+http_response_code(200);
 
 $test('controlador renderiza un solo App Shell', static fn (): bool => preg_match_all('/<html\b/i', $html) === 1 && substr_count($html, 'data-app-shell>') === 1);
 $test('Rail queda activo y abre FerroCheck desde el sidebar', static fn (): bool => preg_match('/app-sidebar-link is-active[^>]+href="[^"]*modulo=ferrocheck&amp;seccion=dashboard"/', $html) === 1);
@@ -96,6 +100,9 @@ $test('sección inválida cae en FerroCheck', static fn (): bool => str_contains
 $test('CSS Rail se carga una sola vez después del CSS global', static fn (): bool => substr_count($html, '/assets/css/rail/rail.css') === 1 && strpos($html, '/assets/css/app-shell.css') < strpos($html, '/assets/css/rail/rail.css'));
 $test('Rail no carga JavaScript propio', static fn (): bool => !str_contains($html, '/assets/js/rail/'));
 $test('encabezado conserva identidad y logout', static fn (): bool => str_contains($html, 'Administrador Rail') && str_contains($html, 'csrf-rail') && str_contains($html, 'modulo=auth&amp;accion=logout'));
+$test('descarga con ID inválido responde 404 controlado', static fn (): bool =>
+    $invalidDownloadStatus === 404 && $invalidDownload === 'El Consist solicitado no existe.'
+);
 
 echo "\nResumen Rail Controller Render: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);

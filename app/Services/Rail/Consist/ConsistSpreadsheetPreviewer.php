@@ -80,6 +80,7 @@ class ConsistSpreadsheetPreviewer
                 'sheet' => $header['sheet'],
                 'row' => $header['row'],
                 'columns' => $header['columns'],
+                'original' => $header['original'] ?? [],
             ],
             'found_columns' => $header['found'] ?? [],
             'missing_required' => [],

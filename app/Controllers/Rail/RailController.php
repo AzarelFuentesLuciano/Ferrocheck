@@ -17,10 +17,12 @@ use App\Services\Rail\Consist\ConsistUploadValidationException;
 use App\Services\Rail\Consist\ConsistUploadValidator;
 use App\Services\Rail\Consist\ConsistVinCrossAnalyzer;
 use App\Services\Rail\Consist\ConsistVinExtractor;
+use App\Services\Rail\Consist\ConsistWorkflowService;
 use App\Support\AuthenticatedHeaderBuilder;
 use App\Support\Rail\RailFlashStore;
 use App\ViewModels\Rail\ConsistUploadViewModel;
 use App\ViewModels\Rail\ConsistAnalysisViewModel;
+use DomainException;
 use RuntimeException;
 use Throwable;
 
@@ -43,6 +45,7 @@ final class RailController
         private ?ConsistVinCrossAnalyzer $vinCrossAnalyzer = null,
         private ?ConsistAnalysisResultStore $analysisResultStore = null,
         private ?ConsistSpreadsheetIdentityValidator $identityValidator = null,
+        private ?ConsistWorkflowService $workflowService = null,
     ) {
         $this->baseUrl = $baseUrl !== null
             ? rtrim($baseUrl, '/')
@@ -52,11 +55,18 @@ final class RailController
     public function dispatch(string $method, array $query = [], array $post = [], array $files = []): ?string
     {
         if (strtoupper($method) !== 'POST') {
+            if (($query['accion'] ?? '') === 'exportar_consist') {
+                return $this->downloadConsist((int) ($query['id'] ?? 0));
+            }
             return $this->render($query, $this->uploadViewModel($query));
         }
 
         [$section, $subsection] = $this->resolveLocation($query, $this->navigationConfiguration());
-        if ($section !== 'consist-rail' || $subsection !== 'registrar') {
+        $action = (string) ($post['action'] ?? '');
+        $workflowActions = ['create_consist_draft'];
+        if ($section !== 'consist-rail'
+            || ($subsection !== 'registrar' && !in_array($action, $workflowActions, true))
+        ) {
             return $this->render($query, $this->uploadViewModel($query));
         }
         $this->requireUploadDependencies();
@@ -73,6 +83,9 @@ final class RailController
             }
             if (($post['action'] ?? '') === 'analyze_vin_cross') {
                 return $this->analyzeVinCross($post, $redirect);
+            }
+            if (in_array($action, $workflowActions, true)) {
+                return $this->handleWorkflowAction($post);
             }
             $validated = $this->uploadValidator->validateBatch($files);
             $staged = $this->temporaryStore->stageBatch($validated);
@@ -117,7 +130,48 @@ final class RailController
     {
         $navigation = $this->navigationConfiguration();
         [$section, $subsection] = $this->resolveLocation($query, $navigation);
-        [$moduleNavigation, $content] = $this->renderRailViews($section, $subsection, $navigation, $consistUpload);
+        $consistPage = null;
+        if ($section === 'consist-rail' && $this->workflowService !== null) {
+            if (!$this->authenticatedUser->can('rail.consist.ver') && !$this->authenticatedUser->isSuperAdministrator()) {
+                $consistPage = ['forbidden' => true];
+            } else {
+                if ($subsection === 'consultar' && (int) ($query['id'] ?? 0) > 0) {
+                    $consistPage = isset($query['vin_detalle'])
+                        ? $this->workflowService->detail(
+                            (int) $query['id'],
+                            (string) $query['vin_detalle'],
+                            $this->authenticatedUser,
+                        )
+                        : $this->workflowService->find((int) $query['id'], $this->authenticatedUser);
+                    if (is_array($consistPage)
+                        && defined('APP_ENV')
+                        && APP_ENV !== 'production'
+                        && ($query['comparar_golden'] ?? '') === '1'
+                        && isset($consistPage['units'])
+                    ) {
+                        $consistPage['golden_comparison'] = $this->workflowService->compare(
+                            $consistPage,
+                            $this->authenticatedUser,
+                        );
+                    }
+                    if (is_array($consistPage) && isset($consistPage['units'])) {
+                        $consistPage['can_export'] = $this->authenticatedUser->can('rail.consist.exportar')
+                            || $this->authenticatedUser->isSuperAdministrator();
+                        $consistPage = $this->paginateConsistPage($consistPage, $query);
+                    }
+                } elseif ($subsection === 'historial') {
+                    $consistPage = $this->workflowService->history([
+                        'folio' => trim((string) ($query['folio'] ?? '')),
+                        'vin' => trim((string) ($query['vin'] ?? '')),
+                        'estado' => trim((string) ($query['estado'] ?? '')),
+                        'desde' => trim((string) ($query['desde'] ?? '')),
+                        'hasta' => trim((string) ($query['hasta'] ?? '')),
+                        'usuario' => trim((string) ($query['usuario'] ?? '')),
+                    ], max(1, (int) ($query['pagina'] ?? 1)), $this->authenticatedUser);
+                }
+            }
+        }
+        [$moduleNavigation, $content] = $this->renderRailViews($section, $subsection, $navigation, $consistUpload, $consistPage);
         $additionalScripts = $section === 'consist-rail' && $subsection === 'registrar'
             ? [$this->baseUrl . '/assets/js/rail/consist-upload-progress.js']
             : [];
@@ -202,12 +256,14 @@ final class RailController
         string $subsection,
         array $navigation,
         ?ConsistUploadViewModel $consistUpload,
+        ?array $consistPage,
     ): array
     {
         $railSection = $section;
         $railSubsection = $subsection;
         $railNavigation = $navigation;
         $railBaseUrl = $this->baseUrl;
+        $railConsistPage = $consistPage;
         $initialLevel = ob_get_level();
 
         try {
@@ -245,7 +301,7 @@ final class RailController
                     && count($preview['files'] ?? []) === 3;
                 if ($canAnalyze && $this->analysisResultStore !== null) {
                     $storedAnalysis = $this->analysisResultStore->load($token);
-                    $analysis = is_array($storedAnalysis) ? new ConsistAnalysisViewModel($storedAnalysis) : null;
+                    $analysis = is_array($storedAnalysis) ? new ConsistAnalysisViewModel($storedAnalysis, $query) : null;
                 }
             } catch (Throwable $exception) {
                 $this->flashStore->add('error', $exception->getMessage());
@@ -332,5 +388,110 @@ final class RailController
         $this->flashStore->add('success', 'Cruce de VIN completado.');
         header('Location: ' . $redirect, true, 303);
         return null;
+    }
+
+    private function handleWorkflowAction(array $post): ?string
+    {
+        if ($this->workflowService === null) {
+            throw new RuntimeException('El flujo persistente de Consist Rail no está disponible.');
+        }
+        $action = (string) ($post['action'] ?? '');
+        $id = max(0, (int) ($post['consist_id'] ?? 0));
+        if ($action === 'create_consist_draft') {
+            $token = trim((string) ($post['batch_token'] ?? ''));
+            $analysis = $this->analysisResultStore?->load($token);
+            if (!is_array($analysis)) {
+                throw new RuntimeException('El análisis requerido no está disponible.');
+            }
+            $draft = $this->workflowService->create(
+                $token,
+                $analysis,
+                trim((string) ($post['fecha_inicio'] ?? '')),
+                trim((string) ($post['fecha_fin'] ?? '')),
+                $this->authenticatedUser,
+            );
+            $this->csrf?->rotate();
+            $this->flashStore?->add('success', 'Borrador de Consist guardado correctamente.');
+            header('Location: ' . $this->consistPageUrl((int) $draft['id']), true, 303);
+            return null;
+        }
+        throw new RuntimeException('La acción solicitada no es válida.');
+    }
+
+    private function downloadConsist(int $id): ?string
+    {
+        if ($id < 1) {
+            http_response_code(404);
+            header('Content-Type: text/plain; charset=UTF-8');
+            header('X-Content-Type-Options: nosniff');
+            return 'El Consist solicitado no existe.';
+        }
+        if ($this->workflowService === null) {
+            throw new RuntimeException('La descarga de Consist no está disponible.');
+        }
+        try {
+            $export = $this->workflowService->export($id, $this->authenticatedUser);
+        } catch (DomainException $exception) {
+            $forbidden = str_contains($exception->getMessage(), 'permiso');
+            http_response_code($forbidden ? 403 : 404);
+            header('Content-Type: text/plain; charset=UTF-8');
+            header('X-Content-Type-Options: nosniff');
+            return $forbidden
+                ? 'No cuenta con permiso para descargar este Consist.'
+                : 'El Consist solicitado no existe.';
+        }
+        $path = (string) $export['path'];
+        $filename = (string) $export['filename'];
+        try {
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="' . addcslashes($filename, '"\\') . '"');
+            header('Content-Length: ' . filesize($path));
+            header('X-Content-Type-Options: nosniff');
+            readfile($path);
+        } finally {
+            if (is_file($path)) {
+                unlink($path);
+            }
+        }
+        return null;
+    }
+
+    private function consistPageUrl(int $id): string
+    {
+        return $this->baseUrl . '/index.php?modulo=rail&seccion=consist-rail&subseccion=consultar&id=' . $id;
+    }
+
+    private function paginateConsistPage(array $page, array $query): array
+    {
+        $vin = mb_strtoupper(trim((string) ($query['vin_buscar'] ?? '')), 'UTF-8');
+        $platform = trim((string) ($query['plataforma'] ?? ''));
+        $incident = trim((string) ($query['incidencia'] ?? ''));
+        $units = array_values(array_filter($page['units'], static function (array $unit) use ($vin, $platform, $incident): bool {
+            if ($vin !== '' && !str_contains((string) $unit['vin'], $vin)) {
+                return false;
+            }
+            if ($platform !== '' && (string) ($unit['final_data_json']['fdTransportationName1'] ?? '') !== $platform) {
+                return false;
+            }
+            if ($incident === 'si' && ($unit['issues_json'] ?? []) === []) {
+                return false;
+            }
+            if ($incident === 'no' && ($unit['issues_json'] ?? []) !== []) {
+                return false;
+            }
+            return true;
+        }));
+        $perPage = 25;
+        $current = max(1, (int) ($query['pagina'] ?? 1));
+        $pages = max(1, (int) ceil(count($units) / $perPage));
+        $current = min($current, $pages);
+        $page['all_platforms'] = array_values(array_unique(array_map(
+            static fn (array $unit): string => (string) ($unit['final_data_json']['fdTransportationName1'] ?? ''),
+            $page['units'],
+        )));
+        $page['units'] = array_slice($units, ($current - 1) * $perPage, $perPage);
+        $page['pagination'] = ['page' => $current, 'pages' => $pages, 'total' => count($units), 'per_page' => $perPage];
+        $page['filters'] = ['vin_buscar' => $vin, 'plataforma' => $platform, 'incidencia' => $incident];
+        return $page;
     }
 }

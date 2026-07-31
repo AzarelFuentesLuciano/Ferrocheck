@@ -1,0 +1,15 @@
+{
+  "vehicle_load_unique": 624,
+  "shippers_unique": 624,
+  "cnacs_records": 648,
+  "cnacs_unique": 624,
+  "cnacs_duplicate_cases": 24,
+  "consist_rows": 624,
+  "consist_unique": 624,
+  "consist_vins_subset_of_inputs": true,
+  "summary_rows": 472,
+  "summary_unique_platforms": 59,
+  "summary_ut_total_raw_rows": 3776,
+  "summary_ut_total_unique_platforms": 472,
+  "summary_difference_against_consist": 152
+}

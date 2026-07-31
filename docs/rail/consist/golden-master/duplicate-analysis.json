@@ -1,0 +1,790 @@
+{
+  "case_count": 24,
+  "duplicate_occurrences": 24,
+  "cases": [
+    {
+      "vin": "3C6LRVAG6TE207507",
+      "repetitions": 2,
+      "rows": [
+        522,
+        617
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceDate",
+        "VON",
+        "EXCHANGERATE",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6LRVBG4TE207553",
+      "repetitions": 2,
+      "rows": [
+        459,
+        552
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6LRVCG9TE210642",
+      "repetitions": 2,
+      "rows": [
+        523,
+        612
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceDate",
+        "VON",
+        "EXCHANGERATE",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6LRVDG1TE200427",
+      "repetitions": 2,
+      "rows": [
+        453,
+        545
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6LRVNG1TE207358",
+      "repetitions": 2,
+      "rows": [
+        525,
+        614
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceDate",
+        "VON",
+        "EXCHANGERATE",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6MRVHGXTE205026",
+      "repetitions": 2,
+      "rows": [
+        462,
+        549
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6MRVJG3TE209770",
+      "repetitions": 2,
+      "rows": [
+        529,
+        613
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceDate",
+        "VON",
+        "EXCHANGERATE",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6MRVUG0TE187089",
+      "repetitions": 2,
+      "rows": [
+        458,
+        546
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6MRVUG4TE191825",
+      "repetitions": 2,
+      "rows": [
+        460,
+        548
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6MRVUG6TE193902",
+      "repetitions": 2,
+      "rows": [
+        451,
+        539
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6MRVUG7TE193083",
+      "repetitions": 2,
+      "rows": [
+        457,
+        543
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6MRVUG7TE193892",
+      "repetitions": 2,
+      "rows": [
+        454,
+        542
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFFP1T4220164",
+      "repetitions": 2,
+      "rows": [
+        463,
+        551
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFFP3T4206797",
+      "repetitions": 2,
+      "rows": [
+        526,
+        616
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceDate",
+        "VON",
+        "EXCHANGERATE",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFFP6T4205725",
+      "repetitions": 2,
+      "rows": [
+        450,
+        538
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFFP9T4210319",
+      "repetitions": 2,
+      "rows": [
+        452,
+        544
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFJP0T4200687",
+      "repetitions": 2,
+      "rows": [
+        527,
+        610
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceDate",
+        "VON",
+        "EXCHANGERATE",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFJP0T4215545",
+      "repetitions": 2,
+      "rows": [
+        464,
+        547
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFJP4T4197566",
+      "repetitions": 2,
+      "rows": [
+        465,
+        553
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFJP4T4200949",
+      "repetitions": 2,
+      "rows": [
+        455,
+        541
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFJP5T4214875",
+      "repetitions": 2,
+      "rows": [
+        456,
+        540
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFJP6T4194684",
+      "repetitions": 2,
+      "rows": [
+        528,
+        611
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceDate",
+        "VON",
+        "EXCHANGERATE",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFLP8T4206377",
+      "repetitions": 2,
+      "rows": [
+        461,
+        550
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceNo",
+        "Shipper",
+        "Pedimento",
+        "InvoiceDate",
+        "Plant",
+        "CONVEYANCE",
+        "BrokerId",
+        "H/SCODE",
+        "BODYMODEL",
+        "ENGINECODE",
+        "SpanishDescription",
+        "VON",
+        "Dealer",
+        "EXCHANGERATE",
+        "BaseModelPrice",
+        "Freight",
+        "TotalOptionPrice",
+        "CustomsExpenses",
+        "Insurance",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    },
+    {
+      "vin": "3C6SRFLPXT4203612",
+      "repetitions": 2,
+      "rows": [
+        524,
+        615
+      ],
+      "equal_columns": [
+        "Vin",
+        "InvoiceDate",
+        "VON",
+        "EXCHANGERATE",
+        ""
+      ],
+      "different_columns": [
+        "NumRemesa"
+      ],
+      "classification": "duplicado con diferencias",
+      "consist_occurrences": 1,
+      "summary_direct_vin_dependency": false,
+      "resolution_evidence": "VLOOKUP de Consist toma la primera coincidencia CNACS"
+    }
+  ]
+}

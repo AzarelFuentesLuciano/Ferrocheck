@@ -18,3 +18,8 @@ logs/excel_diagnostico.log
 # Respaldos locales
 *.bak
 *.bak-*
+
+# Referencias binarias locales de Consist Rail
+/docs/rail/consist/referencias/Plantilla_Consist.xlsm
+/docs/rail/consist/referencias/vascor_sm_db.xlsx
+/docs/rail/consist/referencias/Consist Rail del 29 al 30 de Julio de 2026.xlsx

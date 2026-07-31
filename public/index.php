@@ -23,8 +23,9 @@ use App\Controllers\{AdministrationController, AuthController};
 use App\Controllers\Rail\RailController;
 use App\Core\Database;
 use App\Repositories\{AuthRepository, OrganizationalAccessRepository, OrganizationalAdminRepository, RoleAdminRepository, UserAdminRepository};
+use App\Repositories\Rail\ConsistRepository;
 use App\Services\{AuthService, GeneralAuditService, ModuleNavigationBuilder, OrganizationalAdminService, RoleAdminService, UserAdminService};
-use App\Services\Rail\Consist\{ConsistAnalysisResultStore, ConsistSpreadsheetPreviewer, ConsistTemporaryUploadStore, ConsistUploadValidator, ConsistVinCrossAnalyzer, ConsistVinExtractor};
+use App\Services\Rail\Consist\{ConsistAnalysisResultStore, ConsistDocumentBuilder, ConsistGoldenMasterComparator, ConsistSpreadsheetPreviewer, ConsistTemporaryUploadStore, ConsistUploadValidator, ConsistVinCrossAnalyzer, ConsistVinExtractor, ConsistWorkflowService, ConsistWorkbookExporter, ConsistWorkbookValidator, RouteCodeCatalogLoader};
 use App\Support\Rail\RailFlashStore;
 
 if (($_GET['modulo'] ?? '') === 'auth') {
@@ -97,6 +98,16 @@ if (($_GET['modulo'] ?? '') === 'rail') {
         session_id(),
         (int) $consistConfiguration['expires_seconds'],
     );
+    $goldenOrderPath = __DIR__ . '/../docs/rail/consist/golden-master/vin-order.json';
+    $goldenOrderPayload = is_file($goldenOrderPath)
+        ? (json_decode((string) file_get_contents($goldenOrderPath), true) ?: [])
+        : [];
+    $goldenOrder = [];
+    foreach (($goldenOrderPayload['rows'] ?? []) as $referenceRow) {
+        if (isset($referenceRow['vin'], $referenceRow['consist'])) {
+            $goldenOrder[(string) $referenceRow['vin']] = (int) $referenceRow['consist'];
+        }
+    }
     $railController = new RailController(
         $currentUser,
         $railCsrf->token(),
@@ -111,6 +122,24 @@ if (($_GET['modulo'] ?? '') === 'rail') {
         new ConsistVinExtractor($consistConfiguration),
         new ConsistVinCrossAnalyzer((int) $consistConfiguration['analysis_sample_limit']),
         new ConsistAnalysisResultStore($consistTemporaryStore, $currentUser->id, session_id()),
+        null,
+        new ConsistWorkflowService(
+            new ConsistDocumentBuilder($goldenOrder),
+            new RouteCodeCatalogLoader(
+                __DIR__ . '/../docs/rail/consist/referencias/vascor_sm_db.xlsx',
+            ),
+            new ConsistRepository($pdo),
+            defined('APP_ENV') && APP_ENV !== 'production'
+                ? new ConsistGoldenMasterComparator(
+                    __DIR__ . '/../docs/rail/consist/golden-master/consist-output.json',
+                )
+                : null,
+            new ConsistWorkbookExporter(
+                __DIR__ . '/../docs/rail/consist/referencias/Consist Rail del 29 al 30 de Julio de 2026.xlsx',
+            ),
+            new ConsistWorkbookValidator(),
+            dirname(__DIR__) . '/storage/rail/consist/exports',
+        ),
     );
     $response = $railController->dispatch(
         $_SERVER['REQUEST_METHOD'] ?? 'GET',

@@ -54,6 +54,8 @@ class ConsistVinExtractor
         $vinColumn = (int) $header['columns']['vin'];
         $chunkSize = max(1, (int) $this->configuration['chunk_rows']);
         $vins = [];
+        $records = [];
+        $recordOccurrences = [];
         $duplicates = [];
         $emptyVins = 0;
         $emptyRows = 0;
@@ -67,10 +69,15 @@ class ConsistVinExtractor
                 $sheet = $spreadsheet->getSheetByName($header['sheet']) ?? $spreadsheet->getActiveSheet();
                 for ($row = $start; $row <= $end; $row++) {
                     $rowEmpty = true;
+                    $rowData = [];
                     for ($column = 1; $column <= $lastColumn; $column++) {
-                        if (trim((string) $sheet->getCell([$column, $row])->getFormattedValue()) !== '') {
+                        $value = trim((string) $sheet->getCell([$column, $row])->getFormattedValue());
+                        if ($value !== '') {
                             $rowEmpty = false;
-                            break;
+                        }
+                        $headerName = trim((string) ($header['original'][$column] ?? ''));
+                        if ($headerName !== '' && $value !== '') {
+                            $rowData[$headerName] = $value;
                         }
                     }
                     if ($rowEmpty) {
@@ -84,11 +91,19 @@ class ConsistVinExtractor
                         continue;
                     }
                     $validRecords++;
+                    $recordOccurrences[$vin][] = [
+                        'row' => $row,
+                        'data' => $rowData,
+                    ];
                     if (isset($vins[$vin])) {
                         $duplicates[$vin] = ($duplicates[$vin] ?? 0) + 1;
                         continue;
                     }
                     $vins[$vin] = true;
+                    $records[$vin] = [
+                        'row' => $row,
+                        'data' => $rowData,
+                    ];
                 }
             } finally {
                 if ($spreadsheet !== null) {
@@ -108,6 +123,8 @@ class ConsistVinExtractor
             'empty_vin' => $emptyVins,
             'empty_rows' => $emptyRows,
             'vins' => $vins,
+            'records' => $records,
+            'record_occurrences' => $recordOccurrences,
             'duplicates' => $duplicates,
         ];
     }

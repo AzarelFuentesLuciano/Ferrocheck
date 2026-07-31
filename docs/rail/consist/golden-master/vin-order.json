@@ -1,0 +1,4374 @@
+{
+  "rule_evidence": "ODBC ORDER BY fdTrack; exact tie order is cached golden evidence",
+  "same_vin_set_all_sources": true,
+  "rows": [
+    {
+      "vin": "3C6LRVDG6TE210760",
+      "vehicle_load_report": 440,
+      "shippers": 265,
+      "cnacs": 217,
+      "consist": 1
+    },
+    {
+      "vin": "3C6MRVJG2TE211705",
+      "vehicle_load_report": 439,
+      "shippers": 266,
+      "cnacs": 218,
+      "consist": 2
+    },
+    {
+      "vin": "3C6MRVJG4TE211687",
+      "vehicle_load_report": 438,
+      "shippers": 267,
+      "cnacs": 219,
+      "consist": 3
+    },
+    {
+      "vin": "3C6SRFJP6T4200273",
+      "vehicle_load_report": 437,
+      "shippers": 271,
+      "cnacs": 223,
+      "consist": 4
+    },
+    {
+      "vin": "3C6SRFJP2T4200223",
+      "vehicle_load_report": 436,
+      "shippers": 270,
+      "cnacs": 222,
+      "consist": 5
+    },
+    {
+      "vin": "3C6SRFFP9T4210238",
+      "vehicle_load_report": 435,
+      "shippers": 269,
+      "cnacs": 221,
+      "consist": 6
+    },
+    {
+      "vin": "3C6MRVJGXTE211855",
+      "vehicle_load_report": 434,
+      "shippers": 268,
+      "cnacs": 220,
+      "consist": 7
+    },
+    {
+      "vin": "3C7WR4HJ1TG355721",
+      "vehicle_load_report": 433,
+      "shippers": 272,
+      "cnacs": 224,
+      "consist": 8
+    },
+    {
+      "vin": "3C6MRVJGXTE211709",
+      "vehicle_load_report": 331,
+      "shippers": 262,
+      "cnacs": 214,
+      "consist": 9
+    },
+    {
+      "vin": "3C63R3DL0VG367662",
+      "vehicle_load_report": 330,
+      "shippers": 257,
+      "cnacs": 209,
+      "consist": 10
+    },
+    {
+      "vin": "3C6UR5CJ5VG371397",
+      "vehicle_load_report": 329,
+      "shippers": 264,
+      "cnacs": 216,
+      "consist": 11
+    },
+    {
+      "vin": "3C63RRHJ7VG384275",
+      "vehicle_load_report": 336,
+      "shippers": 258,
+      "cnacs": 210,
+      "consist": 12
+    },
+    {
+      "vin": "3C6MRVJG1TE211484",
+      "vehicle_load_report": 335,
+      "shippers": 259,
+      "cnacs": 211,
+      "consist": 13
+    },
+    {
+      "vin": "3C6SRFJPXT4214273",
+      "vehicle_load_report": 334,
+      "shippers": 263,
+      "cnacs": 215,
+      "consist": 14
+    },
+    {
+      "vin": "3C6MRVJG9TE211734",
+      "vehicle_load_report": 332,
+      "shippers": 261,
+      "cnacs": 213,
+      "consist": 15
+    },
+    {
+      "vin": "3C6MRVJG9TE211491",
+      "vehicle_load_report": 333,
+      "shippers": 260,
+      "cnacs": 212,
+      "consist": 16
+    },
+    {
+      "vin": "3C63R3GL8VG367677",
+      "vehicle_load_report": 405,
+      "shippers": 274,
+      "cnacs": 226,
+      "consist": 17
+    },
+    {
+      "vin": "3C6RRFGG0T4206964",
+      "vehicle_load_report": 403,
+      "shippers": 279,
+      "cnacs": 231,
+      "consist": 18
+    },
+    {
+      "vin": "3C6LRVAG9TE210143",
+      "vehicle_load_report": 402,
+      "shippers": 275,
+      "cnacs": 227,
+      "consist": 19
+    },
+    {
+      "vin": "3C6MRVJG8TE211708",
+      "vehicle_load_report": 404,
+      "shippers": 277,
+      "cnacs": 229,
+      "consist": 20
+    },
+    {
+      "vin": "3C63R3EL4TG369250",
+      "vehicle_load_report": 407,
+      "shippers": 273,
+      "cnacs": 225,
+      "consist": 21
+    },
+    {
+      "vin": "3C6MRVJG9TE204959",
+      "vehicle_load_report": 408,
+      "shippers": 278,
+      "cnacs": 230,
+      "consist": 22
+    },
+    {
+      "vin": "3C6MRVJG4TE211706",
+      "vehicle_load_report": 401,
+      "shippers": 276,
+      "cnacs": 228,
+      "consist": 23
+    },
+    {
+      "vin": "3C7WRNBLXVG383214",
+      "vehicle_load_report": 406,
+      "shippers": 280,
+      "cnacs": 232,
+      "consist": 24
+    },
+    {
+      "vin": "3C6LRVDG3TE210795",
+      "vehicle_load_report": 554,
+      "shippers": 251,
+      "cnacs": 203,
+      "consist": 25
+    },
+    {
+      "vin": "3C6UR5CJ5VG373005",
+      "vehicle_load_report": 560,
+      "shippers": 253,
+      "cnacs": 205,
+      "consist": 26
+    },
+    {
+      "vin": "3C6UR5CJ6VG371392",
+      "vehicle_load_report": 559,
+      "shippers": 254,
+      "cnacs": 206,
+      "consist": 27
+    },
+    {
+      "vin": "3C63RRGL3VG375916",
+      "vehicle_load_report": 558,
+      "shippers": 249,
+      "cnacs": 201,
+      "consist": 28
+    },
+    {
+      "vin": "3C6MRVJG9TE204962",
+      "vehicle_load_report": 557,
+      "shippers": 252,
+      "cnacs": 204,
+      "consist": 29
+    },
+    {
+      "vin": "3C7WRNAJ2VG384308",
+      "vehicle_load_report": 555,
+      "shippers": 256,
+      "cnacs": 208,
+      "consist": 30
+    },
+    {
+      "vin": "3C63RRJL7TG368246",
+      "vehicle_load_report": 553,
+      "shippers": 250,
+      "cnacs": 202,
+      "consist": 31
+    },
+    {
+      "vin": "3C6UR5DJ6VG374386",
+      "vehicle_load_report": 556,
+      "shippers": 255,
+      "cnacs": 207,
+      "consist": 32
+    },
+    {
+      "vin": "3C6UR5DL9TG362540",
+      "vehicle_load_report": 512,
+      "shippers": 287,
+      "cnacs": 239,
+      "consist": 33
+    },
+    {
+      "vin": "3C6UR5DL2TG362539",
+      "vehicle_load_report": 511,
+      "shippers": 285,
+      "cnacs": 237,
+      "consist": 34
+    },
+    {
+      "vin": "3C63R5DL5VG381892",
+      "vehicle_load_report": 505,
+      "shippers": 281,
+      "cnacs": 233,
+      "consist": 35
+    },
+    {
+      "vin": "3C63R5DL7VG381893",
+      "vehicle_load_report": 506,
+      "shippers": 282,
+      "cnacs": 234,
+      "consist": 36
+    },
+    {
+      "vin": "3C6UR5DL6TG362530",
+      "vehicle_load_report": 507,
+      "shippers": 286,
+      "cnacs": 238,
+      "consist": 37
+    },
+    {
+      "vin": "3C6RRFGG7T4209506",
+      "vehicle_load_report": 508,
+      "shippers": 283,
+      "cnacs": 235,
+      "consist": 38
+    },
+    {
+      "vin": "3C7WRTCL9TG339415",
+      "vehicle_load_report": 509,
+      "shippers": 288,
+      "cnacs": 240,
+      "consist": 39
+    },
+    {
+      "vin": "3C6UR5DL1TG362533",
+      "vehicle_load_report": 510,
+      "shippers": 284,
+      "cnacs": 236,
+      "consist": 40
+    },
+    {
+      "vin": "3C6MRVUGXTE193868",
+      "vehicle_load_report": 388,
+      "shippers": 294,
+      "cnacs": 246,
+      "consist": 41
+    },
+    {
+      "vin": "3C6MRVUG5TE201939",
+      "vehicle_load_report": 392,
+      "shippers": 293,
+      "cnacs": 245,
+      "consist": 42
+    },
+    {
+      "vin": "3C6MRVJG2TE204964",
+      "vehicle_load_report": 391,
+      "shippers": 291,
+      "cnacs": 243,
+      "consist": 43
+    },
+    {
+      "vin": "3C6MRVJG3TE207095",
+      "vehicle_load_report": 389,
+      "shippers": 292,
+      "cnacs": 244,
+      "consist": 44
+    },
+    {
+      "vin": "3C63RRGL0VG375646",
+      "vehicle_load_report": 387,
+      "shippers": 290,
+      "cnacs": 242,
+      "consist": 45
+    },
+    {
+      "vin": "3C6UR5HJXTG361079",
+      "vehicle_load_report": 386,
+      "shippers": 296,
+      "cnacs": 248,
+      "consist": 46
+    },
+    {
+      "vin": "3C63R3DJ6VG368295",
+      "vehicle_load_report": 385,
+      "shippers": 289,
+      "cnacs": 241,
+      "consist": 47
+    },
+    {
+      "vin": "3C6RRFGG5T4209956",
+      "vehicle_load_report": 390,
+      "shippers": 295,
+      "cnacs": 247,
+      "consist": 48
+    },
+    {
+      "vin": "3C63R3GL3VG367683",
+      "vehicle_load_report": 521,
+      "shippers": 305,
+      "cnacs": 257,
+      "consist": 49
+    },
+    {
+      "vin": "3C6MRVJG5TE211794",
+      "vehicle_load_report": 528,
+      "shippers": 308,
+      "cnacs": 260,
+      "consist": 50
+    },
+    {
+      "vin": "3C6MRVUG9TE193795",
+      "vehicle_load_report": 527,
+      "shippers": 310,
+      "cnacs": 262,
+      "consist": 51
+    },
+    {
+      "vin": "3C6SRFJP0T4215609",
+      "vehicle_load_report": 526,
+      "shippers": 311,
+      "cnacs": 263,
+      "consist": 52
+    },
+    {
+      "vin": "3C6LRVNGXTE207584",
+      "vehicle_load_report": 525,
+      "shippers": 307,
+      "cnacs": 259,
+      "consist": 53
+    },
+    {
+      "vin": "3C6MRVJG7TE211828",
+      "vehicle_load_report": 524,
+      "shippers": 309,
+      "cnacs": 261,
+      "consist": 54
+    },
+    {
+      "vin": "3C6UR5FJXVG374498",
+      "vehicle_load_report": 522,
+      "shippers": 312,
+      "cnacs": 264,
+      "consist": 55
+    },
+    {
+      "vin": "3C63RRGL2VG363238",
+      "vehicle_load_report": 523,
+      "shippers": 306,
+      "cnacs": 258,
+      "consist": 56
+    },
+    {
+      "vin": "3C63R3GL6VG369072",
+      "vehicle_load_report": 581,
+      "shippers": 297,
+      "cnacs": 249,
+      "consist": 57
+    },
+    {
+      "vin": "3C63RRGL5VG375917",
+      "vehicle_load_report": 578,
+      "shippers": 298,
+      "cnacs": 250,
+      "consist": 58
+    },
+    {
+      "vin": "3C6UR5CJ7VG371398",
+      "vehicle_load_report": 579,
+      "shippers": 304,
+      "cnacs": 256,
+      "consist": 59
+    },
+    {
+      "vin": "3C6MRVHG2TE206414",
+      "vehicle_load_report": 580,
+      "shippers": 300,
+      "cnacs": 252,
+      "consist": 60
+    },
+    {
+      "vin": "3C6MRVJG5TE209740",
+      "vehicle_load_report": 582,
+      "shippers": 301,
+      "cnacs": 253,
+      "consist": 61
+    },
+    {
+      "vin": "3C6MRVUG9TE193909",
+      "vehicle_load_report": 583,
+      "shippers": 303,
+      "cnacs": 255,
+      "consist": 62
+    },
+    {
+      "vin": "3C63RRHL4VG359156",
+      "vehicle_load_report": 577,
+      "shippers": 299,
+      "cnacs": 251,
+      "consist": 63
+    },
+    {
+      "vin": "3C6MRVUG5TE193891",
+      "vehicle_load_report": 584,
+      "shippers": 302,
+      "cnacs": 254,
+      "consist": 64
+    },
+    {
+      "vin": "3C6MRVUG8TE193867",
+      "vehicle_load_report": 461,
+      "shippers": 316,
+      "cnacs": 268,
+      "consist": 65
+    },
+    {
+      "vin": "3C7WRNBJ9VG374812",
+      "vehicle_load_report": 458,
+      "shippers": 319,
+      "cnacs": 272,
+      "consist": 66
+    },
+    {
+      "vin": "3C6SRFJP2T4214266",
+      "vehicle_load_report": 457,
+      "shippers": 318,
+      "cnacs": 271,
+      "consist": 67
+    },
+    {
+      "vin": "3C6RRFGG1T4208643",
+      "vehicle_load_report": 464,
+      "shippers": 317,
+      "cnacs": 269,
+      "consist": 68
+    },
+    {
+      "vin": "3C6LRVAG8TE199636",
+      "vehicle_load_report": 459,
+      "shippers": 313,
+      "cnacs": 265,
+      "consist": 69
+    },
+    {
+      "vin": "3C6MRVJG6TE193757",
+      "vehicle_load_report": 462,
+      "shippers": 315,
+      "cnacs": 267,
+      "consist": 70
+    },
+    {
+      "vin": "3C6LRVVG5TE199331",
+      "vehicle_load_report": 460,
+      "shippers": 314,
+      "cnacs": 266,
+      "consist": 71
+    },
+    {
+      "vin": "3C7WRNBL9VG383222",
+      "vehicle_load_report": 463,
+      "shippers": 320,
+      "cnacs": 270,
+      "consist": 72
+    },
+    {
+      "vin": "3C6LRVDG9TE198345",
+      "vehicle_load_report": 422,
+      "shippers": 323,
+      "cnacs": 275,
+      "consist": 73
+    },
+    {
+      "vin": "3C6MRVHG2TE205912",
+      "vehicle_load_report": 423,
+      "shippers": 324,
+      "cnacs": 276,
+      "consist": 74
+    },
+    {
+      "vin": "3C6SRFJP2T4200688",
+      "vehicle_load_report": 420,
+      "shippers": 327,
+      "cnacs": 279,
+      "consist": 75
+    },
+    {
+      "vin": "3C63R5RLXVG369259",
+      "vehicle_load_report": 418,
+      "shippers": 322,
+      "cnacs": 274,
+      "consist": 76
+    },
+    {
+      "vin": "3C6MRVUG5TE193888",
+      "vehicle_load_report": 419,
+      "shippers": 325,
+      "cnacs": 277,
+      "consist": 77
+    },
+    {
+      "vin": "3C63R3EJ0VG375368",
+      "vehicle_load_report": 417,
+      "shippers": 321,
+      "cnacs": 273,
+      "consist": 78
+    },
+    {
+      "vin": "3C6UR5FJ6VG369296",
+      "vehicle_load_report": 424,
+      "shippers": 328,
+      "cnacs": 280,
+      "consist": 79
+    },
+    {
+      "vin": "3C6MRVUG8TE193917",
+      "vehicle_load_report": 421,
+      "shippers": 326,
+      "cnacs": 278,
+      "consist": 80
+    },
+    {
+      "vin": "3C63RRHL1VG375489",
+      "vehicle_load_report": 601,
+      "shippers": 330,
+      "cnacs": 282,
+      "consist": 81
+    },
+    {
+      "vin": "3C6SRFLP7T4211263",
+      "vehicle_load_report": 607,
+      "shippers": 331,
+      "cnacs": 283,
+      "consist": 82
+    },
+    {
+      "vin": "3C6UR5FJ0VG373246",
+      "vehicle_load_report": 605,
+      "shippers": 334,
+      "cnacs": 286,
+      "consist": 83
+    },
+    {
+      "vin": "3C6UR5DJ4VG373866",
+      "vehicle_load_report": 603,
+      "shippers": 332,
+      "cnacs": 284,
+      "consist": 84
+    },
+    {
+      "vin": "3C7WRNFL5VG374768",
+      "vehicle_load_report": 608,
+      "shippers": 336,
+      "cnacs": 288,
+      "consist": 85
+    },
+    {
+      "vin": "3C63R5TL0VG374026",
+      "vehicle_load_report": 602,
+      "shippers": 329,
+      "cnacs": 281,
+      "consist": 86
+    },
+    {
+      "vin": "3C6UR5DJ9VG374172",
+      "vehicle_load_report": 604,
+      "shippers": 333,
+      "cnacs": 285,
+      "consist": 87
+    },
+    {
+      "vin": "3C6UR5FJ6VG373753",
+      "vehicle_load_report": 606,
+      "shippers": 335,
+      "cnacs": 287,
+      "consist": 88
+    },
+    {
+      "vin": "3C63R3JL4TG367729",
+      "vehicle_load_report": 618,
+      "shippers": 393,
+      "cnacs": 345,
+      "consist": 89
+    },
+    {
+      "vin": "3C6SRFJP2T4200674",
+      "vehicle_load_report": 623,
+      "shippers": 400,
+      "cnacs": 352,
+      "consist": 90
+    },
+    {
+      "vin": "3C6LRVNG3TE207443",
+      "vehicle_load_report": 622,
+      "shippers": 395,
+      "cnacs": 347,
+      "consist": 91
+    },
+    {
+      "vin": "3C63R3SL5VG383925",
+      "vehicle_load_report": 621,
+      "shippers": 394,
+      "cnacs": 346,
+      "consist": 92
+    },
+    {
+      "vin": "3C6MRVUG2TE193881",
+      "vehicle_load_report": 617,
+      "shippers": 397,
+      "cnacs": 349,
+      "consist": 93
+    },
+    {
+      "vin": "3C6MRVJG0TE211766",
+      "vehicle_load_report": 620,
+      "shippers": 396,
+      "cnacs": 348,
+      "consist": 94
+    },
+    {
+      "vin": "3C6RRFFG9T4206852",
+      "vehicle_load_report": 624,
+      "shippers": 399,
+      "cnacs": 351,
+      "consist": 95
+    },
+    {
+      "vin": "3C6MRVUG7TE193147",
+      "vehicle_load_report": 619,
+      "shippers": 398,
+      "cnacs": 350,
+      "consist": 96
+    },
+    {
+      "vin": "3C63R3GL5VG369077",
+      "vehicle_load_report": 427,
+      "shippers": 427,
+      "cnacs": 379,
+      "consist": 97
+    },
+    {
+      "vin": "3C63R3GL2VG369070",
+      "vehicle_load_report": 426,
+      "shippers": 426,
+      "cnacs": 378,
+      "consist": 98
+    },
+    {
+      "vin": "3C63R3GLXVG368832",
+      "vehicle_load_report": 428,
+      "shippers": 428,
+      "cnacs": 380,
+      "consist": 99
+    },
+    {
+      "vin": "3C6MRVUG8TE193898",
+      "vehicle_load_report": 429,
+      "shippers": 431,
+      "cnacs": 383,
+      "consist": 100
+    },
+    {
+      "vin": "3C6LRVDG4TE209123",
+      "vehicle_load_report": 430,
+      "shippers": 429,
+      "cnacs": 381,
+      "consist": 101
+    },
+    {
+      "vin": "3C6MRVUGXTE193871",
+      "vehicle_load_report": 431,
+      "shippers": 432,
+      "cnacs": 384,
+      "consist": 102
+    },
+    {
+      "vin": "3C6LRVNG6TE204200",
+      "vehicle_load_report": 432,
+      "shippers": 430,
+      "cnacs": 382,
+      "consist": 103
+    },
+    {
+      "vin": "3C63R3GL1VG368833",
+      "vehicle_load_report": 425,
+      "shippers": 425,
+      "cnacs": 377,
+      "consist": 104
+    },
+    {
+      "vin": "3C6SRFJP8T4194914",
+      "vehicle_load_report": 586,
+      "shippers": 415,
+      "cnacs": 367,
+      "consist": 105
+    },
+    {
+      "vin": "3C6UR5CJ3VG373472",
+      "vehicle_load_report": 585,
+      "shippers": 416,
+      "cnacs": 368,
+      "consist": 106
+    },
+    {
+      "vin": "3C63R3EJ9VG375367",
+      "vehicle_load_report": 589,
+      "shippers": 409,
+      "cnacs": 361,
+      "consist": 107
+    },
+    {
+      "vin": "3C6MRVHG4TE205278",
+      "vehicle_load_report": 587,
+      "shippers": 411,
+      "cnacs": 363,
+      "consist": 108
+    },
+    {
+      "vin": "3C6MRVJG6TE193693",
+      "vehicle_load_report": 592,
+      "shippers": 413,
+      "cnacs": 365,
+      "consist": 109
+    },
+    {
+      "vin": "3C6MRVUG0TE193880",
+      "vehicle_load_report": 591,
+      "shippers": 414,
+      "cnacs": 366,
+      "consist": 110
+    },
+    {
+      "vin": "3C6MRVJG1TE211730",
+      "vehicle_load_report": 590,
+      "shippers": 412,
+      "cnacs": 364,
+      "consist": 111
+    },
+    {
+      "vin": "3C63R3GL4VG369068",
+      "vehicle_load_report": 588,
+      "shippers": 410,
+      "cnacs": 362,
+      "consist": 112
+    },
+    {
+      "vin": "3C6SRFJP3T4200960",
+      "vehicle_load_report": 318,
+      "shippers": 405,
+      "cnacs": 357,
+      "consist": 113
+    },
+    {
+      "vin": "3C6MRVUGXTE193076",
+      "vehicle_load_report": 314,
+      "shippers": 404,
+      "cnacs": 356,
+      "consist": 114
+    },
+    {
+      "vin": "3C6MRVUG9TE193912",
+      "vehicle_load_report": 313,
+      "shippers": 403,
+      "cnacs": 355,
+      "consist": 115
+    },
+    {
+      "vin": "3C6MRVHG7TE205260",
+      "vehicle_load_report": 317,
+      "shippers": 402,
+      "cnacs": 354,
+      "consist": 116
+    },
+    {
+      "vin": "3C6UR5DJ2VG374157",
+      "vehicle_load_report": 316,
+      "shippers": 408,
+      "cnacs": 360,
+      "consist": 117
+    },
+    {
+      "vin": "3C6SRFJP4T4193811",
+      "vehicle_load_report": 320,
+      "shippers": 406,
+      "cnacs": 358,
+      "consist": 118
+    },
+    {
+      "vin": "3C6SRFJP8T4214286",
+      "vehicle_load_report": 315,
+      "shippers": 407,
+      "cnacs": 359,
+      "consist": 119
+    },
+    {
+      "vin": "3C6MRVHG3TE205305",
+      "vehicle_load_report": 319,
+      "shippers": 401,
+      "cnacs": 353,
+      "consist": 120
+    },
+    {
+      "vin": "3C6UR5FJ6VG368584",
+      "vehicle_load_report": 367,
+      "shippers": 422,
+      "cnacs": 374,
+      "consist": 121
+    },
+    {
+      "vin": "3C7WRNDL1TG367851",
+      "vehicle_load_report": 363,
+      "shippers": 424,
+      "cnacs": 376,
+      "consist": 122
+    },
+    {
+      "vin": "3C6UR5CJ5VG372095",
+      "vehicle_load_report": 361,
+      "shippers": 421,
+      "cnacs": 373,
+      "consist": 123
+    },
+    {
+      "vin": "3C7WRNCL0TG367194",
+      "vehicle_load_report": 362,
+      "shippers": 423,
+      "cnacs": 375,
+      "consist": 124
+    },
+    {
+      "vin": "3C6SRFFP8T4201496",
+      "vehicle_load_report": 364,
+      "shippers": 419,
+      "cnacs": 371,
+      "consist": 125
+    },
+    {
+      "vin": "3C6SRFFP1T4212890",
+      "vehicle_load_report": 368,
+      "shippers": 417,
+      "cnacs": 369,
+      "consist": 126
+    },
+    {
+      "vin": "3C6SRFJP6T4214755",
+      "vehicle_load_report": 366,
+      "shippers": 420,
+      "cnacs": 372,
+      "consist": 127
+    },
+    {
+      "vin": "3C6SRFFP5T4208499",
+      "vehicle_load_report": 365,
+      "shippers": 418,
+      "cnacs": 370,
+      "consist": 128
+    },
+    {
+      "vin": "3C6SRFLP8T4206492",
+      "vehicle_load_report": 456,
+      "shippers": 390,
+      "cnacs": 342,
+      "consist": 129
+    },
+    {
+      "vin": "3C63R3GL2TG369065",
+      "vehicle_load_report": 449,
+      "shippers": 385,
+      "cnacs": 337,
+      "consist": 130
+    },
+    {
+      "vin": "3C6LRVDG0TE208955",
+      "vehicle_load_report": 455,
+      "shippers": 387,
+      "cnacs": 339,
+      "consist": 131
+    },
+    {
+      "vin": "3C6SRFGP4T4207147",
+      "vehicle_load_report": 454,
+      "shippers": 389,
+      "cnacs": 341,
+      "consist": 132
+    },
+    {
+      "vin": "3C7WR5HJ6TG364629",
+      "vehicle_load_report": 450,
+      "shippers": 392,
+      "cnacs": 344,
+      "consist": 133
+    },
+    {
+      "vin": "3C6UR5HJ4TG364642",
+      "vehicle_load_report": 451,
+      "shippers": 391,
+      "cnacs": 343,
+      "consist": 134
+    },
+    {
+      "vin": "3C6LRVDG9TE210851",
+      "vehicle_load_report": 453,
+      "shippers": 388,
+      "cnacs": 340,
+      "consist": 135
+    },
+    {
+      "vin": "3C63R5SL9TG367848",
+      "vehicle_load_report": 452,
+      "shippers": 386,
+      "cnacs": 338,
+      "consist": 136
+    },
+    {
+      "vin": "3C63R5TL7VG374623",
+      "vehicle_load_report": 412,
+      "shippers": 377,
+      "cnacs": 329,
+      "consist": 137
+    },
+    {
+      "vin": "3C6MRVHG3TE206146",
+      "vehicle_load_report": 416,
+      "shippers": 379,
+      "cnacs": 331,
+      "consist": 138
+    },
+    {
+      "vin": "3C6SRFJP4T4212910",
+      "vehicle_load_report": 409,
+      "shippers": 381,
+      "cnacs": 333,
+      "consist": 139
+    },
+    {
+      "vin": "3C6LRVDG6TE209012",
+      "vehicle_load_report": 410,
+      "shippers": 378,
+      "cnacs": 330,
+      "consist": 140
+    },
+    {
+      "vin": "3C6UR5HJ2TG367958",
+      "vehicle_load_report": 411,
+      "shippers": 382,
+      "cnacs": 334,
+      "consist": 141
+    },
+    {
+      "vin": "3C6UR5HJ7TG364635",
+      "vehicle_load_report": 413,
+      "shippers": 383,
+      "cnacs": 335,
+      "consist": 142
+    },
+    {
+      "vin": "3C6SRFGP0T4209591",
+      "vehicle_load_report": 414,
+      "shippers": 380,
+      "cnacs": 332,
+      "consist": 143
+    },
+    {
+      "vin": "3C7WRNFL6VG369322",
+      "vehicle_load_report": 415,
+      "shippers": 384,
+      "cnacs": 336,
+      "consist": 144
+    },
+    {
+      "vin": "3C6SRFJP6T4214593",
+      "vehicle_load_report": 479,
+      "shippers": 475,
+      "cnacs": 427,
+      "consist": 145
+    },
+    {
+      "vin": "3C6SRFLP7T4206502",
+      "vehicle_load_report": 478,
+      "shippers": 477,
+      "cnacs": 429,
+      "consist": 146
+    },
+    {
+      "vin": "3C7WRTAJ7VG378699",
+      "vehicle_load_report": 477,
+      "shippers": 480,
+      "cnacs": 432,
+      "consist": 147
+    },
+    {
+      "vin": "3C6UR5CJ3VG370247",
+      "vehicle_load_report": 476,
+      "shippers": 478,
+      "cnacs": 430,
+      "consist": 148
+    },
+    {
+      "vin": "3C63R5EL6VG381916",
+      "vehicle_load_report": 475,
+      "shippers": 474,
+      "cnacs": 426,
+      "consist": 149
+    },
+    {
+      "vin": "3C7WRNDL4VG374781",
+      "vehicle_load_report": 474,
+      "shippers": 479,
+      "cnacs": 431,
+      "consist": 150
+    },
+    {
+      "vin": "3C6SRFJP8T4214692",
+      "vehicle_load_report": 480,
+      "shippers": 476,
+      "cnacs": 428,
+      "consist": 151
+    },
+    {
+      "vin": "3C63R3EL3VG383711",
+      "vehicle_load_report": 473,
+      "shippers": 473,
+      "cnacs": 425,
+      "consist": 152
+    },
+    {
+      "vin": "3C6SRFFP6T4205725",
+      "vehicle_load_report": 552,
+      "shippers": 5,
+      "cnacs": 537,
+      "consist": 153
+    },
+    {
+      "vin": "3C6MRVUG6TE193902",
+      "vehicle_load_report": 546,
+      "shippers": 2,
+      "cnacs": 538,
+      "consist": 154
+    },
+    {
+      "vin": "3C6SRFJP5T4214875",
+      "vehicle_load_report": 545,
+      "shippers": 8,
+      "cnacs": 539,
+      "consist": 155
+    },
+    {
+      "vin": "3C6SRFJP4T4200949",
+      "vehicle_load_report": 548,
+      "shippers": 7,
+      "cnacs": 540,
+      "consist": 156
+    },
+    {
+      "vin": "3C6MRVUG7TE193892",
+      "vehicle_load_report": 549,
+      "shippers": 4,
+      "cnacs": 541,
+      "consist": 157
+    },
+    {
+      "vin": "3C6MRVUG7TE193083",
+      "vehicle_load_report": 547,
+      "shippers": 3,
+      "cnacs": 542,
+      "consist": 158
+    },
+    {
+      "vin": "3C6SRFFP9T4210319",
+      "vehicle_load_report": 551,
+      "shippers": 6,
+      "cnacs": 543,
+      "consist": 159
+    },
+    {
+      "vin": "3C6LRVDG1TE200427",
+      "vehicle_load_report": 550,
+      "shippers": 1,
+      "cnacs": 544,
+      "consist": 160
+    },
+    {
+      "vin": "3C6MRVUG0TE187089",
+      "vehicle_load_report": 309,
+      "shippers": 11,
+      "cnacs": 545,
+      "consist": 161
+    },
+    {
+      "vin": "3C6SRFJP0T4215545",
+      "vehicle_load_report": 306,
+      "shippers": 14,
+      "cnacs": 546,
+      "consist": 162
+    },
+    {
+      "vin": "3C6MRVUG4TE191825",
+      "vehicle_load_report": 308,
+      "shippers": 12,
+      "cnacs": 547,
+      "consist": 163
+    },
+    {
+      "vin": "3C6MRVHGXTE205026",
+      "vehicle_load_report": 310,
+      "shippers": 10,
+      "cnacs": 548,
+      "consist": 164
+    },
+    {
+      "vin": "3C6SRFLP8T4206377",
+      "vehicle_load_report": 312,
+      "shippers": 16,
+      "cnacs": 549,
+      "consist": 165
+    },
+    {
+      "vin": "3C6SRFFP1T4220164",
+      "vehicle_load_report": 305,
+      "shippers": 13,
+      "cnacs": 550,
+      "consist": 166
+    },
+    {
+      "vin": "3C6LRVBG4TE207553",
+      "vehicle_load_report": 307,
+      "shippers": 9,
+      "cnacs": 551,
+      "consist": 167
+    },
+    {
+      "vin": "3C6SRFJP4T4197566",
+      "vehicle_load_report": 311,
+      "shippers": 15,
+      "cnacs": 552,
+      "consist": 168
+    },
+    {
+      "vin": "3C6RRFGG6T4213840",
+      "vehicle_load_report": 600,
+      "shippers": 457,
+      "cnacs": 409,
+      "consist": 169
+    },
+    {
+      "vin": "3C6SRFFP5T4218126",
+      "vehicle_load_report": 599,
+      "shippers": 460,
+      "cnacs": 412,
+      "consist": 170
+    },
+    {
+      "vin": "3C6SRFJPXT4200423",
+      "vehicle_load_report": 598,
+      "shippers": 462,
+      "cnacs": 414,
+      "consist": 171
+    },
+    {
+      "vin": "3C6SRFJP8T4199269",
+      "vehicle_load_report": 597,
+      "shippers": 461,
+      "cnacs": 413,
+      "consist": 172
+    },
+    {
+      "vin": "3C6SRFJPXT4214287",
+      "vehicle_load_report": 596,
+      "shippers": 463,
+      "cnacs": 415,
+      "consist": 173
+    },
+    {
+      "vin": "3C6SRFFP5T4200595",
+      "vehicle_load_report": 595,
+      "shippers": 459,
+      "cnacs": 411,
+      "consist": 174
+    },
+    {
+      "vin": "3C6SRFFP3T4208355",
+      "vehicle_load_report": 593,
+      "shippers": 458,
+      "cnacs": 410,
+      "consist": 175
+    },
+    {
+      "vin": "3C6UR5CJ8VG370244",
+      "vehicle_load_report": 594,
+      "shippers": 464,
+      "cnacs": 416,
+      "consist": 176
+    },
+    {
+      "vin": "3C6SRFJP2T4214932",
+      "vehicle_load_report": 342,
+      "shippers": 467,
+      "cnacs": 419,
+      "consist": 177
+    },
+    {
+      "vin": "3C6SRFJP9T4200428",
+      "vehicle_load_report": 337,
+      "shippers": 469,
+      "cnacs": 421,
+      "consist": 178
+    },
+    {
+      "vin": "3C6SRFJP7T4205756",
+      "vehicle_load_report": 338,
+      "shippers": 468,
+      "cnacs": 420,
+      "consist": 179
+    },
+    {
+      "vin": "3C6SRFFP7T4200789",
+      "vehicle_load_report": 339,
+      "shippers": 466,
+      "cnacs": 418,
+      "consist": 180
+    },
+    {
+      "vin": "3C6UR5CJ2VG372958",
+      "vehicle_load_report": 341,
+      "shippers": 471,
+      "cnacs": 423,
+      "consist": 181
+    },
+    {
+      "vin": "3C7WRTCL5VG369255",
+      "vehicle_load_report": 343,
+      "shippers": 472,
+      "cnacs": 424,
+      "consist": 182
+    },
+    {
+      "vin": "3C6SRFLP9T4211300",
+      "vehicle_load_report": 344,
+      "shippers": 470,
+      "cnacs": 422,
+      "consist": 183
+    },
+    {
+      "vin": "3C6SRFFP0T4212881",
+      "vehicle_load_report": 340,
+      "shippers": 465,
+      "cnacs": 417,
+      "consist": 184
+    },
+    {
+      "vin": "3C63RRGL8VG375572",
+      "vehicle_load_report": 574,
+      "shippers": 491,
+      "cnacs": 443,
+      "consist": 185
+    },
+    {
+      "vin": "3C63RRGL9VG375595",
+      "vehicle_load_report": 573,
+      "shippers": 492,
+      "cnacs": 444,
+      "consist": 186
+    },
+    {
+      "vin": "3C63R5TLXVG374003",
+      "vehicle_load_report": 576,
+      "shippers": 489,
+      "cnacs": 441,
+      "consist": 187
+    },
+    {
+      "vin": "3C63RRJL5VG375490",
+      "vehicle_load_report": 572,
+      "shippers": 493,
+      "cnacs": 445,
+      "consist": 188
+    },
+    {
+      "vin": "3C6UR5CJ0VG373977",
+      "vehicle_load_report": 571,
+      "shippers": 495,
+      "cnacs": 447,
+      "consist": 189
+    },
+    {
+      "vin": "3C6UR5DJ9VG360417",
+      "vehicle_load_report": 570,
+      "shippers": 496,
+      "cnacs": 448,
+      "consist": 190
+    },
+    {
+      "vin": "3C6RREGG9T4206164",
+      "vehicle_load_report": 569,
+      "shippers": 494,
+      "cnacs": 446,
+      "consist": 191
+    },
+    {
+      "vin": "3C63RRGL0VG375596",
+      "vehicle_load_report": 575,
+      "shippers": 490,
+      "cnacs": 442,
+      "consist": 192
+    },
+    {
+      "vin": "3C6RRFGG3T4210328",
+      "vehicle_load_report": 468,
+      "shippers": 483,
+      "cnacs": 435,
+      "consist": 193
+    },
+    {
+      "vin": "3C7WRNFL6VG374763",
+      "vehicle_load_report": 465,
+      "shippers": 488,
+      "cnacs": 440,
+      "consist": 194
+    },
+    {
+      "vin": "3C7WRNFL1VG374766",
+      "vehicle_load_report": 466,
+      "shippers": 487,
+      "cnacs": 439,
+      "consist": 195
+    },
+    {
+      "vin": "3C6SRFGP3T4168809",
+      "vehicle_load_report": 467,
+      "shippers": 484,
+      "cnacs": 436,
+      "consist": 196
+    },
+    {
+      "vin": "3C63RRML6VG375493",
+      "vehicle_load_report": 469,
+      "shippers": 481,
+      "cnacs": 433,
+      "consist": 197
+    },
+    {
+      "vin": "3C63RRML8VG375494",
+      "vehicle_load_report": 470,
+      "shippers": 482,
+      "cnacs": 434,
+      "consist": 198
+    },
+    {
+      "vin": "3C6UR5CJ4VG368541",
+      "vehicle_load_report": 471,
+      "shippers": 485,
+      "cnacs": 437,
+      "consist": 199
+    },
+    {
+      "vin": "3C6UR5DL4TG362526",
+      "vehicle_load_report": 472,
+      "shippers": 486,
+      "cnacs": 438,
+      "consist": 200
+    },
+    {
+      "vin": "3C6SRFJPXT4201331",
+      "vehicle_load_report": 236,
+      "shippers": 571,
+      "cnacs": 553,
+      "consist": 201
+    },
+    {
+      "vin": "3C6UR5CJ5VG370444",
+      "vehicle_load_report": 239,
+      "shippers": 573,
+      "cnacs": 554,
+      "consist": 202
+    },
+    {
+      "vin": "3C6UR5CJ9VG373007",
+      "vehicle_load_report": 237,
+      "shippers": 575,
+      "cnacs": 555,
+      "consist": 203
+    },
+    {
+      "vin": "3C6SRFJP2T4201291",
+      "vehicle_load_report": 235,
+      "shippers": 570,
+      "cnacs": 556,
+      "consist": 204
+    },
+    {
+      "vin": "3C6SRFFP5T4206834",
+      "vehicle_load_report": 234,
+      "shippers": 569,
+      "cnacs": 557,
+      "consist": 205
+    },
+    {
+      "vin": "3C6UR5CJ8VG371295",
+      "vehicle_load_report": 233,
+      "shippers": 574,
+      "cnacs": 558,
+      "consist": 206
+    },
+    {
+      "vin": "3C6TR5EJ1TG352027",
+      "vehicle_load_report": 240,
+      "shippers": 572,
+      "cnacs": 559,
+      "consist": 207
+    },
+    {
+      "vin": "3C6UR5CJXVG370441",
+      "vehicle_load_report": 238,
+      "shippers": 576,
+      "cnacs": 560,
+      "consist": 208
+    },
+    {
+      "vin": "3C63R5CL3TG368928",
+      "vehicle_load_report": 266,
+      "shippers": 601,
+      "cnacs": 561,
+      "consist": 209
+    },
+    {
+      "vin": "3C6RREGP3T4205947",
+      "vehicle_load_report": 270,
+      "shippers": 605,
+      "cnacs": 562,
+      "consist": 210
+    },
+    {
+      "vin": "3C6SRFGP3T4208774",
+      "vehicle_load_report": 269,
+      "shippers": 606,
+      "cnacs": 563,
+      "consist": 211
+    },
+    {
+      "vin": "3C63RRGL8VG375877",
+      "vehicle_load_report": 265,
+      "shippers": 603,
+      "cnacs": 564,
+      "consist": 212
+    },
+    {
+      "vin": "3C6RREGGXT4201586",
+      "vehicle_load_report": 268,
+      "shippers": 604,
+      "cnacs": 565,
+      "consist": 213
+    },
+    {
+      "vin": "3C6UR5CJ8VG371152",
+      "vehicle_load_report": 272,
+      "shippers": 608,
+      "cnacs": 566,
+      "consist": 214
+    },
+    {
+      "vin": "3C6SRFGP6T4207828",
+      "vehicle_load_report": 271,
+      "shippers": 607,
+      "cnacs": 567,
+      "consist": 215
+    },
+    {
+      "vin": "3C63R5SL1VG373727",
+      "vehicle_load_report": 267,
+      "shippers": 602,
+      "cnacs": 568,
+      "consist": 216
+    },
+    {
+      "vin": "3C63R5NL7VG373680",
+      "vehicle_load_report": 183,
+      "shippers": 593,
+      "cnacs": 569,
+      "consist": 217
+    },
+    {
+      "vin": "3C6SRFFP7T4200467",
+      "vehicle_load_report": 182,
+      "shippers": 597,
+      "cnacs": 570,
+      "consist": 218
+    },
+    {
+      "vin": "3C6RREFP6T4205975",
+      "vehicle_load_report": 181,
+      "shippers": 595,
+      "cnacs": 571,
+      "consist": 219
+    },
+    {
+      "vin": "3C6SRFJP1T4199551",
+      "vehicle_load_report": 180,
+      "shippers": 598,
+      "cnacs": 572,
+      "consist": 220
+    },
+    {
+      "vin": "3C6UR5CJ3VG373973",
+      "vehicle_load_report": 179,
+      "shippers": 599,
+      "cnacs": 573,
+      "consist": 221
+    },
+    {
+      "vin": "3C6UR5CJ7VG372342",
+      "vehicle_load_report": 178,
+      "shippers": 600,
+      "cnacs": 574,
+      "consist": 222
+    },
+    {
+      "vin": "3C6RREGP4T4210719",
+      "vehicle_load_report": 177,
+      "shippers": 596,
+      "cnacs": 575,
+      "consist": 223
+    },
+    {
+      "vin": "3C6RREFP3T4198158",
+      "vehicle_load_report": 184,
+      "shippers": 594,
+      "cnacs": 576,
+      "consist": 224
+    },
+    {
+      "vin": "3C6SRFGP7T4217218",
+      "vehicle_load_report": 3,
+      "shippers": 579,
+      "cnacs": 577,
+      "consist": 225
+    },
+    {
+      "vin": "3C6SRFLP1T4207192",
+      "vehicle_load_report": 8,
+      "shippers": 584,
+      "cnacs": 578,
+      "consist": 226
+    },
+    {
+      "vin": "3C6SRFFP0T4216834",
+      "vehicle_load_report": 7,
+      "shippers": 583,
+      "cnacs": 579,
+      "consist": 227
+    },
+    {
+      "vin": "3C6SRFFP2T4216950",
+      "vehicle_load_report": 6,
+      "shippers": 582,
+      "cnacs": 580,
+      "consist": 228
+    },
+    {
+      "vin": "3C6SRFGP0T4217187",
+      "vehicle_load_report": 4,
+      "shippers": 580,
+      "cnacs": 581,
+      "consist": 229
+    },
+    {
+      "vin": "3C6UR5TL3VG376681",
+      "vehicle_load_report": 2,
+      "shippers": 578,
+      "cnacs": 582,
+      "consist": 230
+    },
+    {
+      "vin": "3C63R3HLXVG375410",
+      "vehicle_load_report": 1,
+      "shippers": 577,
+      "cnacs": 583,
+      "consist": 231
+    },
+    {
+      "vin": "3C6SRFFP9T4216735",
+      "vehicle_load_report": 5,
+      "shippers": 581,
+      "cnacs": 584,
+      "consist": 232
+    },
+    {
+      "vin": "3C6SRFGP2T4208961",
+      "vehicle_load_report": 48,
+      "shippers": 621,
+      "cnacs": 585,
+      "consist": 233
+    },
+    {
+      "vin": "3C6UR5DJ6VG374288",
+      "vehicle_load_report": 47,
+      "shippers": 624,
+      "cnacs": 586,
+      "consist": 234
+    },
+    {
+      "vin": "3C6UR5DJ4VG372832",
+      "vehicle_load_report": 46,
+      "shippers": 623,
+      "cnacs": 587,
+      "consist": 235
+    },
+    {
+      "vin": "3C6TR5CJXTG358296",
+      "vehicle_load_report": 45,
+      "shippers": 622,
+      "cnacs": 588,
+      "consist": 236
+    },
+    {
+      "vin": "3C6RREGP7T4210407",
+      "vehicle_load_report": 44,
+      "shippers": 618,
+      "cnacs": 589,
+      "consist": 237
+    },
+    {
+      "vin": "3C6RREGP9T4210408",
+      "vehicle_load_report": 43,
+      "shippers": 619,
+      "cnacs": 590,
+      "consist": 238
+    },
+    {
+      "vin": "3C63RRML8VG375561",
+      "vehicle_load_report": 42,
+      "shippers": 617,
+      "cnacs": 591,
+      "consist": 239
+    },
+    {
+      "vin": "3C6RRFGG0T4208570",
+      "vehicle_load_report": 41,
+      "shippers": 620,
+      "cnacs": 592,
+      "consist": 240
+    },
+    {
+      "vin": "3C7WRNFL7TG358925",
+      "vehicle_load_report": 195,
+      "shippers": 616,
+      "cnacs": 593,
+      "consist": 241
+    },
+    {
+      "vin": "3C6UR5JJ7VG371095",
+      "vehicle_load_report": 199,
+      "shippers": 614,
+      "cnacs": 594,
+      "consist": 242
+    },
+    {
+      "vin": "3C6UR5JJ8VG371199",
+      "vehicle_load_report": 198,
+      "shippers": 615,
+      "cnacs": 595,
+      "consist": 243
+    },
+    {
+      "vin": "3C6UR5HJ5VG377175",
+      "vehicle_load_report": 197,
+      "shippers": 612,
+      "cnacs": 596,
+      "consist": 244
+    },
+    {
+      "vin": "3C6SRFFPXT4209924",
+      "vehicle_load_report": 196,
+      "shippers": 610,
+      "cnacs": 597,
+      "consist": 245
+    },
+    {
+      "vin": "3C6UR5JJ6VG371198",
+      "vehicle_load_report": 200,
+      "shippers": 613,
+      "cnacs": 598,
+      "consist": 246
+    },
+    {
+      "vin": "3C6SRFJP1T4202321",
+      "vehicle_load_report": 194,
+      "shippers": 611,
+      "cnacs": 599,
+      "consist": 247
+    },
+    {
+      "vin": "3C63R3PL9VG378266",
+      "vehicle_load_report": 193,
+      "shippers": 609,
+      "cnacs": 600,
+      "consist": 248
+    },
+    {
+      "vin": "3C63R3PL9VG384021",
+      "vehicle_load_report": 112,
+      "shippers": 588,
+      "cnacs": 601,
+      "consist": 249
+    },
+    {
+      "vin": "3C63R3GJ6VG375579",
+      "vehicle_load_report": 106,
+      "shippers": 585,
+      "cnacs": 602,
+      "consist": 250
+    },
+    {
+      "vin": "3C63R3GL3VG368784",
+      "vehicle_load_report": 107,
+      "shippers": 586,
+      "cnacs": 603,
+      "consist": 251
+    },
+    {
+      "vin": "3C7WR8AJ7VG378666",
+      "vehicle_load_report": 108,
+      "shippers": 592,
+      "cnacs": 604,
+      "consist": 252
+    },
+    {
+      "vin": "3C63RRPL3VG369484",
+      "vehicle_load_report": 109,
+      "shippers": 589,
+      "cnacs": 605,
+      "consist": 253
+    },
+    {
+      "vin": "3C63R3HL4VG368310",
+      "vehicle_load_report": 110,
+      "shippers": 587,
+      "cnacs": 606,
+      "consist": 254
+    },
+    {
+      "vin": "3C6SRFGP8T4205630",
+      "vehicle_load_report": 111,
+      "shippers": 590,
+      "cnacs": 607,
+      "consist": 255
+    },
+    {
+      "vin": "3C6UR5DJXTG354753",
+      "vehicle_load_report": 105,
+      "shippers": 591,
+      "cnacs": 608,
+      "consist": 256
+    },
+    {
+      "vin": "3C63R3PL3VG383611",
+      "vehicle_load_report": 13,
+      "shippers": 453,
+      "cnacs": 405,
+      "consist": 257
+    },
+    {
+      "vin": "3C63R3CL4VG369240",
+      "vehicle_load_report": 9,
+      "shippers": 449,
+      "cnacs": 401,
+      "consist": 258
+    },
+    {
+      "vin": "3C6SRFFPXT4208370",
+      "vehicle_load_report": 12,
+      "shippers": 455,
+      "cnacs": 402,
+      "consist": 259
+    },
+    {
+      "vin": "3C6SRFLP5T4203372",
+      "vehicle_load_report": 11,
+      "shippers": 456,
+      "cnacs": 404,
+      "consist": 260
+    },
+    {
+      "vin": "3C6SRFGP4T4217161",
+      "vehicle_load_report": 10,
+      "shippers": 450,
+      "cnacs": 403,
+      "consist": 261
+    },
+    {
+      "vin": "3C63R3AL7VG377884",
+      "vehicle_load_report": 14,
+      "shippers": 451,
+      "cnacs": 408,
+      "consist": 262
+    },
+    {
+      "vin": "3C63R3PL5VG383724",
+      "vehicle_load_report": 16,
+      "shippers": 454,
+      "cnacs": 406,
+      "consist": 263
+    },
+    {
+      "vin": "3C63R3BL6VG383691",
+      "vehicle_load_report": 15,
+      "shippers": 452,
+      "cnacs": 407,
+      "consist": 264
+    },
+    {
+      "vin": "3C63R3CL6VG369241",
+      "vehicle_load_report": 256,
+      "shippers": 25,
+      "cnacs": 1,
+      "consist": 265
+    },
+    {
+      "vin": "3C7WRNFL0VG374726",
+      "vehicle_load_report": 254,
+      "shippers": 31,
+      "cnacs": 7,
+      "consist": 266
+    },
+    {
+      "vin": "3C7WRNFL3VG374722",
+      "vehicle_load_report": 253,
+      "shippers": 32,
+      "cnacs": 8,
+      "consist": 267
+    },
+    {
+      "vin": "3C63R3PL6VG383716",
+      "vehicle_load_report": 252,
+      "shippers": 28,
+      "cnacs": 4,
+      "consist": 268
+    },
+    {
+      "vin": "3C63R3PL4VG383620",
+      "vehicle_load_report": 251,
+      "shippers": 27,
+      "cnacs": 3,
+      "consist": 269
+    },
+    {
+      "vin": "3C63R3DL9VG378014",
+      "vehicle_load_report": 249,
+      "shippers": 26,
+      "cnacs": 2,
+      "consist": 270
+    },
+    {
+      "vin": "3C63R3PL8VG383717",
+      "vehicle_load_report": 255,
+      "shippers": 30,
+      "cnacs": 6,
+      "consist": 271
+    },
+    {
+      "vin": "3C63R3PL7VG383725",
+      "vehicle_load_report": 250,
+      "shippers": 29,
+      "cnacs": 5,
+      "consist": 272
+    },
+    {
+      "vin": "3C63R3SL6VG384288",
+      "vehicle_load_report": 205,
+      "shippers": 441,
+      "cnacs": 393,
+      "consist": 273
+    },
+    {
+      "vin": "3C63RRAJ3VG369234",
+      "vehicle_load_report": 201,
+      "shippers": 445,
+      "cnacs": 397,
+      "consist": 274
+    },
+    {
+      "vin": "3C63RRAJ1VG369233",
+      "vehicle_load_report": 202,
+      "shippers": 444,
+      "cnacs": 396,
+      "consist": 275
+    },
+    {
+      "vin": "3C63R3SL7VG383845",
+      "vehicle_load_report": 204,
+      "shippers": 442,
+      "cnacs": 394,
+      "consist": 276
+    },
+    {
+      "vin": "3C6UR5CJ7VG360952",
+      "vehicle_load_report": 206,
+      "shippers": 447,
+      "cnacs": 399,
+      "consist": 277
+    },
+    {
+      "vin": "3C7WRNBL9VG374729",
+      "vehicle_load_report": 207,
+      "shippers": 448,
+      "cnacs": 400,
+      "consist": 278
+    },
+    {
+      "vin": "3C6SRFVP5T4174940",
+      "vehicle_load_report": 208,
+      "shippers": 446,
+      "cnacs": 398,
+      "consist": 279
+    },
+    {
+      "vin": "3C63R5TL9VG382643",
+      "vehicle_load_report": 203,
+      "shippers": 443,
+      "cnacs": 395,
+      "consist": 280
+    },
+    {
+      "vin": "3C6UR5DJ3VG369176",
+      "vehicle_load_report": 287,
+      "shippers": 438,
+      "cnacs": 390,
+      "consist": 281
+    },
+    {
+      "vin": "3C6SRFVP7T4172445",
+      "vehicle_load_report": 286,
+      "shippers": 437,
+      "cnacs": 389,
+      "consist": 282
+    },
+    {
+      "vin": "3C6UR5EJ9VG369164",
+      "vehicle_load_report": 285,
+      "shippers": 439,
+      "cnacs": 391,
+      "consist": 283
+    },
+    {
+      "vin": "3C63R3ML2VG376332",
+      "vehicle_load_report": 284,
+      "shippers": 434,
+      "cnacs": 386,
+      "consist": 284
+    },
+    {
+      "vin": "3C63RRAJ7VG369236",
+      "vehicle_load_report": 283,
+      "shippers": 435,
+      "cnacs": 387,
+      "consist": 285
+    },
+    {
+      "vin": "3C6SRFGP4T4217080",
+      "vehicle_load_report": 282,
+      "shippers": 436,
+      "cnacs": 388,
+      "consist": 286
+    },
+    {
+      "vin": "3C63R3AL6VG383580",
+      "vehicle_load_report": 288,
+      "shippers": 433,
+      "cnacs": 385,
+      "consist": 287
+    },
+    {
+      "vin": "3C7WRNFJ4VG374694",
+      "vehicle_load_report": 281,
+      "shippers": 440,
+      "cnacs": 392,
+      "consist": 288
+    },
+    {
+      "vin": "3C7WRNFL2TG351798",
+      "vehicle_load_report": 161,
+      "shippers": 504,
+      "cnacs": 468,
+      "consist": 289
+    },
+    {
+      "vin": "3C6SRFFPXT4207624",
+      "vehicle_load_report": 162,
+      "shippers": 499,
+      "cnacs": 472,
+      "consist": 290
+    },
+    {
+      "vin": "3C6RREFP6T4198171",
+      "vehicle_load_report": 163,
+      "shippers": 497,
+      "cnacs": 469,
+      "consist": 291
+    },
+    {
+      "vin": "3C6RREGG2T4206121",
+      "vehicle_load_report": 164,
+      "shippers": 498,
+      "cnacs": 470,
+      "consist": 292
+    },
+    {
+      "vin": "3C7WRNEL4VG361284",
+      "vehicle_load_report": 165,
+      "shippers": 503,
+      "cnacs": 467,
+      "consist": 293
+    },
+    {
+      "vin": "3C6SRFJP0T4213195",
+      "vehicle_load_report": 166,
+      "shippers": 500,
+      "cnacs": 466,
+      "consist": 294
+    },
+    {
+      "vin": "3C6SRFLP5T4206398",
+      "vehicle_load_report": 167,
+      "shippers": 501,
+      "cnacs": 465,
+      "consist": 295
+    },
+    {
+      "vin": "3C7WRNBJ4VG383076",
+      "vehicle_load_report": 168,
+      "shippers": 502,
+      "cnacs": 471,
+      "consist": 296
+    },
+    {
+      "vin": "3C6UR5DJ6VG372461",
+      "vehicle_load_report": 93,
+      "shippers": 38,
+      "cnacs": 478,
+      "consist": 297
+    },
+    {
+      "vin": "3C63RRHL6VG376010",
+      "vehicle_load_report": 96,
+      "shippers": 37,
+      "cnacs": 473,
+      "consist": 298
+    },
+    {
+      "vin": "3C63R3DJ0VG376358",
+      "vehicle_load_report": 94,
+      "shippers": 33,
+      "cnacs": 476,
+      "consist": 299
+    },
+    {
+      "vin": "3C63R3RL3VG376252",
+      "vehicle_load_report": 92,
+      "shippers": 36,
+      "cnacs": 474,
+      "consist": 300
+    },
+    {
+      "vin": "3C6UR5DJXVG372463",
+      "vehicle_load_report": 91,
+      "shippers": 39,
+      "cnacs": 479,
+      "consist": 301
+    },
+    {
+      "vin": "3C63R3GJ5VG375458",
+      "vehicle_load_report": 90,
+      "shippers": 34,
+      "cnacs": 477,
+      "consist": 302
+    },
+    {
+      "vin": "3C7WRNEL0TG363045",
+      "vehicle_load_report": 89,
+      "shippers": 40,
+      "cnacs": 475,
+      "consist": 303
+    },
+    {
+      "vin": "3C63R3PL1VG383736",
+      "vehicle_load_report": 95,
+      "shippers": 35,
+      "cnacs": 480,
+      "consist": 304
+    },
+    {
+      "vin": "3C6SRFJPXT4201085",
+      "vehicle_load_report": 22,
+      "shippers": 533,
+      "cnacs": 487,
+      "consist": 305
+    },
+    {
+      "vin": "3C7WRNAL7TG363050",
+      "vehicle_load_report": 17,
+      "shippers": 535,
+      "cnacs": 481,
+      "consist": 306
+    },
+    {
+      "vin": "3C6RRFGG3T4210247",
+      "vehicle_load_report": 24,
+      "shippers": 530,
+      "cnacs": 484,
+      "consist": 307
+    },
+    {
+      "vin": "3C6SRFFP9T4209669",
+      "vehicle_load_report": 23,
+      "shippers": 531,
+      "cnacs": 485,
+      "consist": 308
+    },
+    {
+      "vin": "3C6SRFGPXT4207184",
+      "vehicle_load_report": 20,
+      "shippers": 532,
+      "cnacs": 486,
+      "consist": 309
+    },
+    {
+      "vin": "3C6UR5CJ1VG373406",
+      "vehicle_load_report": 19,
+      "shippers": 534,
+      "cnacs": 482,
+      "consist": 310
+    },
+    {
+      "vin": "3C63RRPL9VG363351",
+      "vehicle_load_report": 18,
+      "shippers": 529,
+      "cnacs": 488,
+      "consist": 311
+    },
+    {
+      "vin": "3C7WRTAJ7VG358176",
+      "vehicle_load_report": 21,
+      "shippers": 536,
+      "cnacs": 483,
+      "consist": 312
+    },
+    {
+      "vin": "3C6UR5HJ7TG367888",
+      "vehicle_load_report": 81,
+      "shippers": 47,
+      "cnacs": 492,
+      "consist": 313
+    },
+    {
+      "vin": "3C7WRLFL6TG367135",
+      "vehicle_load_report": 82,
+      "shippers": 48,
+      "cnacs": 491,
+      "consist": 314
+    },
+    {
+      "vin": "3C6TR5EJ6TG352816",
+      "vehicle_load_report": 83,
+      "shippers": 43,
+      "cnacs": 495,
+      "consist": 315
+    },
+    {
+      "vin": "3C6UR5DJ2VG356659",
+      "vehicle_load_report": 84,
+      "shippers": 46,
+      "cnacs": 496,
+      "consist": 316
+    },
+    {
+      "vin": "3C63R5CL7VG374492",
+      "vehicle_load_report": 85,
+      "shippers": 42,
+      "cnacs": 489,
+      "consist": 317
+    },
+    {
+      "vin": "3C6UR5CJ2VG373334",
+      "vehicle_load_report": 86,
+      "shippers": 44,
+      "cnacs": 493,
+      "consist": 318
+    },
+    {
+      "vin": "3C6UR5CJ5VG372162",
+      "vehicle_load_report": 87,
+      "shippers": 45,
+      "cnacs": 494,
+      "consist": 319
+    },
+    {
+      "vin": "3C63R3JL8VG375500",
+      "vehicle_load_report": 88,
+      "shippers": 41,
+      "cnacs": 490,
+      "consist": 320
+    },
+    {
+      "vin": "3C63R5NL7VG369306",
+      "vehicle_load_report": 99,
+      "shippers": 515,
+      "cnacs": 501,
+      "consist": 321
+    },
+    {
+      "vin": "3C6SRFGP6T4208719",
+      "vehicle_load_report": 104,
+      "shippers": 516,
+      "cnacs": 500,
+      "consist": 322
+    },
+    {
+      "vin": "3C7WRTCJ8VG343618",
+      "vehicle_load_report": 98,
+      "shippers": 520,
+      "cnacs": 503,
+      "consist": 323
+    },
+    {
+      "vin": "3C6UR5HJ1VG373124",
+      "vehicle_load_report": 100,
+      "shippers": 519,
+      "cnacs": 498,
+      "consist": 324
+    },
+    {
+      "vin": "3C6UR5CJXVG372867",
+      "vehicle_load_report": 101,
+      "shippers": 518,
+      "cnacs": 504,
+      "consist": 325
+    },
+    {
+      "vin": "3C63R5FL5VG369206",
+      "vehicle_load_report": 102,
+      "shippers": 514,
+      "cnacs": 497,
+      "consist": 326
+    },
+    {
+      "vin": "3C6UR5CJ9VG373900",
+      "vehicle_load_report": 103,
+      "shippers": 517,
+      "cnacs": 499,
+      "consist": 327
+    },
+    {
+      "vin": "3C63R2AJ9VG375045",
+      "vehicle_load_report": 97,
+      "shippers": 513,
+      "cnacs": 502,
+      "consist": 328
+    },
+    {
+      "vin": "3C63R5EL7TG352812",
+      "vehicle_load_report": 154,
+      "shippers": 505,
+      "cnacs": 509,
+      "consist": 329
+    },
+    {
+      "vin": "3C63R5FL3TG368066",
+      "vehicle_load_report": 155,
+      "shippers": 506,
+      "cnacs": 505,
+      "consist": 330
+    },
+    {
+      "vin": "3C6UR5CJ1VG373891",
+      "vehicle_load_report": 160,
+      "shippers": 511,
+      "cnacs": 512,
+      "consist": 331
+    },
+    {
+      "vin": "3C63R5FL6VG374480",
+      "vehicle_load_report": 159,
+      "shippers": 508,
+      "cnacs": 511,
+      "consist": 332
+    },
+    {
+      "vin": "3C6RRFGG6T4202630",
+      "vehicle_load_report": 158,
+      "shippers": 510,
+      "cnacs": 506,
+      "consist": 333
+    },
+    {
+      "vin": "3C6UR5FJ6TG368047",
+      "vehicle_load_report": 157,
+      "shippers": 512,
+      "cnacs": 510,
+      "consist": 334
+    },
+    {
+      "vin": "3C63R5FL6TG367476",
+      "vehicle_load_report": 156,
+      "shippers": 507,
+      "cnacs": 507,
+      "consist": 335
+    },
+    {
+      "vin": "3C6MR5AJ1TG362633",
+      "vehicle_load_report": 153,
+      "shippers": 509,
+      "cnacs": 508,
+      "consist": 336
+    },
+    {
+      "vin": "3C63R5DL2VG367433",
+      "vehicle_load_report": 121,
+      "shippers": 521,
+      "cnacs": 513,
+      "consist": 337
+    },
+    {
+      "vin": "3C6SRFFP4T4205870",
+      "vehicle_load_report": 122,
+      "shippers": 522,
+      "cnacs": 514,
+      "consist": 338
+    },
+    {
+      "vin": "3C6UR5SJ3VG373196",
+      "vehicle_load_report": 123,
+      "shippers": 527,
+      "cnacs": 519,
+      "consist": 339
+    },
+    {
+      "vin": "3C7WRNBL8TG361709",
+      "vehicle_load_report": 124,
+      "shippers": 528,
+      "cnacs": 520,
+      "consist": 340
+    },
+    {
+      "vin": "3C6SRFJP2T4212730",
+      "vehicle_load_report": 125,
+      "shippers": 523,
+      "cnacs": 516,
+      "consist": 341
+    },
+    {
+      "vin": "3C6SRFLP3T4206576",
+      "vehicle_load_report": 126,
+      "shippers": 524,
+      "cnacs": 518,
+      "consist": 342
+    },
+    {
+      "vin": "3C6UR5FJ9VG374203",
+      "vehicle_load_report": 127,
+      "shippers": 526,
+      "cnacs": 515,
+      "consist": 343
+    },
+    {
+      "vin": "3C6SRFLPXT4206560",
+      "vehicle_load_report": 128,
+      "shippers": 525,
+      "cnacs": 517,
+      "consist": 344
+    },
+    {
+      "vin": "3C6TR5EJ9TG352826",
+      "vehicle_load_report": 504,
+      "shippers": 184,
+      "cnacs": 136,
+      "consist": 345
+    },
+    {
+      "vin": "3C6MRVJGXTE211726",
+      "vehicle_load_report": 497,
+      "shippers": 180,
+      "cnacs": 132,
+      "consist": 346
+    },
+    {
+      "vin": "3C6TR5EJ4TG352880",
+      "vehicle_load_report": 502,
+      "shippers": 182,
+      "cnacs": 134,
+      "consist": 347
+    },
+    {
+      "vin": "3C63R5EL0TG365983",
+      "vehicle_load_report": 501,
+      "shippers": 177,
+      "cnacs": 129,
+      "consist": 348
+    },
+    {
+      "vin": "3C6LRVCG1TE209047",
+      "vehicle_load_report": 500,
+      "shippers": 178,
+      "cnacs": 130,
+      "consist": 349
+    },
+    {
+      "vin": "3C6MRVJGXTE211760",
+      "vehicle_load_report": 499,
+      "shippers": 181,
+      "cnacs": 133,
+      "consist": 350
+    },
+    {
+      "vin": "3C6MRVJG3TE211695",
+      "vehicle_load_report": 498,
+      "shippers": 179,
+      "cnacs": 131,
+      "consist": 351
+    },
+    {
+      "vin": "3C6TR5EJ7TG352811",
+      "vehicle_load_report": 503,
+      "shippers": 183,
+      "cnacs": 135,
+      "consist": 352
+    },
+    {
+      "vin": "3C6SRFFP5T4210317",
+      "vehicle_load_report": 376,
+      "shippers": 174,
+      "cnacs": 126,
+      "consist": 353
+    },
+    {
+      "vin": "3C63RRGL2VG375910",
+      "vehicle_load_report": 370,
+      "shippers": 169,
+      "cnacs": 121,
+      "consist": 354
+    },
+    {
+      "vin": "3C6MRVJG5TE207096",
+      "vehicle_load_report": 371,
+      "shippers": 172,
+      "cnacs": 124,
+      "consist": 355
+    },
+    {
+      "vin": "3C6MRVJG3TE201877",
+      "vehicle_load_report": 372,
+      "shippers": 171,
+      "cnacs": 123,
+      "consist": 356
+    },
+    {
+      "vin": "3C6MRVJGXTE204016",
+      "vehicle_load_report": 373,
+      "shippers": 173,
+      "cnacs": 125,
+      "consist": 357
+    },
+    {
+      "vin": "3C6LRVDG0TE209118",
+      "vehicle_load_report": 374,
+      "shippers": 170,
+      "cnacs": 122,
+      "consist": 358
+    },
+    {
+      "vin": "3C6SRFGP0T4203872",
+      "vehicle_load_report": 375,
+      "shippers": 175,
+      "cnacs": 127,
+      "consist": 359
+    },
+    {
+      "vin": "3C7WR4HJ5TG355754",
+      "vehicle_load_report": 369,
+      "shippers": 176,
+      "cnacs": 128,
+      "consist": 360
+    },
+    {
+      "vin": "3C63RRJL4VG378560",
+      "vehicle_load_report": 350,
+      "shippers": 202,
+      "cnacs": 154,
+      "consist": 361
+    },
+    {
+      "vin": "3C6LRVAG9TE210028",
+      "vehicle_load_report": 349,
+      "shippers": 203,
+      "cnacs": 155,
+      "consist": 362
+    },
+    {
+      "vin": "3C6LRVDG7TE206765",
+      "vehicle_load_report": 352,
+      "shippers": 204,
+      "cnacs": 156,
+      "consist": 363
+    },
+    {
+      "vin": "3C7WRTAJ0VG369620",
+      "vehicle_load_report": 348,
+      "shippers": 208,
+      "cnacs": 160,
+      "consist": 364
+    },
+    {
+      "vin": "3C6MRVHG8TE205316",
+      "vehicle_load_report": 347,
+      "shippers": 205,
+      "cnacs": 157,
+      "consist": 365
+    },
+    {
+      "vin": "3C63R3SL3VG384832",
+      "vehicle_load_report": 351,
+      "shippers": 201,
+      "cnacs": 153,
+      "consist": 366
+    },
+    {
+      "vin": "3C6MRVJG2TE211753",
+      "vehicle_load_report": 346,
+      "shippers": 206,
+      "cnacs": 158,
+      "consist": 367
+    },
+    {
+      "vin": "3C6SRFJP6T4193597",
+      "vehicle_load_report": 345,
+      "shippers": 207,
+      "cnacs": 159,
+      "consist": 368
+    },
+    {
+      "vin": "3C63RRGL0TG358973",
+      "vehicle_load_report": 564,
+      "shippers": 185,
+      "cnacs": 137,
+      "consist": 369
+    },
+    {
+      "vin": "3C6SRFJP1T4194950",
+      "vehicle_load_report": 568,
+      "shippers": 190,
+      "cnacs": 142,
+      "consist": 370
+    },
+    {
+      "vin": "3C6MRVJG6TE204983",
+      "vehicle_load_report": 567,
+      "shippers": 188,
+      "cnacs": 140,
+      "consist": 371
+    },
+    {
+      "vin": "3C6MRVJG0TE201867",
+      "vehicle_load_report": 566,
+      "shippers": 187,
+      "cnacs": 139,
+      "consist": 372
+    },
+    {
+      "vin": "3C7WRKEJ0VG383408",
+      "vehicle_load_report": 562,
+      "shippers": 192,
+      "cnacs": 144,
+      "consist": 373
+    },
+    {
+      "vin": "3C6LRVDG7TE210797",
+      "vehicle_load_report": 563,
+      "shippers": 186,
+      "cnacs": 138,
+      "consist": 374
+    },
+    {
+      "vin": "3C6MRVJG7TE211697",
+      "vehicle_load_report": 561,
+      "shippers": 189,
+      "cnacs": 141,
+      "consist": 375
+    },
+    {
+      "vin": "3C6SRFJP2T4213506",
+      "vehicle_load_report": 565,
+      "shippers": 191,
+      "cnacs": 143,
+      "consist": 376
+    },
+    {
+      "vin": "3C63R3EL1VG383786",
+      "vehicle_load_report": 448,
+      "shippers": 193,
+      "cnacs": 145,
+      "consist": 377
+    },
+    {
+      "vin": "3C63RRJL5VG384318",
+      "vehicle_load_report": 442,
+      "shippers": 194,
+      "cnacs": 146,
+      "consist": 378
+    },
+    {
+      "vin": "3C6LRVNG7TE210085",
+      "vehicle_load_report": 447,
+      "shippers": 195,
+      "cnacs": 147,
+      "consist": 379
+    },
+    {
+      "vin": "3C6MRVJG9TE211751",
+      "vehicle_load_report": 445,
+      "shippers": 197,
+      "cnacs": 149,
+      "consist": 380
+    },
+    {
+      "vin": "3C6MRVJGXTE211497",
+      "vehicle_load_report": 444,
+      "shippers": 198,
+      "cnacs": 150,
+      "consist": 381
+    },
+    {
+      "vin": "3C6MRVJG0TE204977",
+      "vehicle_load_report": 443,
+      "shippers": 196,
+      "cnacs": 148,
+      "consist": 382
+    },
+    {
+      "vin": "3C6UR5CJ3VG368014",
+      "vehicle_load_report": 446,
+      "shippers": 199,
+      "cnacs": 151,
+      "consist": 383
+    },
+    {
+      "vin": "3C7WRLAJ0VG383520",
+      "vehicle_load_report": 441,
+      "shippers": 200,
+      "cnacs": 152,
+      "consist": 384
+    },
+    {
+      "vin": "3C7WR4AJ3TG363457",
+      "vehicle_load_report": 543,
+      "shippers": 144,
+      "cnacs": 96,
+      "consist": 385
+    },
+    {
+      "vin": "3C6SRFJP2T4193824",
+      "vehicle_load_report": 544,
+      "shippers": 141,
+      "cnacs": 93,
+      "consist": 386
+    },
+    {
+      "vin": "3C6SRFJPXT4193733",
+      "vehicle_load_report": 542,
+      "shippers": 143,
+      "cnacs": 95,
+      "consist": 387
+    },
+    {
+      "vin": "3C6MRVJG7TE207097",
+      "vehicle_load_report": 541,
+      "shippers": 138,
+      "cnacs": 90,
+      "consist": 388
+    },
+    {
+      "vin": "3C6MRVUG3TE193825",
+      "vehicle_load_report": 540,
+      "shippers": 140,
+      "cnacs": 92,
+      "consist": 389
+    },
+    {
+      "vin": "3C6MRVJGXTE193695",
+      "vehicle_load_report": 539,
+      "shippers": 139,
+      "cnacs": 91,
+      "consist": 390
+    },
+    {
+      "vin": "3C6SRFJP9T4214927",
+      "vehicle_load_report": 538,
+      "shippers": 142,
+      "cnacs": 94,
+      "consist": 391
+    },
+    {
+      "vin": "3C6MRVJG6TE211805",
+      "vehicle_load_report": 537,
+      "shippers": 137,
+      "cnacs": 89,
+      "consist": 392
+    },
+    {
+      "vin": "3C6MRVJG9TE209773",
+      "vehicle_load_report": 613,
+      "shippers": 148,
+      "cnacs": 100,
+      "consist": 393
+    },
+    {
+      "vin": "3C7WRNFL2TG363918",
+      "vehicle_load_report": 609,
+      "shippers": 152,
+      "cnacs": 104,
+      "consist": 394
+    },
+    {
+      "vin": "3C6MRVJG7TE210937",
+      "vehicle_load_report": 610,
+      "shippers": 147,
+      "cnacs": 99,
+      "consist": 395
+    },
+    {
+      "vin": "3C6LRVDG2TE195769",
+      "vehicle_load_report": 612,
+      "shippers": 145,
+      "cnacs": 97,
+      "consist": 396
+    },
+    {
+      "vin": "3C6LRVNG3TE207359",
+      "vehicle_load_report": 614,
+      "shippers": 146,
+      "cnacs": 98,
+      "consist": 397
+    },
+    {
+      "vin": "3C6SRFJP7T4197402",
+      "vehicle_load_report": 615,
+      "shippers": 150,
+      "cnacs": 102,
+      "consist": 398
+    },
+    {
+      "vin": "3C6SRFFP4T4208865",
+      "vehicle_load_report": 616,
+      "shippers": 149,
+      "cnacs": 101,
+      "consist": 399
+    },
+    {
+      "vin": "3C6SRFJP7T4213503",
+      "vehicle_load_report": 611,
+      "shippers": 151,
+      "cnacs": 103,
+      "consist": 400
+    },
+    {
+      "vin": "3C6SRFJP0T4200687",
+      "vehicle_load_report": 360,
+      "shippers": 22,
+      "cnacs": 609,
+      "consist": 401
+    },
+    {
+      "vin": "3C6SRFJP6T4194684",
+      "vehicle_load_report": 359,
+      "shippers": 23,
+      "cnacs": 610,
+      "consist": 402
+    },
+    {
+      "vin": "3C6LRVCG9TE210642",
+      "vehicle_load_report": 353,
+      "shippers": 18,
+      "cnacs": 611,
+      "consist": 403
+    },
+    {
+      "vin": "3C6MRVJG3TE209770",
+      "vehicle_load_report": 354,
+      "shippers": 20,
+      "cnacs": 612,
+      "consist": 404
+    },
+    {
+      "vin": "3C6LRVNG1TE207358",
+      "vehicle_load_report": 355,
+      "shippers": 19,
+      "cnacs": 613,
+      "consist": 405
+    },
+    {
+      "vin": "3C6SRFLPXT4203612",
+      "vehicle_load_report": 356,
+      "shippers": 24,
+      "cnacs": 614,
+      "consist": 406
+    },
+    {
+      "vin": "3C6SRFFP3T4206797",
+      "vehicle_load_report": 357,
+      "shippers": 21,
+      "cnacs": 615,
+      "consist": 407
+    },
+    {
+      "vin": "3C6LRVAG6TE207507",
+      "vehicle_load_report": 358,
+      "shippers": 17,
+      "cnacs": 616,
+      "consist": 408
+    },
+    {
+      "vin": "3C7WRNEL1TG360543",
+      "vehicle_load_report": 399,
+      "shippers": 160,
+      "cnacs": 112,
+      "consist": 409
+    },
+    {
+      "vin": "3C6SRFJP6T4215453",
+      "vehicle_load_report": 398,
+      "shippers": 157,
+      "cnacs": 109,
+      "consist": 410
+    },
+    {
+      "vin": "3C6SRFGP9T4210190",
+      "vehicle_load_report": 397,
+      "shippers": 156,
+      "cnacs": 108,
+      "consist": 411
+    },
+    {
+      "vin": "3C6UR5DL8TG336057",
+      "vehicle_load_report": 396,
+      "shippers": 159,
+      "cnacs": 111,
+      "consist": 412
+    },
+    {
+      "vin": "3C6RRFGG7T4205388",
+      "vehicle_load_report": 395,
+      "shippers": 154,
+      "cnacs": 106,
+      "consist": 413
+    },
+    {
+      "vin": "3C6UR5CJ9VG373461",
+      "vehicle_load_report": 394,
+      "shippers": 158,
+      "cnacs": 110,
+      "consist": 414
+    },
+    {
+      "vin": "3C6SRFGP3T4204188",
+      "vehicle_load_report": 393,
+      "shippers": 155,
+      "cnacs": 107,
+      "consist": 415
+    },
+    {
+      "vin": "3C6RREGG7T4216255",
+      "vehicle_load_report": 400,
+      "shippers": 153,
+      "cnacs": 105,
+      "consist": 416
+    },
+    {
+      "vin": "3C6UR5DJ2VG373865",
+      "vehicle_load_report": 534,
+      "shippers": 167,
+      "cnacs": 119,
+      "consist": 417
+    },
+    {
+      "vin": "3C6RRFGGXT4210195",
+      "vehicle_load_report": 529,
+      "shippers": 164,
+      "cnacs": 116,
+      "consist": 418
+    },
+    {
+      "vin": "3C63RRHL8TG326982",
+      "vehicle_load_report": 530,
+      "shippers": 162,
+      "cnacs": 114,
+      "consist": 419
+    },
+    {
+      "vin": "3C6UR5DL9TG362523",
+      "vehicle_load_report": 536,
+      "shippers": 168,
+      "cnacs": 120,
+      "consist": 420
+    },
+    {
+      "vin": "3C6RREGG6T4206154",
+      "vehicle_load_report": 531,
+      "shippers": 163,
+      "cnacs": 115,
+      "consist": 421
+    },
+    {
+      "vin": "3C6SRFGP0T4214676",
+      "vehicle_load_report": 533,
+      "shippers": 166,
+      "cnacs": 118,
+      "consist": 422
+    },
+    {
+      "vin": "3C63R5CL2VG374190",
+      "vehicle_load_report": 535,
+      "shippers": 161,
+      "cnacs": 113,
+      "consist": 423
+    },
+    {
+      "vin": "3C6SRFFP4T4205562",
+      "vehicle_load_report": 532,
+      "shippers": 165,
+      "cnacs": 117,
+      "consist": 424
+    },
+    {
+      "vin": "3C6UR5CJ3TG352604",
+      "vehicle_load_report": 493,
+      "shippers": 87,
+      "cnacs": 39,
+      "consist": 425
+    },
+    {
+      "vin": "3C6RRFGG8T4216707",
+      "vehicle_load_report": 494,
+      "shippers": 85,
+      "cnacs": 37,
+      "consist": 426
+    },
+    {
+      "vin": "3C6MRVUG6TE187095",
+      "vehicle_load_report": 496,
+      "shippers": 84,
+      "cnacs": 36,
+      "consist": 427
+    },
+    {
+      "vin": "3C6MRVJG5TE209771",
+      "vehicle_load_report": 492,
+      "shippers": 82,
+      "cnacs": 34,
+      "consist": 428
+    },
+    {
+      "vin": "3C7WR4AJXTG363455",
+      "vehicle_load_report": 491,
+      "shippers": 88,
+      "cnacs": 40,
+      "consist": 429
+    },
+    {
+      "vin": "3C6MRVUG0TE193832",
+      "vehicle_load_report": 495,
+      "shippers": 83,
+      "cnacs": 35,
+      "consist": 430
+    },
+    {
+      "vin": "3C6SRFJP6T4213508",
+      "vehicle_load_report": 489,
+      "shippers": 86,
+      "cnacs": 38,
+      "consist": 431
+    },
+    {
+      "vin": "3C6MRVHG6TE205041",
+      "vehicle_load_report": 490,
+      "shippers": 81,
+      "cnacs": 33,
+      "consist": 432
+    },
+    {
+      "vin": "3C6LRVDG1TE209063",
+      "vehicle_load_report": 487,
+      "shippers": 66,
+      "cnacs": 18,
+      "consist": 433
+    },
+    {
+      "vin": "3C6MRVJG3TE206500",
+      "vehicle_load_report": 481,
+      "shippers": 69,
+      "cnacs": 21,
+      "consist": 434
+    },
+    {
+      "vin": "3C6MRVJG1TE211808",
+      "vehicle_load_report": 488,
+      "shippers": 68,
+      "cnacs": 20,
+      "consist": 435
+    },
+    {
+      "vin": "3C6SRFFP9T4209655",
+      "vehicle_load_report": 482,
+      "shippers": 70,
+      "cnacs": 22,
+      "consist": 436
+    },
+    {
+      "vin": "3C6SRFGP8T4208527",
+      "vehicle_load_report": 483,
+      "shippers": 71,
+      "cnacs": 23,
+      "consist": 437
+    },
+    {
+      "vin": "3C6MRVHG9TE205910",
+      "vehicle_load_report": 484,
+      "shippers": 67,
+      "cnacs": 19,
+      "consist": 438
+    },
+    {
+      "vin": "3C6SRFJP0T4200415",
+      "vehicle_load_report": 485,
+      "shippers": 72,
+      "cnacs": 24,
+      "consist": 439
+    },
+    {
+      "vin": "3C63RRGL4VG375911",
+      "vehicle_load_report": 486,
+      "shippers": 65,
+      "cnacs": 17,
+      "consist": 440
+    },
+    {
+      "vin": "3C63R3DJ8VG368167",
+      "vehicle_load_report": 517,
+      "shippers": 75,
+      "cnacs": 27,
+      "consist": 441
+    },
+    {
+      "vin": "3C6MRVHG6TE205881",
+      "vehicle_load_report": 520,
+      "shippers": 78,
+      "cnacs": 30,
+      "consist": 442
+    },
+    {
+      "vin": "3C6SRFFP6T4209774",
+      "vehicle_load_report": 518,
+      "shippers": 80,
+      "cnacs": 32,
+      "consist": 443
+    },
+    {
+      "vin": "3C6MRVHG6TE205251",
+      "vehicle_load_report": 516,
+      "shippers": 77,
+      "cnacs": 29,
+      "consist": 444
+    },
+    {
+      "vin": "3C63R3CL1VG367669",
+      "vehicle_load_report": 515,
+      "shippers": 73,
+      "cnacs": 25,
+      "consist": 445
+    },
+    {
+      "vin": "3C63R3CL2VG369088",
+      "vehicle_load_report": 514,
+      "shippers": 74,
+      "cnacs": 26,
+      "consist": 446
+    },
+    {
+      "vin": "3C6MRVUG1TE193791",
+      "vehicle_load_report": 513,
+      "shippers": 79,
+      "cnacs": 31,
+      "consist": 447
+    },
+    {
+      "vin": "3C6MRVHG5TE205239",
+      "vehicle_load_report": 519,
+      "shippers": 76,
+      "cnacs": 28,
+      "consist": 448
+    },
+    {
+      "vin": "3C6MRVJG7TE211781",
+      "vehicle_load_report": 377,
+      "shippers": 58,
+      "cnacs": 10,
+      "consist": 449
+    },
+    {
+      "vin": "3C6SRFFP7T4212893",
+      "vehicle_load_report": 378,
+      "shippers": 62,
+      "cnacs": 14,
+      "consist": 450
+    },
+    {
+      "vin": "3C7WRNAL4VG383307",
+      "vehicle_load_report": 379,
+      "shippers": 64,
+      "cnacs": 16,
+      "consist": 451
+    },
+    {
+      "vin": "3C6MRVUGXTE191666",
+      "vehicle_load_report": 384,
+      "shippers": 60,
+      "cnacs": 12,
+      "consist": 452
+    },
+    {
+      "vin": "3C6MRVHG8TE206403",
+      "vehicle_load_report": 383,
+      "shippers": 57,
+      "cnacs": 9,
+      "consist": 453
+    },
+    {
+      "vin": "3C6SRFJP6T4200922",
+      "vehicle_load_report": 382,
+      "shippers": 63,
+      "cnacs": 15,
+      "consist": 454
+    },
+    {
+      "vin": "3C6SRFFP5T4208387",
+      "vehicle_load_report": 381,
+      "shippers": 61,
+      "cnacs": 13,
+      "consist": 455
+    },
+    {
+      "vin": "3C6MRVJGXTE209779",
+      "vehicle_load_report": 380,
+      "shippers": 59,
+      "cnacs": 11,
+      "consist": 456
+    },
+    {
+      "vin": "3C6TR5EJ5TG352810",
+      "vehicle_load_report": 325,
+      "shippers": 96,
+      "cnacs": 48,
+      "consist": 457
+    },
+    {
+      "vin": "3C6MRVJG1TE209735",
+      "vehicle_load_report": 321,
+      "shippers": 91,
+      "cnacs": 43,
+      "consist": 458
+    },
+    {
+      "vin": "3C6SRFFP9T4210000",
+      "vehicle_load_report": 322,
+      "shippers": 94,
+      "cnacs": 46,
+      "consist": 459
+    },
+    {
+      "vin": "3C6MRVUG2TE193816",
+      "vehicle_load_report": 324,
+      "shippers": 92,
+      "cnacs": 44,
+      "consist": 460
+    },
+    {
+      "vin": "3C63RRGL7TG363250",
+      "vehicle_load_report": 326,
+      "shippers": 89,
+      "cnacs": 41,
+      "consist": 461
+    },
+    {
+      "vin": "3C6MRVUG3TE193162",
+      "vehicle_load_report": 327,
+      "shippers": 93,
+      "cnacs": 45,
+      "consist": 462
+    },
+    {
+      "vin": "3C6SRFJP4T4213944",
+      "vehicle_load_report": 328,
+      "shippers": 95,
+      "cnacs": 47,
+      "consist": 463
+    },
+    {
+      "vin": "3C6LRVBG8TE207555",
+      "vehicle_load_report": 323,
+      "shippers": 90,
+      "cnacs": 42,
+      "consist": 464
+    },
+    {
+      "vin": "3C63R5HL3VG381982",
+      "vehicle_load_report": 245,
+      "shippers": 553,
+      "cnacs": 617,
+      "consist": 465
+    },
+    {
+      "vin": "3C6UR5DJ2TG362748",
+      "vehicle_load_report": 76,
+      "shippers": 125,
+      "cnacs": 77,
+      "consist": 466
+    },
+    {
+      "vin": "3C7WRNFL1TG360539",
+      "vehicle_load_report": 77,
+      "shippers": 128,
+      "cnacs": 80,
+      "consist": 467
+    },
+    {
+      "vin": "3C6SRFJP5T4213595",
+      "vehicle_load_report": 79,
+      "shippers": 122,
+      "cnacs": 74,
+      "consist": 468
+    },
+    {
+      "vin": "3C6UR5DJ3VG370831",
+      "vehicle_load_report": 248,
+      "shippers": 557,
+      "cnacs": 618,
+      "consist": 469
+    },
+    {
+      "vin": "3C7WRLFL4TG367070",
+      "vehicle_load_report": 73,
+      "shippers": 127,
+      "cnacs": 79,
+      "consist": 470
+    },
+    {
+      "vin": "3C6SRFGP5T4207819",
+      "vehicle_load_report": 75,
+      "shippers": 121,
+      "cnacs": 73,
+      "consist": 471
+    },
+    {
+      "vin": "3C6TR5CJ2TG358731",
+      "vehicle_load_report": 74,
+      "shippers": 123,
+      "cnacs": 75,
+      "consist": 472
+    },
+    {
+      "vin": "3C6RRFGGXT4205398",
+      "vehicle_load_report": 246,
+      "shippers": 555,
+      "cnacs": 619,
+      "consist": 473
+    },
+    {
+      "vin": "3C6RRFGG9T4209863",
+      "vehicle_load_report": 243,
+      "shippers": 554,
+      "cnacs": 620,
+      "consist": 474
+    },
+    {
+      "vin": "3C6UR5CJ8TG354901",
+      "vehicle_load_report": 78,
+      "shippers": 124,
+      "cnacs": 76,
+      "consist": 475
+    },
+    {
+      "vin": "3C7WRTAJ8VG369820",
+      "vehicle_load_report": 244,
+      "shippers": 559,
+      "cnacs": 621,
+      "consist": 476
+    },
+    {
+      "vin": "3C7WR5AJ2TG354898",
+      "vehicle_load_report": 80,
+      "shippers": 126,
+      "cnacs": 78,
+      "consist": 477
+    },
+    {
+      "vin": "3C7WRNAL7VG383060",
+      "vehicle_load_report": 241,
+      "shippers": 558,
+      "cnacs": 622,
+      "consist": 478
+    },
+    {
+      "vin": "3C7WRTCL1VG369821",
+      "vehicle_load_report": 242,
+      "shippers": 560,
+      "cnacs": 623,
+      "consist": 479
+    },
+    {
+      "vin": "3C6UR5DJ0VG370950",
+      "vehicle_load_report": 247,
+      "shippers": 556,
+      "cnacs": 624,
+      "consist": 480
+    },
+    {
+      "vin": "3C6UR5CL8VG381455",
+      "vehicle_load_report": 211,
+      "shippers": 565,
+      "cnacs": 625,
+      "consist": 481
+    },
+    {
+      "vin": "3C6RREFP3T4198175",
+      "vehicle_load_report": 212,
+      "shippers": 563,
+      "cnacs": 626,
+      "consist": 482
+    },
+    {
+      "vin": "3C63RRRL4VG375680",
+      "vehicle_load_report": 213,
+      "shippers": 562,
+      "cnacs": 627,
+      "consist": 483
+    },
+    {
+      "vin": "3C7WRNDL8TG367653",
+      "vehicle_load_report": 214,
+      "shippers": 568,
+      "cnacs": 628,
+      "consist": 484
+    },
+    {
+      "vin": "3C6UR5CJ5VG374638",
+      "vehicle_load_report": 215,
+      "shippers": 564,
+      "cnacs": 629,
+      "consist": 485
+    },
+    {
+      "vin": "3C7WRNBJ8VG383100",
+      "vehicle_load_report": 216,
+      "shippers": 567,
+      "cnacs": 630,
+      "consist": 486
+    },
+    {
+      "vin": "3C7WRTCJ7TG347219",
+      "vehicle_load_report": 280,
+      "shippers": 104,
+      "cnacs": 56,
+      "consist": 487
+    },
+    {
+      "vin": "3C7WR8CJXVG369618",
+      "vehicle_load_report": 279,
+      "shippers": 102,
+      "cnacs": 54,
+      "consist": 488
+    },
+    {
+      "vin": "3C6UR5CJXVG372996",
+      "vehicle_load_report": 278,
+      "shippers": 101,
+      "cnacs": 53,
+      "consist": 489
+    },
+    {
+      "vin": "3C6UR5CJ5VG373943",
+      "vehicle_load_report": 277,
+      "shippers": 100,
+      "cnacs": 52,
+      "consist": 490
+    },
+    {
+      "vin": "3C6RRFGG6T4213322",
+      "vehicle_load_report": 276,
+      "shippers": 99,
+      "cnacs": 51,
+      "consist": 491
+    },
+    {
+      "vin": "3C6UR5DJ4TG361083",
+      "vehicle_load_report": 210,
+      "shippers": 566,
+      "cnacs": 631,
+      "consist": 492
+    },
+    {
+      "vin": "3C63R5RL5VG369265",
+      "vehicle_load_report": 274,
+      "shippers": 97,
+      "cnacs": 49,
+      "consist": 493
+    },
+    {
+      "vin": "3C63R5TL7VG369261",
+      "vehicle_load_report": 209,
+      "shippers": 561,
+      "cnacs": 632,
+      "consist": 494
+    },
+    {
+      "vin": "3C63R5SL7VG374462",
+      "vehicle_load_report": 273,
+      "shippers": 98,
+      "cnacs": 50,
+      "consist": 495
+    },
+    {
+      "vin": "3C7WRNFLXTG360569",
+      "vehicle_load_report": 275,
+      "shippers": 103,
+      "cnacs": 55,
+      "consist": 496
+    },
+    {
+      "vin": "3C63R3GJ5VG375461",
+      "vehicle_load_report": 27,
+      "shippers": 50,
+      "cnacs": 633,
+      "consist": 497
+    },
+    {
+      "vin": "3C6UR5CJ9TG356026",
+      "vehicle_load_report": 176,
+      "shippers": 120,
+      "cnacs": 72,
+      "consist": 498
+    },
+    {
+      "vin": "3C63R3ML1VG383773",
+      "vehicle_load_report": 32,
+      "shippers": 55,
+      "cnacs": 634,
+      "consist": 499
+    },
+    {
+      "vin": "3C6UR5CJ6TG356002",
+      "vehicle_load_report": 175,
+      "shippers": 119,
+      "cnacs": 71,
+      "consist": 500
+    },
+    {
+      "vin": "3C63RRGL3TG363309",
+      "vehicle_load_report": 173,
+      "shippers": 115,
+      "cnacs": 67,
+      "consist": 501
+    },
+    {
+      "vin": "3C6RREGG5T4216254",
+      "vehicle_load_report": 172,
+      "shippers": 116,
+      "cnacs": 68,
+      "consist": 502
+    },
+    {
+      "vin": "3C6SRFJP9T4211090",
+      "vehicle_load_report": 170,
+      "shippers": 117,
+      "cnacs": 69,
+      "consist": 503
+    },
+    {
+      "vin": "3C63R3SLXVG383872",
+      "vehicle_load_report": 171,
+      "shippers": 113,
+      "cnacs": 65,
+      "consist": 504
+    },
+    {
+      "vin": "3C63R3GJ7VG375459",
+      "vehicle_load_report": 26,
+      "shippers": 51,
+      "cnacs": 635,
+      "consist": 505
+    },
+    {
+      "vin": "3C63R3GJ3VG375460",
+      "vehicle_load_report": 28,
+      "shippers": 49,
+      "cnacs": 636,
+      "consist": 506
+    },
+    {
+      "vin": "3C63RRJL6VG375546",
+      "vehicle_load_report": 29,
+      "shippers": 53,
+      "cnacs": 637,
+      "consist": 507
+    },
+    {
+      "vin": "3C6UR5CJ8VG382636",
+      "vehicle_load_report": 30,
+      "shippers": 54,
+      "cnacs": 638,
+      "consist": 508
+    },
+    {
+      "vin": "3C63R5FL9VG377339",
+      "vehicle_load_report": 169,
+      "shippers": 114,
+      "cnacs": 66,
+      "consist": 509
+    },
+    {
+      "vin": "3C6UR5CJ2TG356014",
+      "vehicle_load_report": 174,
+      "shippers": 118,
+      "cnacs": 70,
+      "consist": 510
+    },
+    {
+      "vin": "3C6UR5CJ1VG382638",
+      "vehicle_load_report": 31,
+      "shippers": 56,
+      "cnacs": 639,
+      "consist": 511
+    },
+    {
+      "vin": "3C63R5CL3VG373811",
+      "vehicle_load_report": 25,
+      "shippers": 52,
+      "cnacs": 640,
+      "consist": 512
+    },
+    {
+      "vin": "3C6SRFFP5T4207594",
+      "vehicle_load_report": 133,
+      "shippers": 131,
+      "cnacs": 83,
+      "consist": 513
+    },
+    {
+      "vin": "3C63R5SL6TG367225",
+      "vehicle_load_report": 186,
+      "shippers": 546,
+      "cnacs": 641,
+      "consist": 514
+    },
+    {
+      "vin": "3C7WRTCL4VG369702",
+      "vehicle_load_report": 187,
+      "shippers": 552,
+      "cnacs": 642,
+      "consist": 515
+    },
+    {
+      "vin": "3C6UR5CJ0VG374062",
+      "vehicle_load_report": 188,
+      "shippers": 549,
+      "cnacs": 643,
+      "consist": 516
+    },
+    {
+      "vin": "3C63R3AJ7VG367855",
+      "vehicle_load_report": 189,
+      "shippers": 545,
+      "cnacs": 644,
+      "consist": 517
+    },
+    {
+      "vin": "3C6UR5CJ6VG373501",
+      "vehicle_load_report": 190,
+      "shippers": 550,
+      "cnacs": 645,
+      "consist": 518
+    },
+    {
+      "vin": "3C6UR5CJ7VG370753",
+      "vehicle_load_report": 191,
+      "shippers": 551,
+      "cnacs": 646,
+      "consist": 519
+    },
+    {
+      "vin": "3C6SRFGP5T4188186",
+      "vehicle_load_report": 129,
+      "shippers": 133,
+      "cnacs": 85,
+      "consist": 520
+    },
+    {
+      "vin": "3C7WRNFL6TG351545",
+      "vehicle_load_report": 130,
+      "shippers": 136,
+      "cnacs": 88,
+      "consist": 521
+    },
+    {
+      "vin": "3C7WRLBL7TG360619",
+      "vehicle_load_report": 132,
+      "shippers": 135,
+      "cnacs": 87,
+      "consist": 522
+    },
+    {
+      "vin": "3C6SRFFPXT4211687",
+      "vehicle_load_report": 134,
+      "shippers": 132,
+      "cnacs": 84,
+      "consist": 523
+    },
+    {
+      "vin": "3C6RREFP4T4158039",
+      "vehicle_load_report": 192,
+      "shippers": 548,
+      "cnacs": 647,
+      "consist": 524
+    },
+    {
+      "vin": "3C6UR5CJ5VG370993",
+      "vehicle_load_report": 135,
+      "shippers": 134,
+      "cnacs": 86,
+      "consist": 525
+    },
+    {
+      "vin": "3C63R5TLXVG384305",
+      "vehicle_load_report": 185,
+      "shippers": 547,
+      "cnacs": 648,
+      "consist": 526
+    },
+    {
+      "vin": "3C63R5SL8VG374163",
+      "vehicle_load_report": 136,
+      "shippers": 129,
+      "cnacs": 81,
+      "consist": 527
+    },
+    {
+      "vin": "3C63RRGL9TG359166",
+      "vehicle_load_report": 131,
+      "shippers": 130,
+      "cnacs": 82,
+      "consist": 528
+    },
+    {
+      "vin": "3C63R5EL6TG368449",
+      "vehicle_load_report": 263,
+      "shippers": 105,
+      "cnacs": 57,
+      "consist": 529
+    },
+    {
+      "vin": "3C6UR5DL1TG359485",
+      "vehicle_load_report": 257,
+      "shippers": 111,
+      "cnacs": 63,
+      "consist": 530
+    },
+    {
+      "vin": "3C63RRGL6VG375540",
+      "vehicle_load_report": 258,
+      "shippers": 106,
+      "cnacs": 58,
+      "consist": 531
+    },
+    {
+      "vin": "3C6SRFGP6T4207926",
+      "vehicle_load_report": 259,
+      "shippers": 109,
+      "cnacs": 61,
+      "consist": 532
+    },
+    {
+      "vin": "3C6UR5CJ0VG370982",
+      "vehicle_load_report": 260,
+      "shippers": 110,
+      "cnacs": 62,
+      "consist": 533
+    },
+    {
+      "vin": "3C6RRFFG8T4206809",
+      "vehicle_load_report": 262,
+      "shippers": 107,
+      "cnacs": 59,
+      "consist": 534
+    },
+    {
+      "vin": "3C6UR5FJ5VG377731",
+      "vehicle_load_report": 264,
+      "shippers": 112,
+      "cnacs": 64,
+      "consist": 535
+    },
+    {
+      "vin": "3C6RRFGG1T4208691",
+      "vehicle_load_report": 261,
+      "shippers": 108,
+      "cnacs": 60,
+      "consist": 536
+    },
+    {
+      "vin": "3C63RRGL8VG376186",
+      "vehicle_load_report": 65,
+      "shippers": 355,
+      "cnacs": 307,
+      "consist": 537
+    },
+    {
+      "vin": "3C6RREGPXT4210479",
+      "vehicle_load_report": 67,
+      "shippers": 356,
+      "cnacs": 308,
+      "consist": 538
+    },
+    {
+      "vin": "3C63R5CLXVG369299",
+      "vehicle_load_report": 68,
+      "shippers": 353,
+      "cnacs": 305,
+      "consist": 539
+    },
+    {
+      "vin": "3C6UR5CJ9TG358276",
+      "vehicle_load_report": 69,
+      "shippers": 357,
+      "cnacs": 309,
+      "consist": 540
+    },
+    {
+      "vin": "3C6UR5HJ2TG362596",
+      "vehicle_load_report": 70,
+      "shippers": 358,
+      "cnacs": 311,
+      "consist": 541
+    },
+    {
+      "vin": "3C6UR5FJ9VG373388",
+      "vehicle_load_report": 71,
+      "shippers": 359,
+      "cnacs": 310,
+      "consist": 542
+    },
+    {
+      "vin": "3C7WRTCL2TG359375",
+      "vehicle_load_report": 72,
+      "shippers": 360,
+      "cnacs": 312,
+      "consist": 543
+    },
+    {
+      "vin": "3C63RRGL7VG375966",
+      "vehicle_load_report": 66,
+      "shippers": 354,
+      "cnacs": 306,
+      "consist": 544
+    },
+    {
+      "vin": "3C6RREGG6T4206185",
+      "vehicle_load_report": 120,
+      "shippers": 362,
+      "cnacs": 314,
+      "consist": 545
+    },
+    {
+      "vin": "3C63RRGL5VG375965",
+      "vehicle_load_report": 114,
+      "shippers": 361,
+      "cnacs": 313,
+      "consist": 546
+    },
+    {
+      "vin": "3C7WRTCL5TG359368",
+      "vehicle_load_report": 115,
+      "shippers": 368,
+      "cnacs": 320,
+      "consist": 547
+    },
+    {
+      "vin": "3C7WRTCL1VG359371",
+      "vehicle_load_report": 116,
+      "shippers": 366,
+      "cnacs": 318,
+      "consist": 548
+    },
+    {
+      "vin": "3C7WRTCL2TG359361",
+      "vehicle_load_report": 117,
+      "shippers": 367,
+      "cnacs": 319,
+      "consist": 549
+    },
+    {
+      "vin": "3C6UR5CJ9TG353286",
+      "vehicle_load_report": 119,
+      "shippers": 365,
+      "cnacs": 317,
+      "consist": 550
+    },
+    {
+      "vin": "3C6SRFGPXT4209100",
+      "vehicle_load_report": 113,
+      "shippers": 364,
+      "cnacs": 316,
+      "consist": 551
+    },
+    {
+      "vin": "3C6SRFGP8T4217082",
+      "vehicle_load_report": 118,
+      "shippers": 363,
+      "cnacs": 315,
+      "consist": 552
+    },
+    {
+      "vin": "3C7WRTCL9VG369114",
+      "vehicle_load_report": 146,
+      "shippers": 374,
+      "cnacs": 328,
+      "consist": 553
+    },
+    {
+      "vin": "3C6SRFJP2T4211125",
+      "vehicle_load_report": 152,
+      "shippers": 376,
+      "cnacs": 324,
+      "consist": 554
+    },
+    {
+      "vin": "3C63R5FL4VG374655",
+      "vehicle_load_report": 151,
+      "shippers": 375,
+      "cnacs": 323,
+      "consist": 555
+    },
+    {
+      "vin": "3C6UR5CJ1VG372658",
+      "vehicle_load_report": 150,
+      "shippers": 373,
+      "cnacs": 327,
+      "consist": 556
+    },
+    {
+      "vin": "3C63R3HL2VG376213",
+      "vehicle_load_report": 149,
+      "shippers": 370,
+      "cnacs": 322,
+      "consist": 557
+    },
+    {
+      "vin": "3C6SRFLP0T4211167",
+      "vehicle_load_report": 147,
+      "shippers": 371,
+      "cnacs": 325,
+      "consist": 558
+    },
+    {
+      "vin": "3C6SRFLP1T4206415",
+      "vehicle_load_report": 145,
+      "shippers": 372,
+      "cnacs": 326,
+      "consist": 559
+    },
+    {
+      "vin": "3C63R3DL3TG357124",
+      "vehicle_load_report": 148,
+      "shippers": 369,
+      "cnacs": 321,
+      "consist": 560
+    },
+    {
+      "vin": "3C7WRNFL2TG363952",
+      "vehicle_load_report": 299,
+      "shippers": 343,
+      "cnacs": 293,
+      "consist": 561
+    },
+    {
+      "vin": "3C7WRNFL2TG367032",
+      "vehicle_load_report": 304,
+      "shippers": 344,
+      "cnacs": 294,
+      "consist": 562
+    },
+    {
+      "vin": "3C7WRNFL0TG363951",
+      "vehicle_load_report": 303,
+      "shippers": 342,
+      "cnacs": 296,
+      "consist": 563
+    },
+    {
+      "vin": "3C63RRHL9TG368173",
+      "vehicle_load_report": 302,
+      "shippers": 337,
+      "cnacs": 295,
+      "consist": 564
+    },
+    {
+      "vin": "3C6UR5HJ5TG347591",
+      "vehicle_load_report": 300,
+      "shippers": 341,
+      "cnacs": 292,
+      "consist": 565
+    },
+    {
+      "vin": "3C6RREGG1T4211035",
+      "vehicle_load_report": 298,
+      "shippers": 338,
+      "cnacs": 289,
+      "consist": 566
+    },
+    {
+      "vin": "3C6SRFLP2T4211168",
+      "vehicle_load_report": 297,
+      "shippers": 340,
+      "cnacs": 291,
+      "consist": 567
+    },
+    {
+      "vin": "3C6RREGG3T4211036",
+      "vehicle_load_report": 301,
+      "shippers": 339,
+      "cnacs": 290,
+      "consist": 568
+    },
+    {
+      "vin": "3C7WRNEL2TG362172",
+      "vehicle_load_report": 230,
+      "shippers": 352,
+      "cnacs": 304,
+      "consist": 569
+    },
+    {
+      "vin": "3C6RRFFG7T4215906",
+      "vehicle_load_report": 232,
+      "shippers": 345,
+      "cnacs": 297,
+      "consist": 570
+    },
+    {
+      "vin": "3C6SRFGP3T4212260",
+      "vehicle_load_report": 231,
+      "shippers": 347,
+      "cnacs": 299,
+      "consist": 571
+    },
+    {
+      "vin": "3C6SRFJP8T4215342",
+      "vehicle_load_report": 229,
+      "shippers": 349,
+      "cnacs": 301,
+      "consist": 572
+    },
+    {
+      "vin": "3C6UR5FJ1TG367937",
+      "vehicle_load_report": 227,
+      "shippers": 351,
+      "cnacs": 303,
+      "consist": 573
+    },
+    {
+      "vin": "3C6SRFGP2T4168560",
+      "vehicle_load_report": 226,
+      "shippers": 346,
+      "cnacs": 298,
+      "consist": 574
+    },
+    {
+      "vin": "3C6SRFGP8T4169020",
+      "vehicle_load_report": 225,
+      "shippers": 348,
+      "cnacs": 300,
+      "consist": 575
+    },
+    {
+      "vin": "3C6UR5CJ7TG367963",
+      "vehicle_load_report": 228,
+      "shippers": 350,
+      "cnacs": 302,
+      "consist": 576
+    },
+    {
+      "vin": "3C7WRMDL4VG374838",
+      "vehicle_load_report": 219,
+      "shippers": 246,
+      "cnacs": 198,
+      "consist": 577
+    },
+    {
+      "vin": "3C7WRNBL9VG374715",
+      "vehicle_load_report": 218,
+      "shippers": 247,
+      "cnacs": 199,
+      "consist": 578
+    },
+    {
+      "vin": "3C6SRFJP0T4216906",
+      "vehicle_load_report": 220,
+      "shippers": 242,
+      "cnacs": 194,
+      "consist": 579
+    },
+    {
+      "vin": "3C6SRFLP1T4207466",
+      "vehicle_load_report": 222,
+      "shippers": 245,
+      "cnacs": 197,
+      "consist": 580
+    },
+    {
+      "vin": "3C6SRFJP3T4174537",
+      "vehicle_load_report": 223,
+      "shippers": 243,
+      "cnacs": 195,
+      "consist": 581
+    },
+    {
+      "vin": "3C6SRFLP1T4207239",
+      "vehicle_load_report": 224,
+      "shippers": 244,
+      "cnacs": 196,
+      "consist": 582
+    },
+    {
+      "vin": "3C63R5SL2VG376653",
+      "vehicle_load_report": 221,
+      "shippers": 241,
+      "cnacs": 193,
+      "consist": 583
+    },
+    {
+      "vin": "3C7WRNFJXVG374683",
+      "vehicle_load_report": 217,
+      "shippers": 248,
+      "cnacs": 200,
+      "consist": 584
+    },
+    {
+      "vin": "3C7WRNFL9VG374725",
+      "vehicle_load_report": 38,
+      "shippers": 240,
+      "cnacs": 192,
+      "consist": 585
+    },
+    {
+      "vin": "3C6SRFLP7T4207715",
+      "vehicle_load_report": 33,
+      "shippers": 238,
+      "cnacs": 191,
+      "consist": 586
+    },
+    {
+      "vin": "3C6SRFFP4T4217100",
+      "vehicle_load_report": 34,
+      "shippers": 237,
+      "cnacs": 190,
+      "consist": 587
+    },
+    {
+      "vin": "3C63R3GJ1VG375411",
+      "vehicle_load_report": 35,
+      "shippers": 234,
+      "cnacs": 188,
+      "consist": 588
+    },
+    {
+      "vin": "3C63R3DL3VG383676",
+      "vehicle_load_report": 37,
+      "shippers": 233,
+      "cnacs": 187,
+      "consist": 589
+    },
+    {
+      "vin": "3C63R5EL6VG376859",
+      "vehicle_load_report": 39,
+      "shippers": 236,
+      "cnacs": 189,
+      "consist": 590
+    },
+    {
+      "vin": "3C7WRNFL1VG374721",
+      "vehicle_load_report": 40,
+      "shippers": 239,
+      "cnacs": 186,
+      "consist": 591
+    },
+    {
+      "vin": "3C63R3HJ0VG375379",
+      "vehicle_load_report": 36,
+      "shippers": 235,
+      "cnacs": 185,
+      "consist": 592
+    },
+    {
+      "vin": "3C6UR5TL6VG376707",
+      "vehicle_load_report": 139,
+      "shippers": 215,
+      "cnacs": 166,
+      "consist": 593
+    },
+    {
+      "vin": "3C63R3EL0VG384783",
+      "vehicle_load_report": 144,
+      "shippers": 209,
+      "cnacs": 161,
+      "consist": 594
+    },
+    {
+      "vin": "3C63R3PLXVG377949",
+      "vehicle_load_report": 143,
+      "shippers": 210,
+      "cnacs": 162,
+      "consist": 595
+    },
+    {
+      "vin": "3C63R3RL5VG377998",
+      "vehicle_load_report": 142,
+      "shippers": 211,
+      "cnacs": 163,
+      "consist": 596
+    },
+    {
+      "vin": "3C63RRJL1VG357262",
+      "vehicle_load_report": 138,
+      "shippers": 212,
+      "cnacs": 164,
+      "consist": 597
+    },
+    {
+      "vin": "3C6UR5SL6VG376658",
+      "vehicle_load_report": 137,
+      "shippers": 214,
+      "cnacs": 165,
+      "consist": 598
+    },
+    {
+      "vin": "3C6SRFLP8T4207092",
+      "vehicle_load_report": 141,
+      "shippers": 213,
+      "cnacs": 167,
+      "consist": 599
+    },
+    {
+      "vin": "3C7WRNFL5VG374723",
+      "vehicle_load_report": 140,
+      "shippers": 216,
+      "cnacs": 168,
+      "consist": 600
+    },
+    {
+      "vin": "3C6SRFGPXT4207413",
+      "vehicle_load_report": 49,
+      "shippers": 227,
+      "cnacs": 179,
+      "consist": 601
+    },
+    {
+      "vin": "3C63R5SLXVG381972",
+      "vehicle_load_report": 54,
+      "shippers": 226,
+      "cnacs": 178,
+      "consist": 602
+    },
+    {
+      "vin": "3C6UR5CJ3VG360950",
+      "vehicle_load_report": 53,
+      "shippers": 229,
+      "cnacs": 181,
+      "consist": 603
+    },
+    {
+      "vin": "3C6UR5JJ8VG363670",
+      "vehicle_load_report": 52,
+      "shippers": 230,
+      "cnacs": 182,
+      "consist": 604
+    },
+    {
+      "vin": "3C6UR5SL3VG378545",
+      "vehicle_load_report": 50,
+      "shippers": 231,
+      "cnacs": 183,
+      "consist": 605
+    },
+    {
+      "vin": "3C7WR9AL4VG369690",
+      "vehicle_load_report": 56,
+      "shippers": 232,
+      "cnacs": 184,
+      "consist": 606
+    },
+    {
+      "vin": "3C63R5EL2VG385624",
+      "vehicle_load_report": 55,
+      "shippers": 225,
+      "cnacs": 177,
+      "consist": 607
+    },
+    {
+      "vin": "3C6SRFLP2T4203328",
+      "vehicle_load_report": 51,
+      "shippers": 228,
+      "cnacs": 180,
+      "consist": 608
+    },
+    {
+      "vin": "3C63R5FL5VG369190",
+      "vehicle_load_report": 57,
+      "shippers": 218,
+      "cnacs": 170,
+      "consist": 609
+    },
+    {
+      "vin": "3C6SRFLP3T4207193",
+      "vehicle_load_report": 59,
+      "shippers": 222,
+      "cnacs": 173,
+      "consist": 610
+    },
+    {
+      "vin": "3C6SRFGP3T4217460",
+      "vehicle_load_report": 60,
+      "shippers": 219,
+      "cnacs": 171,
+      "consist": 611
+    },
+    {
+      "vin": "3C6SRFJP2T4217166",
+      "vehicle_load_report": 61,
+      "shippers": 220,
+      "cnacs": 172,
+      "consist": 612
+    },
+    {
+      "vin": "3C6SRFJP2T4217233",
+      "vehicle_load_report": 62,
+      "shippers": 221,
+      "cnacs": 175,
+      "consist": 613
+    },
+    {
+      "vin": "3C6SRFLP3T4216461",
+      "vehicle_load_report": 63,
+      "shippers": 223,
+      "cnacs": 176,
+      "consist": 614
+    },
+    {
+      "vin": "3C6UR5EJ7VG369163",
+      "vehicle_load_report": 64,
+      "shippers": 224,
+      "cnacs": 174,
+      "consist": 615
+    },
+    {
+      "vin": "3C63R5DL4VG376585",
+      "vehicle_load_report": 58,
+      "shippers": 217,
+      "cnacs": 169,
+      "consist": 616
+    },
+    {
+      "vin": "3C7WRTBJ4VG369621",
+      "vehicle_load_report": 296,
+      "shippers": 544,
+      "cnacs": 535,
+      "consist": 617
+    },
+    {
+      "vin": "3C6UR5CJXVG370701",
+      "vehicle_load_report": 295,
+      "shippers": 541,
+      "cnacs": 534,
+      "consist": 618
+    },
+    {
+      "vin": "3C6RRFGG4T4212850",
+      "vehicle_load_report": 294,
+      "shippers": 538,
+      "cnacs": 530,
+      "consist": 619
+    },
+    {
+      "vin": "3C6SRFJP1T4215585",
+      "vehicle_load_report": 293,
+      "shippers": 540,
+      "cnacs": 536,
+      "consist": 620
+    },
+    {
+      "vin": "3C7WRMCL9VG383469",
+      "vehicle_load_report": 292,
+      "shippers": 542,
+      "cnacs": 529,
+      "consist": 621
+    },
+    {
+      "vin": "3C6SRFGP1T4204951",
+      "vehicle_load_report": 291,
+      "shippers": 539,
+      "cnacs": 533,
+      "consist": 622
+    },
+    {
+      "vin": "3C7WRNAJ8TG361242",
+      "vehicle_load_report": 289,
+      "shippers": 543,
+      "cnacs": 532,
+      "consist": 623
+    },
+    {
+      "vin": "3C63R5DL9VG377201",
+      "vehicle_load_report": 290,
+      "shippers": 537,
+      "cnacs": 531,
+      "consist": 624
+    }
+  ]
+}
