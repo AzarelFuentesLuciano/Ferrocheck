@@ -50,10 +50,13 @@ DSN hacia `127.0.0.1`/`localhost` y la base `ferrocheck`.
 
 Antes de habilitar el flujo deben estar aplicadas, en orden, las migraciones
 `20260725_015_register_rail_module.sql` y
-`20260730_016_create_rail_consists.sql`. Este repositorio no dispone de un
-runner que registre automáticamente 015 y 016 en `schema_migrations`; no se
-deben insertar marcas ficticias. La descarga requiere autenticación, acceso
-organizacional a Rail y el permiso `rail.consist.exportar`.
+`20260730_016_create_rail_consists.sql` y
+`20260731_017_create_rail_route_catalog.sql`. Este repositorio no dispone de un
+runner que registre automáticamente estas migraciones en `schema_migrations`;
+no se deben insertar marcas ficticias. Antes de generar el primer borrador, un
+administrador debe importar `vascor_sm_db.xlsx` desde Rail → Configuración →
+Catálogos. La descarga requiere autenticación, acceso organizacional a Rail y
+el permiso `rail.consist.exportar`.
 
 ## Validación visual
 

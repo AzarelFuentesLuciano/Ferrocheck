@@ -14,8 +14,10 @@ final class ConsistDocumentBuilder
         'CNACS-Pedimento', 'fdManufacturerRouteCode2', 'fdLoadID', 'fdCustom1', 'fdCustom2',
     ];
 
-    public function __construct(private array $referenceOrder = [])
-    {
+    public function __construct(
+        private array $referenceOrder = [],
+        private ?ConsistOperationalSummary $operationalSummary = null,
+    ) {
     }
 
     public function build(
@@ -138,6 +140,11 @@ final class ConsistDocumentBuilder
             $platforms[$platformPosition]['unit_vins'][] = $unit['vin'];
         }
         unset($unit);
+        $operationalSummary = ($this->operationalSummary ?? new ConsistOperationalSummary())
+            ->fromFinalUnits((array) $analysis['units'], $units);
+        foreach ($operationalSummary['inconsistencies'] as $inconsistency) {
+            $issues[] = $inconsistency;
+        }
 
         foreach ($platforms as $platform) {
             if ($platform['total_units'] > 8) {
@@ -159,6 +166,7 @@ final class ConsistDocumentBuilder
                 static fn (array $unit): int => (int) ($unit['duplicate_counts']['cnacs'] ?? 0),
                 $analysis['units'],
             )),
+            $operationalSummary,
         );
     }
 

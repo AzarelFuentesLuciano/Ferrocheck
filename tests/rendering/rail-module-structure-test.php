@@ -105,20 +105,24 @@ $test('vistas internas usan encabezado sencillo sin banners repetidos', static f
     return true;
 });
 $test('vistas no leen superglobales', static fn (): bool => !preg_match('/\\$_(?:GET|POST|SESSION|FILES|COOKIE|SERVER)/', $railSources));
-$test('vistas no contienen SQL y el formulario queda aislado en Consist Rail', static function () use ($railSources, $root): bool {
+$test('vistas no contienen SQL y los formularios quedan aislados por flujo', static function () use ($railSources, $root): bool {
     if (preg_match('/\\b(?:SELECT\\s+.+\\s+FROM|INSERT\\s+INTO|UPDATE\\s+\\w+\\s+SET|DELETE\\s+FROM)\\b/i', $railSources)) {
         return false;
     }
-    foreach (['ferro', 'facturacion', 'inventario', 'evidencias', 'configuracion'] as $view) {
+    foreach (['ferro', 'facturacion', 'inventario', 'evidencias'] as $view) {
         $source = (string) file_get_contents($root . '/app/Views/rail/' . $view . '.php');
         if (preg_match('/<form|<table/i', $source)) {
             return false;
         }
     }
     $consist = (string) file_get_contents($root . '/app/Views/rail/consist-rail.php');
+    $configuration = (string) file_get_contents($root . '/app/Views/rail/configuracion.php');
     return substr_count($consist, '<form') >= 2
         && str_contains($consist, 'enctype="multipart/form-data"')
-        && str_contains($consist, 'name="action" value="analyze_vin_cross"');
+        && str_contains($consist, 'name="action" value="analyze_vin_cross"')
+        && substr_count($configuration, '<form') === 1
+        && str_contains($configuration, 'name="action" value="import_route_catalog"')
+        && str_contains($configuration, 'name="_csrf"');
 });
 $test('CSS está acotado a Rail y las clases reutilizadas permanecen contextualizadas', static function () use ($css): bool {
     preg_match_all('/\\.([a-zA-Z_][a-zA-Z0-9_-]*)/', $css, $matches);

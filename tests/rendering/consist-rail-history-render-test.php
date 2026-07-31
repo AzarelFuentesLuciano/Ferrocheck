@@ -23,6 +23,12 @@ $history = $render('historial', [
         'id'=>1,'folio'=>'CR-2026-000001','status'=>'borrador',
         'total_units'=>624,'total_platforms'=>78,'created_by_name'=>'Admin',
         'source_filename'=>'vascor_sm_db.xlsx','created_at'=>'2026-07-30 10:00:00',
+        'operational_summary'=>[
+            'pending_platforms'=>3,
+            'confirmed_platforms'=>75,
+            'total_loaded_platforms'=>78,
+            'is_consistent'=>true,
+        ],
     ]],
     'total'=>1,'page'=>1,'pages'=>1,
     'filters'=>['folio'=>'CR-2026','vin'=>'VIN1','estado'=>'borrador','desde'=>'2026-07-01','hasta'=>'2026-07-31','usuario'=>'Admin'],
@@ -43,9 +49,11 @@ $test = static function (string $label, bool $ok) use (&$passed, &$failed): void
     $ok ? $passed++ : $failed++;
     echo sprintf("[%s] %s\n", $ok ? 'PASS' : 'FAIL', $label);
 };
-$test('historial muestra columnas y acción Continuar', str_contains($history, 'CR-2026-000001')
+$test('historial muestra métricas operativas y acción Ver', str_contains($history, 'CR-2026-000001')
     && str_contains($history, '>Ver</a>')
-    && str_contains($history, 'Plataformas'));
+    && str_contains($history, 'Pendientes')
+    && str_contains($history, 'Confirmadas')
+    && str_contains($history, 'Total plataformas'));
 $test('historial conserva filtros por folio, VIN, estado y fecha', str_contains($history, 'name="folio"')
     && str_contains($history, 'name="vin"')
     && str_contains($history, 'name="estado"')

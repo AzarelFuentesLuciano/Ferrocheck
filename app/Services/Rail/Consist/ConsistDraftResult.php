@@ -18,6 +18,7 @@ final readonly class ConsistDraftResult
         public array $units,
         public array $issues,
         public int $cnacsDuplicateCount,
+        public array $operationalSummary,
     ) {
     }
 
@@ -37,6 +38,7 @@ final readonly class ConsistDraftResult
             'units' => $this->units,
             'issues' => $this->issues,
             'cnacs_duplicate_count' => $this->cnacsDuplicateCount,
+            'operational_summary' => $this->operationalSummary,
         ];
     }
 }

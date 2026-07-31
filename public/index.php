@@ -23,9 +23,9 @@ use App\Controllers\{AdministrationController, AuthController};
 use App\Controllers\Rail\RailController;
 use App\Core\Database;
 use App\Repositories\{AuthRepository, OrganizationalAccessRepository, OrganizationalAdminRepository, RoleAdminRepository, UserAdminRepository};
-use App\Repositories\Rail\ConsistRepository;
+use App\Repositories\Rail\{ConsistRepository, RouteCodeCatalogRepository};
 use App\Services\{AuthService, GeneralAuditService, ModuleNavigationBuilder, OrganizationalAdminService, RoleAdminService, UserAdminService};
-use App\Services\Rail\Consist\{ConsistAnalysisResultStore, ConsistDocumentBuilder, ConsistGoldenMasterComparator, ConsistSpreadsheetPreviewer, ConsistTemporaryUploadStore, ConsistUploadValidator, ConsistVinCrossAnalyzer, ConsistVinExtractor, ConsistWorkflowService, ConsistWorkbookExporter, ConsistWorkbookValidator, RouteCodeCatalogLoader};
+use App\Services\Rail\Consist\{ConsistAnalysisResultStore, ConsistDocumentBuilder, ConsistGoldenMasterComparator, ConsistOperationalSummary, ConsistSpreadsheetPreviewer, ConsistTemporaryUploadStore, ConsistUploadValidator, ConsistVinCrossAnalyzer, ConsistVinExtractor, ConsistWorkflowService, ConsistWorkbookExporter, ConsistWorkbookValidator, RouteCodeCatalogLoader, RouteCodeCatalogService};
 use App\Support\Rail\RailFlashStore;
 
 if (($_GET['modulo'] ?? '') === 'auth') {
@@ -108,6 +108,8 @@ if (($_GET['modulo'] ?? '') === 'rail') {
             $goldenOrder[(string) $referenceRow['vin']] = (int) $referenceRow['consist'];
         }
     }
+    $routeCatalogRepository = new RouteCodeCatalogRepository($pdo);
+    $consistOperationalSummary = new ConsistOperationalSummary();
     $railController = new RailController(
         $currentUser,
         $railCsrf->token(),
@@ -124,22 +126,20 @@ if (($_GET['modulo'] ?? '') === 'rail') {
         new ConsistAnalysisResultStore($consistTemporaryStore, $currentUser->id, session_id()),
         null,
         new ConsistWorkflowService(
-            new ConsistDocumentBuilder($goldenOrder),
-            new RouteCodeCatalogLoader(
-                __DIR__ . '/../docs/rail/consist/referencias/vascor_sm_db.xlsx',
-            ),
+            new ConsistDocumentBuilder($goldenOrder, $consistOperationalSummary),
+            new RouteCodeCatalogLoader($routeCatalogRepository),
             new ConsistRepository($pdo),
             defined('APP_ENV') && APP_ENV !== 'production'
                 ? new ConsistGoldenMasterComparator(
                     __DIR__ . '/../docs/rail/consist/golden-master/consist-output.json',
                 )
                 : null,
-            new ConsistWorkbookExporter(
-                __DIR__ . '/../docs/rail/consist/referencias/Consist Rail del 29 al 30 de Julio de 2026.xlsx',
-            ),
+            new ConsistWorkbookExporter(),
             new ConsistWorkbookValidator(),
             dirname(__DIR__) . '/storage/rail/consist/exports',
         ),
+        new RouteCodeCatalogService($routeCatalogRepository),
+        $consistOperationalSummary,
     );
     $response = $railController->dispatch(
         $_SERVER['REQUEST_METHOD'] ?? 'GET',

@@ -219,6 +219,16 @@
                 <button class="rail-consist-submit" type="submit">Aplicar filtros</button>
             </form>
             <p>Resultados: <strong><?php echo $railEscape($consistUpload->analysis->pagination['total']); ?></strong></p>
+            <?php if (empty($railCatalogPage['active'])): ?>
+                <div class="rail-consist-message rail-consist-message--error" role="alert">
+                    No existe un catálogo maestro de rutas activo.
+                    <?php if (!empty($railCatalogPage['can_import'])): ?>
+                        <a href="<?php echo $railEscape($railBaseUrl); ?>/index.php?modulo=rail&amp;seccion=configuracion&amp;subseccion=catalogos">Importar catálogo maestro</a>.
+                    <?php else: ?>
+                        Solicite a un administrador que lo importe desde Configuración de Rail.
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
             <form method="post" class="rail-consist-form"
                   action="<?php echo $railEscape($railBaseUrl); ?>/index.php?modulo=rail&amp;seccion=consist-rail&amp;subseccion=registrar">
                 <input type="hidden" name="_csrf" value="<?php echo $railEscape($consistUpload->csrfToken); ?>">
@@ -248,7 +258,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="rail-consist-submit" type="submit">Generar Consist</button>
+                <button class="rail-consist-submit" type="submit" <?php echo empty($railCatalogPage['active']) ? 'disabled' : ''; ?>>Generar Consist</button>
             </form>
 
             <?php if (is_array($consistUpload->analysis->detail)): $detail = $consistUpload->analysis->detail; ?>
@@ -320,6 +330,16 @@
             </div>
 
             <?php $consistency = $analysisResult['consistency'] ?? []; ?>
+            <?php $operational = $analysisResult['operational_summary'] ?? []; ?>
+            <h3>Resumen operativo de plataformas</h3>
+            <div class="rail-consist-analysis__files">
+                <article class="rail-consist-analysis-card"><h4>Plataformas Pendientes de Confirmar</h4><strong><?php echo $railEscape($operational['pending_platforms'] ?? 0); ?></strong></article>
+                <article class="rail-consist-analysis-card"><h4>Plataformas Confirmadas</h4><strong><?php echo $railEscape($operational['confirmed_platforms'] ?? 0); ?></strong></article>
+                <article class="rail-consist-analysis-card"><h4>Total de Plataformas Cargadas</h4><strong><?php echo $railEscape($operational['total_loaded_platforms'] ?? 0); ?></strong></article>
+            </div>
+            <?php if (($operational['is_consistent'] ?? true) !== true): ?>
+                <div class="rail-consist-message rail-consist-message--error" role="alert">Inconsistencia: las plataformas pendientes superan el total cargado.</div>
+            <?php endif; ?>
             <h3>Consistencia</h3>
             <dl class="rail-consist-consistency">
                 <div><dt>Total único combinado</dt><dd><?php echo $railEscape($consistency['total_unique_combined'] ?? 0); ?></dd></div>
@@ -363,6 +383,7 @@
         </section>
     <?php else: ?>
     <section class="rail-consist-analysis">
+        <?php $operational = $railConsistPage['operational_summary'] ?? []; ?>
         <div class="rail-consist-analysis__files">
             <?php foreach (['status'=>'Estado','folio'=>'Folio','fecha_inicio'=>'Fecha inicial','fecha_fin'=>'Fecha final','created_at'=>'Generado','created_by_name'=>'Usuario','total_units'=>'Unidades','total_platforms'=>'Plataformas'] as $key => $label): ?>
                 <article class="rail-consist-analysis-card"><h3><?php echo $railEscape($label); ?></h3><strong><?php echo $railEscape($railConsistPage[$key] ?? ''); ?></strong></article>
@@ -373,6 +394,14 @@
             <article class="rail-consist-analysis-card"><h3>Incidencias</h3><strong><?php echo $railEscape(count($railConsistPage['issues'] ?? [])); ?></strong></article>
             <article class="rail-consist-analysis-card"><h3>Catálogo</h3><strong><?php echo $railEscape($railConsistPage['source_filename'] ?? ''); ?></strong></article>
         </div>
+        <h2>Resumen operativo de plataformas</h2>
+        <div class="rail-consist-analysis__files">
+            <article class="rail-consist-analysis-card"><h3>Plataformas Pendientes de Confirmar</h3><strong><?php echo $railEscape($operational['pending_platforms'] ?? 0); ?></strong></article>
+            <article class="rail-consist-analysis-card"><h3>Plataformas Confirmadas</h3><strong><?php echo $railEscape($operational['confirmed_platforms'] ?? 0); ?></strong></article>
+            <article class="rail-consist-analysis-card"><h3>Total de Plataformas Cargadas</h3><strong><?php echo $railEscape($operational['total_loaded_platforms'] ?? 0); ?></strong></article>
+        </div>
+        <p><?php echo $railEscape($operational['pending_platforms'] ?? 0); ?> pendientes + <?php echo $railEscape($operational['confirmed_platforms'] ?? 0); ?> confirmadas = <?php echo $railEscape($operational['total_loaded_platforms'] ?? 0); ?> cargadas.</p>
+        <?php if (($operational['is_consistent'] ?? true) !== true): ?><div class="rail-consist-message rail-consist-message--error" role="alert">Inconsistencia: las plataformas pendientes superan el total cargado.</div><?php endif; ?>
         <form method="get" class="rail-consist-form">
             <input type="hidden" name="modulo" value="rail"><input type="hidden" name="seccion" value="consist-rail"><input type="hidden" name="subseccion" value="consultar"><input type="hidden" name="id" value="<?php echo $railEscape($railConsistPage['id']); ?>">
             <div class="rail-consist-form__files">
@@ -383,14 +412,14 @@
         </form>
         <div class="rail-consist-table-wrap">
             <table>
-                <thead><tr><th>Plataforma</th><th>Posición</th><th>VIN</th><th>Track</th><th>Route Code</th><th>Market</th><th>Shipping Destination</th><th>Estado</th><th>Acción</th></tr></thead>
+                <thead><tr><th>Plataforma</th><th>Posición</th><th>VIN</th><th>Track</th><th>Route Code</th><th>Shipping Destination</th><th>Estado</th><th>Acción</th></tr></thead>
                 <tbody>
                 <?php foreach ($railConsistPage['units'] ?? [] as $unit): ?>
                     <tr>
                         <td><?php echo $railEscape($unit['final_data_json']['fdTransportationName1'] ?? ''); ?></td>
                         <td><?php echo $railEscape($unit['global_position']); ?></td>
                         <td><?php echo $railEscape($unit['vin']); ?></td>
-                        <td><?php echo $railEscape($unit['track']); ?></td><td><?php echo $railEscape($unit['route_code']); ?></td><td><?php echo $railEscape($unit['market']); ?></td><td><?php echo $railEscape($unit['shipping_destination']); ?></td>
+                        <td><?php echo $railEscape($unit['track']); ?></td><td><?php echo $railEscape($unit['route_code']); ?></td><td><?php echo $railEscape($unit['shipping_destination']); ?></td>
                         <td><?php echo ($unit['issues_json'] ?? []) === [] ? 'Correcto' : 'Con incidencia'; ?></td>
                         <td><a href="<?php echo $railEscape($railBaseUrl); ?>/index.php?modulo=rail&amp;seccion=consist-rail&amp;subseccion=consultar&amp;id=<?php echo $railEscape($railConsistPage['id']); ?>&amp;vin_detalle=<?php echo rawurlencode((string) $unit['vin']); ?>">Ver detalle</a></td>
                     </tr>
@@ -422,8 +451,8 @@
         </div>
         <button class="rail-consist-submit" type="submit">Buscar</button>
     </form>
-    <div class="rail-consist-table-wrap"><table><thead><tr><th>Folio</th><th>Fecha</th><th>Estado</th><th>Unidades</th><th>Plataformas</th><th>Usuario</th><th>Catálogo</th><th>Acción</th></tr></thead><tbody>
-    <?php foreach ($railConsistPage['items'] ?? [] as $item): ?><tr><td><?php echo $railEscape($item['folio']); ?></td><td><?php echo $railEscape($item['created_at']); ?></td><td><?php echo $railEscape($item['status']); ?></td><td><?php echo $railEscape($item['total_units']); ?></td><td><?php echo $railEscape($item['total_platforms']); ?></td><td><?php echo $railEscape($item['created_by_name']); ?></td><td><?php echo $railEscape($item['source_filename']); ?></td><td><a href="<?php echo $railEscape($railBaseUrl); ?>/index.php?modulo=rail&amp;seccion=consist-rail&amp;subseccion=consultar&amp;id=<?php echo $railEscape($item['id']); ?>">Ver</a></td></tr><?php endforeach; ?>
+    <div class="rail-consist-table-wrap"><table><thead><tr><th>Folio</th><th>Fecha</th><th>Estado</th><th>Unidades</th><th>Pendientes</th><th>Confirmadas</th><th>Total plataformas</th><th>Usuario</th><th>Catálogo</th><th>Acción</th></tr></thead><tbody>
+    <?php foreach ($railConsistPage['items'] ?? [] as $item): $itemOperational = $item['operational_summary'] ?? []; ?><tr><td><?php echo $railEscape($item['folio']); ?></td><td><?php echo $railEscape($item['created_at']); ?></td><td><?php echo $railEscape($item['status']); ?></td><td><?php echo $railEscape($item['total_units']); ?></td><td><?php echo $railEscape($itemOperational['pending_platforms'] ?? 0); ?></td><td><?php echo $railEscape($itemOperational['confirmed_platforms'] ?? 0); ?></td><td><?php echo $railEscape($itemOperational['total_loaded_platforms'] ?? 0); ?></td><td><?php echo $railEscape($item['created_by_name']); ?></td><td><?php echo $railEscape($item['source_filename']); ?></td><td><a href="<?php echo $railEscape($railBaseUrl); ?>/index.php?modulo=rail&amp;seccion=consist-rail&amp;subseccion=consultar&amp;id=<?php echo $railEscape($item['id']); ?>">Ver</a></td></tr><?php endforeach; ?>
     </tbody></table></div>
     <p>Página <?php echo $railEscape($railConsistPage['page']); ?> de <?php echo $railEscape($railConsistPage['pages']); ?> · <?php echo $railEscape($railConsistPage['total']); ?> resultados</p>
     <?php endif; ?>

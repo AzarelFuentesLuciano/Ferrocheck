@@ -21,8 +21,9 @@ class ConsistRepository
             $folio = $this->nextFolio((int) gmdate('Y'));
             $statement = $this->pdo->prepare(
                 'INSERT INTO rail_consists
-                 (folio,analysis_token,fecha_inicio,fecha_fin,status,total_units,total_platforms,source_catalog_version_id,issues_json,created_by)
-                 VALUES(:folio,:token,:start_date,:end_date,\'borrador\',:units,:platforms,:catalog,:issues,:actor)'
+                 (folio,analysis_token,fecha_inicio,fecha_fin,status,total_units,total_platforms,source_catalog_version_id,
+                  issues_json,operational_summary_json,created_by)
+                 VALUES(:folio,:token,:start_date,:end_date,\'borrador\',:units,:platforms,:catalog,:issues,:summary,:actor)'
             );
             $statement->execute([
                 'folio' => $folio,
@@ -33,6 +34,7 @@ class ConsistRepository
                 'platforms' => $draft['total_platforms'],
                 'catalog' => $catalogId,
                 'issues' => $this->json($draft['issues'] ?? []),
+                'summary' => $this->json($draft['operational_summary'] ?? []),
                 'actor' => $draft['created_by'],
             ]);
             $consistId = (int) $this->pdo->lastInsertId();
@@ -111,6 +113,7 @@ class ConsistRepository
         $units->execute(['id' => $id]);
         $result['units'] = array_map([$this, 'hydrateUnit'], $units->fetchAll());
         $result['issues'] = $this->decode($result['issues_json'] ?? null);
+        $result['operational_summary'] = $this->decode($result['operational_summary_json'] ?? null);
         return $result;
     }
 
@@ -152,8 +155,12 @@ class ConsistRepository
             ' ORDER BY c.created_at DESC LIMIT ' . (int) $perPage . ' OFFSET ' . (int) $offset
         );
         $query->execute($params);
+        $items = array_map(function (array $item): array {
+            $item['operational_summary'] = $this->decode($item['operational_summary_json'] ?? null);
+            return $item;
+        }, $query->fetchAll());
         return [
-            'items' => $query->fetchAll(),
+            'items' => $items,
             'total' => $total,
             'page' => $page,
             'pages' => max(1, (int) ceil($total / $perPage)),

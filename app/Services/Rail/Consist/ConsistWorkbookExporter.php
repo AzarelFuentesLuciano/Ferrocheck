@@ -17,7 +17,16 @@ use RuntimeException;
 
 final class ConsistWorkbookExporter
 {
-    public function __construct(private string $formatReference)
+    private const CONSIST_WIDTHS = [
+        29.42578125, 25.140625, 14.28515625, 9.42578125, 10.85546875,
+        12.85546875, 12.42578125, 27.0, 27.42578125, 22.28515625,
+        33.42578125, 11.7109375, 15.0, 15.0,
+    ];
+    private const SUMMARY_WIDTHS = [
+        33.140625, 14.28515625, 15.0, 30.7109375, 25.85546875, 16.140625, 9.42578125,
+    ];
+
+    public function __construct(?string $formatReference = null)
     {
     }
 
@@ -27,14 +36,10 @@ final class ConsistWorkbookExporter
             (string) ($consist['fecha_inicio'] ?? ''),
             (string) ($consist['fecha_fin'] ?? ''),
         );
-        if (!is_file($this->formatReference) || !is_readable($this->formatReference)) {
-            throw new RuntimeException('La referencia visual del Consist no está disponible.');
-        }
         if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) {
             throw new RuntimeException('No fue posible preparar la exportación.');
         }
 
-        $reference = IOFactory::load($this->formatReference);
         $book = new Spreadsheet();
         $consistSheet = $book->getActiveSheet();
         $consistSheet->setTitle('Consist');
@@ -51,18 +56,21 @@ final class ConsistWorkbookExporter
         );
         $summary = $this->summary($units);
         $this->writeValues($summarySheet, self::summaryHeaders(), $summary);
-        $this->copyFormat($reference->getSheetByName('Consist'), $consistSheet, 14, count($units) + 1, 'ConsistTable');
-        $this->copyFormat($reference->getSheetByName('Summary'), $summarySheet, 7, count($summary) + 1, 'SummaryTable');
+        $operationalSummary = (array) ($consist['operational_summary'] ?? []);
+        $this->copyFormat($consistSheet, self::CONSIST_WIDTHS, count($units) + 1, 'ConsistTable');
+        $this->copyFormat($summarySheet, self::SUMMARY_WIDTHS, count($summary) + 1, 'SummaryTable');
+        $this->writeOperationalSummary($summarySheet, $operationalSummary);
 
-        $referenceVersion = $reference->getSheetByName('Version');
-        for ($row = 1; $row <= 2; $row++) {
-            for ($column = 1; $column <= 3; $column++) {
-                $value = $referenceVersion?->getCell([$column, $row])->getValue();
-                $versionSheet->setCellValueExplicit([$column, $row], $value ?? '', DataType::TYPE_STRING);
-                if ($referenceVersion !== null) {
-                    $coordinate = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($column) . $row;
-                    $versionSheet->duplicateStyle($referenceVersion->getStyle($coordinate), $coordinate);
-                }
+        foreach ([
+            ['Versión', 'Detalles', 'Fecha'],
+            ['1.0M', 'Se configura el orden de las tablas al realizarse la consulta de datos.', '43430'],
+        ] as $rowIndex => $row) {
+            foreach ($row as $columnIndex => $value) {
+                $versionSheet->setCellValueExplicit(
+                    [$columnIndex + 1, $rowIndex + 1],
+                    $value,
+                    DataType::TYPE_STRING,
+                );
             }
         }
         $versionSheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
@@ -72,7 +80,6 @@ final class ConsistWorkbookExporter
         $path = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
             . bin2hex(random_bytes(16)) . '.xlsx';
         IOFactory::createWriter($book, 'Xlsx')->save($path);
-        $reference->disconnectWorksheets();
         $book->disconnectWorksheets();
         return [
             'path' => $path,
@@ -80,6 +87,7 @@ final class ConsistWorkbookExporter
             'sha256' => hash_file('sha256', $path),
             'total_units' => count($units),
             'total_summary_rows' => count($summary),
+            'operational_summary' => $operationalSummary,
         ];
     }
 
@@ -135,37 +143,46 @@ final class ConsistWorkbookExporter
         }
     }
 
+    private function writeOperationalSummary(Worksheet $sheet, array $summary): void
+    {
+        $metrics = [
+            'Plataformas Pendientes de Confirmar' => (int) ($summary['pending_platforms'] ?? 0),
+            'Plataformas Confirmadas' => (int) ($summary['confirmed_platforms'] ?? 0),
+            'Total de Plataformas Cargadas' => (int) ($summary['total_loaded_platforms'] ?? 0),
+        ];
+        $row = 1;
+        foreach ($metrics as $label => $value) {
+            $sheet->setCellValueExplicit([9, $row], $label, DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit([10, $row], $value, DataType::TYPE_NUMERIC);
+            $row++;
+        }
+        $sheet->getColumnDimension('I')->setWidth(38);
+        $sheet->getColumnDimension('J')->setWidth(14);
+        $sheet->getStyle('I1:I3')->getFont()->setBold(true);
+    }
+
     private function copyFormat(
-        ?Worksheet $source,
         Worksheet $target,
-        int $columns,
+        array $widths,
         int $lastRow,
         string $tableName,
     ): void
     {
-        if ($source === null) {
-            throw new RuntimeException('La referencia visual no contiene las hojas oficiales.');
-        }
+        $columns = count($widths);
         for ($column = 1; $column <= $columns; $column++) {
             $letter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($column);
-            $target->getColumnDimension($letter)->setWidth($source->getColumnDimension($letter)->getWidth());
+            $target->getColumnDimension($letter)->setWidth((float) $widths[$column - 1]);
         }
-        $headerHeight = $source->getRowDimension(1)->getRowHeight();
-        if ($headerHeight < 0) {
-            $headerHeight = $source->getDefaultRowDimension()->getRowHeight();
-        }
-        $fallbackHeaderHeight = $tableName === 'SummaryTable' ? 15.0 : 12.75;
-        $target->getRowDimension(1)->setRowHeight($headerHeight > 0 ? $headerHeight : $fallbackHeaderHeight);
+        $target->getRowDimension(1)->setRowHeight($tableName === 'SummaryTable' ? 15.0 : 12.75);
         if ($lastRow >= 1) {
             $range = 'A1:' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columns) . $lastRow;
             $target->getStyle($range)->getAlignment()
                 ->setHorizontal(Alignment::HORIZONTAL_CENTER)
                 ->setVertical(Alignment::VERTICAL_CENTER);
             $target->getStyle($range)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_GENERAL);
-            $referenceFont = $source->getStyle('A2')->getFont();
             $target->getStyle($range)->getFont()
-                ->setName($referenceFont->getName())
-                ->setSize($referenceFont->getSize());
+                ->setName('Verdana')
+                ->setSize(10);
             $headerRange = 'A1:' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columns) . '1';
             $target->getStyle($headerRange)->getFont()->setBold(true);
             $target->getStyle($headerRange)->getFill()
@@ -176,10 +193,6 @@ final class ConsistWorkbookExporter
             $style->setShowRowStripes(true);
             $table->setStyle($style);
             $target->addTable($table);
-        }
-        $freeze = $source->getFreezePane();
-        if ($freeze !== null && $freeze !== '') {
-            $target->freezePane($freeze);
         }
     }
 }

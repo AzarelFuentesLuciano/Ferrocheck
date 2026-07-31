@@ -32,10 +32,15 @@ $units[0]['vin'] = '12345678901234567';
 $units[0]['final_data_json']['fdwholevin'] = '12345678901234567';
 
 $directory = sys_get_temp_dir() . '/vascor-consist-export-test-' . bin2hex(random_bytes(6));
-$export = (new ConsistWorkbookExporter($reference))->export([
+$export = (new ConsistWorkbookExporter())->export([
     'fecha_inicio' => '2026-07-29',
     'fecha_fin' => '2026-07-30',
     'units' => $units,
+    'operational_summary' => [
+        'pending_platforms' => 7,
+        'confirmed_platforms' => 48,
+        'total_loaded_platforms' => 55,
+    ],
 ], $directory);
 $validation = (new ConsistWorkbookValidator())->validate($export['path']);
 
@@ -56,6 +61,12 @@ assert($output->getSheetByName('Consist')->getTableByName('ConsistTable')?->getR
 assert($output->getSheetByName('Summary')->getTableByName('SummaryTable')?->getRange() === 'A1:G56');
 assert($output->getSheetByName('Consist')->getColumnDimension('A')->getWidth() === 29.42578125);
 assert($output->getSheetByName('Summary')->getColumnDimension('A')->getWidth() === 33.140625);
+assert($output->getSheetByName('Summary')->getCell('I1')->getValue() === 'Plataformas Pendientes de Confirmar');
+assert((int) $output->getSheetByName('Summary')->getCell('J1')->getValue() === 7);
+assert((int) $output->getSheetByName('Summary')->getCell('J2')->getValue() === 48);
+assert((int) $output->getSheetByName('Summary')->getCell('J3')->getValue() === 55);
+assert(!in_array('Bloque', ConsistDocumentBuilder::HEADERS, true));
+assert(!in_array('Bloque', ConsistWorkbookExporter::summaryHeaders(), true));
 assert($output->getSheetByName('Consist')->getRowDimension(1)->getRowHeight() === 12.75);
 assert($output->getSheetByName('Summary')->getRowDimension(1)->getRowHeight() === 15.0);
 assert($output->getSheetByName('Consist')->getCell('B2')->getValue() === '12345678901234567');
@@ -71,7 +82,7 @@ assert(hash_file('sha256', $reference) === $initialHash);
 
 $withDuplicate = $units;
 $withDuplicate[] = $units[0];
-$duplicateExport = (new ConsistWorkbookExporter($reference))->export([
+$duplicateExport = (new ConsistWorkbookExporter())->export([
     'fecha_inicio' => '2026-07-29', 'fecha_fin' => '2026-07-30', 'units' => $withDuplicate,
 ], $directory);
 $duplicateReader = IOFactory::createReaderForFile($duplicateExport['path']);

@@ -10,6 +10,7 @@ use App\Core\Rendering\RenderAdapter;
 use App\Core\Rendering\RenderContext;
 use App\Services\ModuleNavigationBuilder;
 use App\Services\Rail\Consist\ConsistAnalysisResultStore;
+use App\Services\Rail\Consist\ConsistOperationalSummary;
 use App\Services\Rail\Consist\ConsistSpreadsheetPreviewer;
 use App\Services\Rail\Consist\ConsistSpreadsheetIdentityValidator;
 use App\Services\Rail\Consist\ConsistTemporaryUploadStore;
@@ -18,6 +19,7 @@ use App\Services\Rail\Consist\ConsistUploadValidator;
 use App\Services\Rail\Consist\ConsistVinCrossAnalyzer;
 use App\Services\Rail\Consist\ConsistVinExtractor;
 use App\Services\Rail\Consist\ConsistWorkflowService;
+use App\Services\Rail\Consist\RouteCodeCatalogService;
 use App\Support\AuthenticatedHeaderBuilder;
 use App\Support\Rail\RailFlashStore;
 use App\ViewModels\Rail\ConsistUploadViewModel;
@@ -46,6 +48,8 @@ final class RailController
         private ?ConsistAnalysisResultStore $analysisResultStore = null,
         private ?ConsistSpreadsheetIdentityValidator $identityValidator = null,
         private ?ConsistWorkflowService $workflowService = null,
+        private ?RouteCodeCatalogService $catalogService = null,
+        private ?ConsistOperationalSummary $operationalSummary = null,
     ) {
         $this->baseUrl = $baseUrl !== null
             ? rtrim($baseUrl, '/')
@@ -63,6 +67,9 @@ final class RailController
 
         [$section, $subsection] = $this->resolveLocation($query, $this->navigationConfiguration());
         $action = (string) ($post['action'] ?? '');
+        if ($section === 'configuracion' && $subsection === 'catalogos' && $action === 'import_route_catalog') {
+            return $this->handleCatalogImport($post, $files);
+        }
         $workflowActions = ['create_consist_draft'];
         if ($section !== 'consist-rail'
             || ($subsection !== 'registrar' && !in_array($action, $workflowActions, true))
@@ -72,7 +79,9 @@ final class RailController
         $this->requireUploadDependencies();
         $redirect = $this->consistUploadUrl();
         $requestedAnalysisToken = trim((string) ($post['batch_token'] ?? ''));
-        if (($post['action'] ?? '') === 'analyze_vin_cross' && preg_match('/^[a-f0-9]{64}$/', $requestedAnalysisToken)) {
+        if (in_array((string) ($post['action'] ?? ''), ['analyze_vin_cross', 'create_consist_draft'], true)
+            && preg_match('/^[a-f0-9]{64}$/', $requestedAnalysisToken)
+        ) {
             $redirect .= '&preview=' . rawurlencode($requestedAnalysisToken);
         }
         $stagedToken = null;
@@ -130,6 +139,10 @@ final class RailController
     {
         $navigation = $this->navigationConfiguration();
         [$section, $subsection] = $this->resolveLocation($query, $navigation);
+        $catalogPage = ($this->catalogService?->status() ?? ['active' => false, 'version' => null]) + [
+            'can_import' => $this->authenticatedUser->can('rail.catalogos.importar')
+                || $this->authenticatedUser->isSuperAdministrator(),
+        ];
         $consistPage = null;
         if ($section === 'consist-rail' && $this->workflowService !== null) {
             if (!$this->authenticatedUser->can('rail.consist.ver') && !$this->authenticatedUser->isSuperAdministrator()) {
@@ -171,7 +184,14 @@ final class RailController
                 }
             }
         }
-        [$moduleNavigation, $content] = $this->renderRailViews($section, $subsection, $navigation, $consistUpload, $consistPage);
+        [$moduleNavigation, $content] = $this->renderRailViews(
+            $section,
+            $subsection,
+            $navigation,
+            $consistUpload,
+            $consistPage,
+            $catalogPage,
+        );
         $additionalScripts = $section === 'consist-rail' && $subsection === 'registrar'
             ? [$this->baseUrl . '/assets/js/rail/consist-upload-progress.js']
             : [];
@@ -257,6 +277,7 @@ final class RailController
         array $navigation,
         ?ConsistUploadViewModel $consistUpload,
         ?array $consistPage,
+        array $catalogPage,
     ): array
     {
         $railSection = $section;
@@ -264,6 +285,9 @@ final class RailController
         $railNavigation = $navigation;
         $railBaseUrl = $this->baseUrl;
         $railConsistPage = $consistPage;
+        $railCatalogPage = $catalogPage;
+        $railMessages = $consistUpload?->messages ?? [];
+        $railCsrfToken = $consistUpload?->csrfToken ?? '';
         $initialLevel = ob_get_level();
 
         try {
@@ -383,6 +407,8 @@ final class RailController
             $extracted['shippers'],
             $extracted['cnacs'],
         );
+        $result['operational_summary'] = ($this->operationalSummary ?? new ConsistOperationalSummary())
+            ->fromAnalysis($result);
         $this->analysisResultStore->save($token, $result);
         $this->csrf->rotate();
         $this->flashStore->add('success', 'Cruce de VIN completado.');
@@ -416,6 +442,41 @@ final class RailController
             return null;
         }
         throw new RuntimeException('La acción solicitada no es válida.');
+    }
+
+    private function handleCatalogImport(array $post, array $files): ?string
+    {
+        $redirect = $this->baseUrl
+            . '/index.php?modulo=rail&seccion=configuracion&subseccion=catalogos';
+        try {
+            if ($this->csrf === null || !$this->csrf->validate((string) ($post['_csrf'] ?? ''))) {
+                throw new RuntimeException('La sesión del formulario expiró. Intenta nuevamente.');
+            }
+            if ($this->catalogService === null) {
+                throw new RuntimeException('La importación del catálogo maestro no está disponible.');
+            }
+            $catalog = $this->catalogService->import(
+                (array) ($files['route_catalog'] ?? []),
+                $this->authenticatedUser,
+            );
+            $this->csrf->rotate();
+            $this->flashStore?->add(
+                'success',
+                sprintf(
+                    'Catálogo maestro activado correctamente con %d rutas.',
+                    (int) ($catalog['version']['record_count'] ?? 0),
+                ),
+            );
+        } catch (Throwable $exception) {
+            $this->flashStore?->add(
+                'error',
+                $exception instanceof RuntimeException || $exception instanceof DomainException
+                    ? $exception->getMessage()
+                    : 'No fue posible importar el catálogo maestro.',
+            );
+        }
+        header('Location: ' . $redirect, true, 303);
+        return null;
     }
 
     private function downloadConsist(int $id): ?string

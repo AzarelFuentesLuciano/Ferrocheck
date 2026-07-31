@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Rail\Consist;
 
+use App\Repositories\Rail\RouteCodeCatalogRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use RuntimeException;
 
@@ -11,24 +12,34 @@ final class RouteCodeCatalogLoader
 {
     private const EXPECTED_SHA256 = '42640d6baf5de85a151c38ea6d1234d5f8a0948bb605e2e173d7a60b5bf9972e';
 
-    public function __construct(private string $path, private ?string $expectedSha256 = self::EXPECTED_SHA256)
+    public function __construct(
+        private string|RouteCodeCatalogRepository $source,
+        private ?string $expectedSha256 = self::EXPECTED_SHA256,
+    )
     {
     }
 
     public function load(): array
     {
-        if (!is_file($this->path) || !is_readable($this->path)) {
+        if ($this->source instanceof RouteCodeCatalogRepository) {
+            return $this->source->activeCatalog()
+                ?? throw new RuntimeException(
+                    'No existe un catálogo maestro de rutas activo. Importe y active uno desde Rail → Configuración → Catálogos.',
+                );
+        }
+        $path = $this->source;
+        if (!is_file($path) || !is_readable($path)) {
             throw new RuntimeException('El catálogo maestro de rutas no está disponible.');
         }
-        $sha256 = hash_file('sha256', $this->path);
+        $sha256 = hash_file('sha256', $path);
         if ($this->expectedSha256 !== null && !hash_equals($this->expectedSha256, $sha256)) {
             throw new RuntimeException('El catálogo maestro no corresponde a la versión aprobada.');
         }
 
-        $reader = IOFactory::createReaderForFile($this->path);
+        $reader = IOFactory::createReaderForFile($path);
         $reader->setReadDataOnly(true);
         $reader->setLoadSheetsOnly(['route_codes']);
-        $spreadsheet = $reader->load($this->path);
+        $spreadsheet = $reader->load($path);
         try {
             $sheet = $spreadsheet->getSheetByName('route_codes');
             if ($sheet === null) {
@@ -69,7 +80,7 @@ final class RouteCodeCatalogLoader
 
             return [
                 'version' => [
-                    'source_filename' => basename($this->path),
+                    'source_filename' => basename($path),
                     'source_sha256' => $sha256,
                     'sheet' => 'route_codes',
                     'record_count' => count($routes) + array_sum(array_map('count', $duplicates)),

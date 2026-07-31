@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__, 2);
 $migration = (string) file_get_contents($root . '/database/migrations/20260730_016_create_rail_consists.sql');
+$catalogMigration = (string) file_get_contents($root . '/database/migrations/20260731_017_create_rail_route_catalog.sql');
+$summaryMigration = (string) file_get_contents($root . '/database/migrations/20260731_018_add_rail_consist_operational_summary.sql');
 $repository = (string) file_get_contents($root . '/app/Repositories/Rail/ConsistRepository.php');
 $controller = (string) file_get_contents($root . '/app/Controllers/Rail/RailController.php');
 $passed = 0;
@@ -44,10 +46,22 @@ $test('permisos mínimos aprobados',
     && str_contains($migration, 'rail.consist.ver_detalle')
     && str_contains($migration, 'rail.consist.ver_historial')
     && !str_contains($migration, 'rail.consist.confirmar'));
+$test('catálogo de rutas queda versionado, indexado y protegido',
+    str_contains($catalogMigration, 'rail_catalog_route_codes')
+    && str_contains($catalogMigration, 'uq_rail_catalog_route_version_code')
+    && str_contains($catalogMigration, 'fk_rail_catalog_route_version')
+    && str_contains($catalogMigration, 'rail.catalogos.importar'));
 $test('POST conserva CSRF y no expone confirmación/cancelación',
     str_contains($controller, '$this->csrf->validate')
+    && str_contains($controller, 'handleCatalogImport')
+    && !str_contains($controller, '$_POST')
     && !str_contains($controller, "'confirm_consist'")
     && !str_contains($controller, "'cancel_consist'"));
+
+$test('resumen operativo persiste y se hidrata para detalle e historial',
+    str_contains($summaryMigration, 'operational_summary_json')
+    && str_contains($repository, "'operational_summary'")
+    && str_contains($repository, "'operational_summary_json'"));
 
 echo "\nResumen Consist Persistence Contract: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);
