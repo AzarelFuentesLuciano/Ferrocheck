@@ -90,6 +90,14 @@ assert(count(array_filter($result['platforms'], static fn (array $platform): boo
 assert($comparison['pass'] === true);
 assert($comparison['matches'] === 624);
 assert($comparison['differences'] === 0);
+$inputPlatforms = [];
+foreach ($analysis['units'] as $sourceUnit) {
+    $inputPlatforms[$sourceUnit['vin']] = (string) ($sourceUnit['source_data']['vehicle_load_report']['fdTransportationName1'] ?? '');
+}
+foreach (array_slice($result['units'], 0, 10) as $unit) {
+    assert($unit['platform_number'] === $inputPlatforms[$unit['vin']]);
+    assert($unit['final_columns']['fdTransportationName1'] === $inputPlatforms[$unit['vin']]);
+}
 assert((static function () use ($analysis, $catalog): bool {
     try {
         (new ConsistDocumentBuilder())->build('token-invalido', $analysis, $catalog, 1, ConsistOperationalPeriod::fromInput('2026-07-29', '2026-07-30'));

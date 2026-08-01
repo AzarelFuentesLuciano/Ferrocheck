@@ -531,7 +531,7 @@ final class RailController
             if ($vin !== '' && !str_contains((string) $unit['vin'], $vin)) {
                 return false;
             }
-            if ($platform !== '' && (string) ($unit['final_data_json']['fdTransportationName1'] ?? '') !== $platform) {
+            if ($platform !== '' && (string) ($unit['platform_number'] ?? '') !== $platform) {
                 return false;
             }
             if ($incident === 'si' && ($unit['issues_json'] ?? []) === []) {
@@ -546,10 +546,10 @@ final class RailController
         $current = max(1, (int) ($query['pagina'] ?? 1));
         $pages = max(1, (int) ceil(count($units) / $perPage));
         $current = min($current, $pages);
-        $page['all_platforms'] = array_values(array_unique(array_map(
-            static fn (array $unit): string => (string) ($unit['final_data_json']['fdTransportationName1'] ?? ''),
+        $page['all_platforms'] = array_values(array_unique(array_filter(array_map(
+            static fn (array $unit): string => trim((string) ($unit['platform_number'] ?? '')),
             $page['units'],
-        )));
+        ), static fn (string $value): bool => $value !== '')));
         $page['units'] = array_slice($units, ($current - 1) * $perPage, $perPage);
         $page['pagination'] = ['page' => $current, 'pages' => $pages, 'total' => count($units), 'per_page' => $perPage];
         $page['filters'] = ['vin_buscar' => $vin, 'plataforma' => $platform, 'incidencia' => $incident];

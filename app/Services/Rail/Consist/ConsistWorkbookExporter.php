@@ -111,19 +111,10 @@ final class ConsistWorkbookExporter
 
     private function finalRow(array $unit): array
     {
-        $source = (array) ($unit['final_data_json'] ?? $unit['final_columns'] ?? []);
-        if (array_is_list($source)) {
-            $source = array_combine(
-                ConsistDocumentBuilder::HEADERS,
-                array_pad(array_slice($source, 0, count(ConsistDocumentBuilder::HEADERS)), count(ConsistDocumentBuilder::HEADERS), ''),
-            );
-        }
-
-        $row = [];
-        foreach (ConsistDocumentBuilder::HEADERS as $header) {
-            $row[$header] = $source[$header] ?? '';
-        }
-        return $row;
+        return (new ConsistUnitDataNormalizer())->finalData(
+            (array) ($unit['final_data_json'] ?? $unit['final_columns'] ?? []),
+            (array) ($unit['vehicle_load_data_json'] ?? $unit['source_data']['vehicle_load_report'] ?? []),
+        );
     }
 
     private function summary(array $finalRows): array

@@ -357,7 +357,7 @@
             <h2>Detalle de unidad <?php echo $railEscape($detail['vin']); ?></h2>
             <dl class="rail-consist-meta">
                 <div><dt>Posición global</dt><dd><?php echo $railEscape($detail['global_position']); ?></dd></div>
-                <div><dt>Plataforma</dt><dd><?php echo $railEscape($detail['final_data_json']['fdTransportationName1'] ?? ''); ?></dd></div>
+                <div><dt>Plataforma</dt><dd><?php echo $railEscape($detail['platform_number'] ?? ''); ?></dd></div>
                 <div><dt>Posición en plataforma</dt><dd><?php echo $railEscape($detail['platform_position']); ?></dd></div>
                 <div><dt>Route Code</dt><dd><?php echo $railEscape($detail['route_code']); ?></dd></div>
                 <div><dt>Market</dt><dd><?php echo $railEscape($detail['market']); ?></dd></div>
@@ -420,7 +420,7 @@
                 <tbody>
                 <?php foreach ($railConsistPage['units'] ?? [] as $unit): ?>
                     <tr>
-                        <td><?php echo $railEscape($unit['final_data_json']['fdTransportationName1'] ?? ''); ?></td>
+                        <td><?php echo $railEscape($unit['platform_number'] ?? ''); ?></td>
                         <td><?php echo $railEscape($unit['global_position']); ?></td>
                         <td><?php echo $railEscape($unit['vin']); ?></td>
                         <td><?php echo $railEscape($unit['track']); ?></td><td><?php echo $railEscape($unit['route_code']); ?></td><td><?php echo $railEscape($unit['shipping_destination']); ?></td>

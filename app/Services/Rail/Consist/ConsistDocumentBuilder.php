@@ -18,6 +18,7 @@ final class ConsistDocumentBuilder
         private array $referenceOrder = [],
         private ?ConsistOperationalSummary $operationalSummary = null,
         private ?RouteCodeResolver $routeCodeResolver = null,
+        private ?ConsistUnitDataNormalizer $unitDataNormalizer = null,
     ) {
     }
 
@@ -55,6 +56,7 @@ final class ConsistDocumentBuilder
             $vehicle = (array) ($source['vehicle_load_report'] ?? []);
             $shippers = (array) ($source['shippers'] ?? []);
             $cnacs = (array) ($source['cnacs'] ?? []);
+            $unitDataNormalizer = $this->unitDataNormalizer ?? new ConsistUnitDataNormalizer();
             $routeCode = trim((string) ($vehicle['fdmanufacturerroutecode'] ?? ''));
             $carrier = trim((string) ($vehicle['fdSCAC'] ?? ''));
             $vehicleDestination = trim((string) ($vehicle['fdDestinationLocation'] ?? ''));
@@ -69,7 +71,7 @@ final class ConsistDocumentBuilder
                 $pedimento = $cnacs === [] ? 'Falta agregar este VIN en hoja de CNACS' : 'Pending';
             }
             $final = [
-                trim((string) ($vehicle['fdTransportationName1'] ?? '')),
+                $unitDataNormalizer->vehicleValue($vehicle, 'fdTransportationName1'),
                 $vin,
                 $routeCode,
                 $carrier,
@@ -131,12 +133,20 @@ final class ConsistDocumentBuilder
             return $left['stable_input_position'] <=> $right['stable_input_position'];
         });
         $platforms = [];
+        $platformPositions = [];
         foreach ($units as $position => &$unit) {
             $global = $position + 1;
-            $platformPosition = intdiv($position, 8) + 1;
+            $platformNumber = trim((string) $unit['final_columns']['fdTransportationName1']);
+            if ($platformNumber === '') {
+                throw new DomainException(sprintf('El VIN %s no contiene fdTransportationName1.', $unit['vin']));
+            }
+            if (!isset($platformPositions[$platformNumber])) {
+                $platformPositions[$platformNumber] = count($platformPositions) + 1;
+            }
+            $platformPosition = $platformPositions[$platformNumber];
             $unit['global_position'] = $global;
-            $unit['platform_position'] = (($position % 8) + 1);
-            $unit['platform_number'] = (string) $unit['final_columns']['fdTransportationName1'];
+            $unit['platform_number'] = $platformNumber;
+            $unit['platform_group_position'] = $platformPosition;
             $platforms[$platformPosition] ??= [
                 'position' => $platformPosition,
                 'platform_number' => $unit['platform_number'],
@@ -144,6 +154,7 @@ final class ConsistDocumentBuilder
                 'total_units' => 0,
                 'unit_vins' => [],
             ];
+            $unit['platform_position'] = $platforms[$platformPosition]['total_units'] + 1;
             $platforms[$platformPosition]['total_units']++;
             $platforms[$platformPosition]['unit_vins'][] = $unit['vin'];
         }

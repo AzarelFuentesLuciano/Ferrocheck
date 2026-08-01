@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Rail;
 
+use App\Services\Rail\Consist\ConsistUnitDataNormalizer;
 use PDO;
 use RuntimeException;
 use Throwable;
@@ -44,6 +45,7 @@ class ConsistRepository
                  VALUES(:consist,:number,:position,:track,:units)'
             );
             $platformIds = [];
+            $platformPositionsByNumber = [];
             foreach ($draft['platforms'] as $platform) {
                 $insertPlatform->execute([
                     'consist' => $consistId,
@@ -53,6 +55,7 @@ class ConsistRepository
                     'units' => $platform['total_units'],
                 ]);
                 $platformIds[(int) $platform['position']] = (int) $this->pdo->lastInsertId();
+                $platformPositionsByNumber[(string) $platform['platform_number']] = (int) $platform['position'];
             }
 
             $insertUnit = $this->pdo->prepare(
@@ -65,7 +68,12 @@ class ConsistRepository
                   :vehicle,:shippers,:cnacs,:additional,:trace,:issues)'
             );
             foreach ($draft['units'] as $unit) {
-                $platformPosition = intdiv((int) $unit['global_position'] - 1, 8) + 1;
+                $platformPosition = (int) ($unit['platform_group_position']
+                    ?? $platformPositionsByNumber[(string) ($unit['platform_number'] ?? '')]
+                    ?? 0);
+                if (!isset($platformIds[$platformPosition])) {
+                    throw new RuntimeException('No fue posible relacionar una unidad con su plataforma real.');
+                }
                 $source = (array) $unit['source_data'];
                 $insertUnit->execute([
                     'consist' => $consistId,
@@ -246,6 +254,11 @@ class ConsistRepository
         ] as $field) {
             $unit[$field] = $this->decode($unit[$field] ?? null);
         }
+        $unit['final_data_json'] = (new ConsistUnitDataNormalizer())->finalData(
+            (array) $unit['final_data_json'],
+            (array) $unit['vehicle_load_data_json'],
+        );
+        $unit['platform_number'] = trim((string) $unit['final_data_json']['fdTransportationName1']);
         return $unit;
     }
 

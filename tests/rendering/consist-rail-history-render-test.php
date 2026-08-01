@@ -41,14 +41,17 @@ $confirmed = $render('consultar', [
     'units'=>[[
         'global_position'=>1,'platform_position'=>1,'vin'=>'VIN1','track'=>'T1','route_code'=>'20IL',
         'market'=>'NAFTA','shipping_destination'=>'DEST','final_data_json'=>['fdTransportationName1'=>'P1'],
+        'platform_number'=>'P1',
         'issues_json'=>[],
     ]],
+    'all_platforms'=>['P1'],
 ]);
 $warningDetail = $render('consultar', [
     'unit'=>[
         'vin'=>'VIN-WARNING','global_position'=>1,'platform_position'=>1,'route_code'=>'75',
         'market'=>'NAFTA','shipping_destination'=>'Amarillo, TX',
         'final_data_json'=>['fdTransportationName1'=>'P1'],
+        'platform_number'=>'P1',
         'vehicle_load_data_json'=>[],'shippers_data_json'=>[],'cnacs_selected_data_json'=>[],
         'cnacs_additional_data_json'=>[],'trace_json'=>['route_code_resolution'=>['mode'=>'historical_first_match','selected_source_row'=>288,'variant_count'=>2]],
         'issues_json'=>[['type'=>'route_code_historical_fallback','message'=>'Primera coincidencia histórica aplicada.']],
@@ -82,6 +85,10 @@ $test('borrador no muestra acciones fuera de alcance', str_contains($confirmed, 
     && !str_contains($confirmed, 'Quitar')
     && !str_contains($confirmed, 'Confirmar Consist')
     && !str_contains($confirmed, 'Cancelar borrador'));
+$test('borrador y filtro muestran la plataforma normalizada',
+    substr_count($confirmed, 'P1') >= 2
+    && str_contains($confirmed, '<option value="P1"'));
+$test('detalle muestra la plataforma normalizada', str_contains($warningDetail, '<dd>P1</dd>'));
 
 echo "\nResumen Consist Rail History Render: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);
