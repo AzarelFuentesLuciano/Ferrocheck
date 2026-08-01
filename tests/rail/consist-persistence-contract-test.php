@@ -6,6 +6,7 @@ $root = dirname(__DIR__, 2);
 $migration = (string) file_get_contents($root . '/database/migrations/20260730_016_create_rail_consists.sql');
 $catalogMigration = (string) file_get_contents($root . '/database/migrations/20260731_017_create_rail_route_catalog.sql');
 $summaryMigration = (string) file_get_contents($root . '/database/migrations/20260731_018_add_rail_consist_operational_summary.sql');
+$officialCatalogMigration = (string) file_get_contents($root . '/database/migrations/20260731_019_seed_official_rail_route_catalog.sql');
 $repository = (string) file_get_contents($root . '/app/Repositories/Rail/ConsistRepository.php');
 $controller = (string) file_get_contents($root . '/app/Controllers/Rail/RailController.php');
 $passed = 0;
@@ -51,6 +52,11 @@ $test('catálogo de rutas queda versionado, indexado y protegido',
     && str_contains($catalogMigration, 'uq_rail_catalog_route_version_code')
     && str_contains($catalogMigration, 'fk_rail_catalog_route_version')
     && str_contains($catalogMigration, 'rail.catalogos.importar'));
+$test('catálogo oficial queda autocontenido, preserva filas fuente y no exige usuario ficticio',
+    str_contains($officialCatalogMigration, '42640d6baf5de85a151c38ea6d1234d5f8a0948bb605e2e173d7a60b5bf9972e')
+    && str_contains($officialCatalogMigration, 'uq_rail_catalog_route_version_source')
+    && str_contains($officialCatalogMigration, "NULL,0,'system'")
+    && !str_contains($officialCatalogMigration, 'docs/rail/consist/referencias'));
 $test('POST conserva CSRF y no expone confirmación/cancelación',
     str_contains($controller, '$this->csrf->validate')
     && str_contains($controller, 'handleCatalogImport')
@@ -62,6 +68,11 @@ $test('resumen operativo persiste y se hidrata para detalle e historial',
     str_contains($summaryMigration, 'operational_summary_json')
     && str_contains($repository, "'operational_summary'")
     && str_contains($repository, "'operational_summary_json'"));
+$test('advertencias de resolución reutilizan issues, trace y auditoría general',
+    str_contains($repository, 'route_code_resolution_summary')
+    && str_contains($repository, 'route_code_resolution')
+    && str_contains($repository, "'trace' => \$this->json(\$unit['trace'])")
+    && str_contains($repository, "'issues' => \$this->json(\$unit['issues'])"));
 
 echo "\nResumen Consist Persistence Contract: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);

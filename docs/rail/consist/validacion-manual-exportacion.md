@@ -15,16 +15,16 @@ No deben ejecutarse estas pruebas contra producción ni `vascor-pruebas`.
 ## Archivos utilizados
 
 - `Plantilla_Consist.xlsm`, únicamente como fuente diagnóstica.
-- `vascor_sm_db.xlsx`, catálogo controlado.
+- `vascor_sm_db.xlsx`, únicamente como fuente del seed oficial verificable.
 - `Consist Rail del 29 al 30 de Julio de 2026.xlsx`, referencia visual.
 
 Los originales son de sólo lectura y sus SHA-256 deben compararse antes y
 después.
 
-Los tres binarios de referencia se custodian fuera de Git y deben
-aprovisionarse explícitamente en `docs/rail/consist/referencias/` con los
-hashes aprobados antes de habilitar la generación. El commit no contiene ni
-modifica esos XLSM/XLSX.
+Los tres binarios de referencia se custodian fuera de Git. El servidor no
+necesita `vascor_sm_db.xlsx`: la migración 019 contiene el catálogo oficial
+como SQL autocontenido. Los otros binarios sólo son necesarios para pruebas
+diagnósticas y Golden Master.
 
 ## Resultado esperado
 
@@ -50,12 +50,13 @@ DSN hacia `127.0.0.1`/`localhost` y la base `ferrocheck`.
 
 Antes de habilitar el flujo deben estar aplicadas, en orden, las migraciones
 `20260725_015_register_rail_module.sql` y
-`20260730_016_create_rail_consists.sql` y
-`20260731_017_create_rail_route_catalog.sql`. Este repositorio no dispone de un
+`20260730_016_create_rail_consists.sql`,
+`20260731_017_create_rail_route_catalog.sql`,
+`20260731_018_add_rail_consist_operational_summary.sql` y
+`20260731_019_seed_official_rail_route_catalog.sql`. Este repositorio no dispone de un
 runner que registre automáticamente estas migraciones en `schema_migrations`;
-no se deben insertar marcas ficticias. Antes de generar el primer borrador, un
-administrador debe importar `vascor_sm_db.xlsx` desde Rail → Configuración →
-Catálogos. La descarga requiere autenticación, acceso organizacional a Rail y
+no se deben insertar marcas ficticias. El catálogo queda instalado por la 019
+y no requiere importación manual. La descarga requiere autenticación, acceso organizacional a Rail y
 el permiso `rail.consist.exportar`.
 
 ## Validación visual
@@ -64,6 +65,22 @@ Abrir la descarga en Microsoft Excel, sólo lectura, junto a la referencia.
 Comparar orden de hojas, encabezados negros, franjas de tabla, tipografía,
 alineación centrada, anchos, altura de encabezado, filtros y formatos.
 Cerrar ambos libros sin guardar.
+
+## Resolución de Route Codes
+
+Antes de exportar, revisar las advertencias del borrador. Una advertencia
+`historical_first_match` es no bloqueante e identifica Route Code, número de
+variantes, `source_row` elegida y destino seleccionado. El detalle de unidad
+conserva el modo y criterios en trazabilidad.
+
+Un Route Code inexistente sigue siendo bloqueante: no se crea un borrador
+parcial. Una ambigüedad existente no detiene el lote; primero usa evidencia
+conservadora de `fdDestinationLocation` y, si no basta, la primera fila por
+`source_row`.
+
+Los ocho resultados históricos de 54, 54B y 54D fueron reproducidos mediante
+fixtures basados en valores observables del entregable oficial; la validación
+completa desde los archivos fuente del lote permanece pendiente.
 
 ## Problemas encontrados y solución
 

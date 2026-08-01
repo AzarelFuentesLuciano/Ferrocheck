@@ -29,6 +29,7 @@ $history = $render('historial', [
             'total_loaded_platforms'=>78,
             'is_consistent'=>true,
         ],
+        'issues'=>[['type'=>'route_code_resolution_summary','fallback_unit_count'=>2,'route_codes'=>['75','BR']]],
     ]],
     'total'=>1,'page'=>1,'pages'=>1,
     'filters'=>['folio'=>'CR-2026','vin'=>'VIN1','estado'=>'borrador','desde'=>'2026-07-01','hasta'=>'2026-07-31','usuario'=>'Admin'],
@@ -42,6 +43,17 @@ $confirmed = $render('consultar', [
         'market'=>'NAFTA','shipping_destination'=>'DEST','final_data_json'=>['fdTransportationName1'=>'P1'],
         'issues_json'=>[],
     ]],
+]);
+$warningDetail = $render('consultar', [
+    'unit'=>[
+        'vin'=>'VIN-WARNING','global_position'=>1,'platform_position'=>1,'route_code'=>'75',
+        'market'=>'NAFTA','shipping_destination'=>'Amarillo, TX',
+        'final_data_json'=>['fdTransportationName1'=>'P1'],
+        'vehicle_load_data_json'=>[],'shippers_data_json'=>[],'cnacs_selected_data_json'=>[],
+        'cnacs_additional_data_json'=>[],'trace_json'=>['route_code_resolution'=>['mode'=>'historical_first_match','selected_source_row'=>288,'variant_count'=>2]],
+        'issues_json'=>[['type'=>'route_code_historical_fallback','message'=>'Primera coincidencia histórica aplicada.']],
+    ],
+    'consist'=>['id'=>1],
 ]);
 $passed = 0;
 $failed = 0;
@@ -61,6 +73,11 @@ $test('historial conserva filtros por folio, VIN, estado y fecha', str_contains(
     && str_contains($history, 'name="hasta"'));
 $test('historial usa tabla responsive y paginación', str_contains($history, 'rail-consist-table-wrap')
     && str_contains($history, 'Página 1 de 1'));
+$test('historial muestra resumen persistido de fallback histórico', str_contains($history, '2 unidad(es)')
+    && str_contains($history, '75, BR'));
+$test('detalle muestra warning y trazabilidad de resolución', str_contains($warningDetail, 'Primera coincidencia histórica aplicada.')
+    && str_contains($warningDetail, 'historical_first_match')
+    && str_contains($warningDetail, '288'));
 $test('borrador no muestra acciones fuera de alcance', str_contains($confirmed, 'borrador')
     && !str_contains($confirmed, 'Quitar')
     && !str_contains($confirmed, 'Confirmar Consist')

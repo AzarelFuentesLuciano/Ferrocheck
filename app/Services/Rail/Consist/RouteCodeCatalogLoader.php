@@ -24,7 +24,7 @@ final class RouteCodeCatalogLoader
         if ($this->source instanceof RouteCodeCatalogRepository) {
             return $this->source->activeCatalog()
                 ?? throw new RuntimeException(
-                    'No existe un catálogo maestro de rutas activo. Importe y active uno desde Rail → Configuración → Catálogos.',
+                    'No existe un catálogo maestro de rutas activo. Verifique que la migración oficial del catálogo esté aplicada.',
                 );
         }
         $path = $this->source;
@@ -57,6 +57,7 @@ final class RouteCodeCatalogLoader
             }
 
             $routes = [];
+            $records = [];
             $duplicates = [];
             for ($row = 2, $last = $sheet->getHighestDataRow(); $row <= $last; $row++) {
                 $routeCode = $this->normalize($sheet->getCell([1, $row])->getFormattedValue());
@@ -70,7 +71,14 @@ final class RouteCodeCatalogLoader
                     'market' => trim((string) $sheet->getCell([3, $row])->getFormattedValue()),
                     'shipping_destination' => trim((string) $sheet->getCell([4, $row])->getFormattedValue()),
                     'carrier' => trim((string) $sheet->getCell([5, $row])->getFormattedValue()),
+                    'heavy_duty' => trim((string) $sheet->getCell([6, $row])->getFormattedValue()),
+                    'usa_canada' => trim((string) $sheet->getCell([7, $row])->getFormattedValue()),
+                    'production_plant' => trim((string) $sheet->getCell([8, $row])->getFormattedValue()),
+                    'rc_plant' => trim((string) $sheet->getCell([9, $row])->getFormattedValue()),
+                    'load_by' => trim((string) $sheet->getCell([10, $row])->getFormattedValue()),
+                    'border_crossing' => trim((string) $sheet->getCell([11, $row])->getFormattedValue()),
                 ];
+                $records[] = $record;
                 if (isset($routes[$routeCode])) {
                     $duplicates[$routeCode][] = $record;
                     continue;
@@ -86,6 +94,11 @@ final class RouteCodeCatalogLoader
                     'record_count' => count($routes) + array_sum(array_map('count', $duplicates)),
                 ],
                 'routes' => $routes,
+                'records' => $records,
+                'route_variants' => array_reduce($records, static function (array $groups, array $record): array {
+                    $groups[$record['route_code']][] = $record;
+                    return $groups;
+                }, []),
                 'duplicate_routes' => $duplicates,
             ];
         } finally {

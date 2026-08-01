@@ -89,7 +89,13 @@ class ConsistRepository
                     'issues' => $this->json($unit['issues']),
                 ]);
             }
-            $this->audit((int) $draft['created_by'], $consistId, $folio, (int) $draft['total_units']);
+            $this->audit(
+                (int) $draft['created_by'],
+                $consistId,
+                $folio,
+                (int) $draft['total_units'],
+                (array) ($draft['issues'] ?? []),
+            );
             return $this->find($consistId) ?? throw new RuntimeException('No fue posible recuperar el borrador.');
         });
     }
@@ -157,6 +163,7 @@ class ConsistRepository
         $query->execute($params);
         $items = array_map(function (array $item): array {
             $item['operational_summary'] = $this->decode($item['operational_summary_json'] ?? null);
+            $item['issues'] = $this->decode($item['issues_json'] ?? null);
             return $item;
         }, $query->fetchAll());
         return [
@@ -242,8 +249,18 @@ class ConsistRepository
         return $value === [] ? null : json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 
-    private function audit(int $actorId, int $id, string $folio, int $units): void
+    private function audit(int $actorId, int $id, string $folio, int $units, array $issues): void
     {
+        $resolutionSummary = null;
+        foreach ($issues as $issue) {
+            if (($issue['type'] ?? '') === 'route_code_resolution_summary') {
+                $resolutionSummary = [
+                    'fallback_unit_count' => (int) ($issue['fallback_unit_count'] ?? 0),
+                    'route_codes' => array_values((array) ($issue['route_codes'] ?? [])),
+                ];
+                break;
+            }
+        }
         $statement = $this->pdo->prepare(
             'INSERT INTO auditoria_eventos(usuario_id,accion,modulo,entidad,entidad_id,resultado,valor_nuevo_json,created_at)
              VALUES(:actor,\'rail.consist.generar\',\'rail\',\'rail_consist\',:id,\'exito\',:value,CURRENT_TIMESTAMP(6))'
@@ -251,7 +268,11 @@ class ConsistRepository
         $statement->execute([
             'actor' => $actorId,
             'id' => $id,
-            'value' => $this->json(['folio' => $folio, 'total_units' => $units]),
+            'value' => $this->json(array_filter([
+                'folio' => $folio,
+                'total_units' => $units,
+                'route_code_resolution' => $resolutionSummary,
+            ], static fn (mixed $value): bool => $value !== null)),
         ]);
     }
 

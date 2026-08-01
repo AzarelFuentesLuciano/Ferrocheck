@@ -222,11 +222,7 @@
             <?php if (empty($railCatalogPage['active'])): ?>
                 <div class="rail-consist-message rail-consist-message--error" role="alert">
                     No existe un catálogo maestro de rutas activo.
-                    <?php if (!empty($railCatalogPage['can_import'])): ?>
-                        <a href="<?php echo $railEscape($railBaseUrl); ?>/index.php?modulo=rail&amp;seccion=configuracion&amp;subseccion=catalogos">Importar catálogo maestro</a>.
-                    <?php else: ?>
-                        Solicite a un administrador que lo importe desde Configuración de Rail.
-                    <?php endif; ?>
+                    Verifique que la migración oficial 019 esté instalada.
                 </div>
             <?php endif; ?>
             <form method="post" class="rail-consist-form"
@@ -389,6 +385,14 @@
                 <article class="rail-consist-analysis-card"><h3><?php echo $railEscape($label); ?></h3><strong><?php echo $railEscape($railConsistPage[$key] ?? ''); ?></strong></article>
             <?php endforeach; ?>
         </div>
+        <?php foreach ($railConsistPage['issues'] ?? [] as $issue): ?>
+            <?php if (($issue['type'] ?? '') === 'route_code_resolution_summary'): ?>
+                <div class="rail-consist-message rail-consist-message--warning" role="status">
+                    Se aplicó la primera coincidencia histórica en <?php echo $railEscape($issue['fallback_unit_count'] ?? 0); ?> unidad(es).
+                    Route Codes: <?php echo $railEscape(implode(', ', $issue['route_codes'] ?? [])); ?>. Consulte el detalle de las unidades para revisar el criterio y destino seleccionados.
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
         <div class="rail-consist-analysis__files">
             <article class="rail-consist-analysis-card"><h3>Capacidad habitual</h3><strong>Hasta 8</strong></article>
             <article class="rail-consist-analysis-card"><h3>Incidencias</h3><strong><?php echo $railEscape(count($railConsistPage['issues'] ?? [])); ?></strong></article>
@@ -451,6 +455,15 @@
         </div>
         <button class="rail-consist-submit" type="submit">Buscar</button>
     </form>
+    <?php foreach ($railConsistPage['items'] ?? [] as $historyItem): ?>
+        <?php foreach ($historyItem['issues'] ?? [] as $historyIssue): ?>
+            <?php if (($historyIssue['type'] ?? '') === 'route_code_resolution_summary'): ?>
+                <div class="rail-consist-message rail-consist-message--warning" role="status">
+                    <?php echo $railEscape($historyItem['folio'] ?? 'Consist'); ?>: <?php echo $railEscape($historyIssue['fallback_unit_count'] ?? 0); ?> unidad(es) con primera coincidencia histórica en Route Codes <?php echo $railEscape(implode(', ', $historyIssue['route_codes'] ?? [])); ?>.
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endforeach; ?>
     <div class="rail-consist-table-wrap"><table><thead><tr><th>Folio</th><th>Fecha</th><th>Estado</th><th>Unidades</th><th>Pendientes</th><th>Confirmadas</th><th>Total plataformas</th><th>Usuario</th><th>Catálogo</th><th>Acción</th></tr></thead><tbody>
     <?php foreach ($railConsistPage['items'] ?? [] as $item): $itemOperational = $item['operational_summary'] ?? []; ?><tr><td><?php echo $railEscape($item['folio']); ?></td><td><?php echo $railEscape($item['created_at']); ?></td><td><?php echo $railEscape($item['status']); ?></td><td><?php echo $railEscape($item['total_units']); ?></td><td><?php echo $railEscape($itemOperational['pending_platforms'] ?? 0); ?></td><td><?php echo $railEscape($itemOperational['confirmed_platforms'] ?? 0); ?></td><td><?php echo $railEscape($itemOperational['total_loaded_platforms'] ?? 0); ?></td><td><?php echo $railEscape($item['created_by_name']); ?></td><td><?php echo $railEscape($item['source_filename']); ?></td><td><a href="<?php echo $railEscape($railBaseUrl); ?>/index.php?modulo=rail&amp;seccion=consist-rail&amp;subseccion=consultar&amp;id=<?php echo $railEscape($item['id']); ?>">Ver</a></td></tr><?php endforeach; ?>
     </tbody></table></div>

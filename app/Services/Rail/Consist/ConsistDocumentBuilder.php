@@ -17,6 +17,7 @@ final class ConsistDocumentBuilder
     public function __construct(
         private array $referenceOrder = [],
         private ?ConsistOperationalSummary $operationalSummary = null,
+        private ?RouteCodeResolver $routeCodeResolver = null,
     ) {
     }
 
@@ -34,8 +35,8 @@ final class ConsistDocumentBuilder
         if (!isset($analysis['units']) || !is_array($analysis['units'])) {
             throw new DomainException('El análisis de origen no contiene unidades.');
         }
-        $routes = (array) ($catalog['routes'] ?? []);
         $issues = [];
+        $routeFallbacks = [];
         $units = [];
         $inputPosition = 0;
         foreach ($analysis['units'] as $sourceUnit) {
@@ -55,16 +56,13 @@ final class ConsistDocumentBuilder
             $shippers = (array) ($source['shippers'] ?? []);
             $cnacs = (array) ($source['cnacs'] ?? []);
             $routeCode = trim((string) ($vehicle['fdmanufacturerroutecode'] ?? ''));
-            $route = $routes[$this->normalize($routeCode)] ?? null;
-            $market = is_array($route) && trim((string) ($route['market'] ?? '')) !== ''
-                ? (string) $route['market']
-                : 'REVISAR';
             $carrier = trim((string) ($vehicle['fdSCAC'] ?? ''));
-            $destination = $carrier === 'KCSM'
-                ? 'Laredo'
-                : (is_array($route) && trim((string) ($route['shipping_destination'] ?? '')) !== ''
-                    ? (string) $route['shipping_destination']
-                    : 'REVISAR');
+            $vehicleDestination = trim((string) ($vehicle['fdDestinationLocation'] ?? ''));
+            $route = ($this->routeCodeResolver ?? new RouteCodeResolver())
+                ->resolve($catalog, $routeCode, $carrier, $vehicleDestination);
+            $market = trim((string) ($route['market'] ?? '')) ?: 'REVISAR';
+            $destination = trim((string) ($route['resolved_destination'] ?? $route['shipping_destination'] ?? ''))
+                ?: 'REVISAR';
             $shipper = trim((string) ($shippers['Textbox7'] ?? '')) ?: 'Pending';
             $pedimento = trim((string) ($cnacs['Pedimento'] ?? ''));
             if ($pedimento === '') {
@@ -78,7 +76,7 @@ final class ConsistDocumentBuilder
                 trim((string) ($vehicle['fdTrack'] ?? '')),
                 $shipper,
                 '',
-                trim((string) ($vehicle['fdDestinationLocation'] ?? '')),
+                $vehicleDestination,
                 $destination,
                 $pedimento,
                 trim((string) ($vehicle['fdManufacturerRouteCode2'] ?? '')),
@@ -86,10 +84,20 @@ final class ConsistDocumentBuilder
                 trim((string) ($vehicle['fdCustom1'] ?? '')),
                 trim((string) ($vehicle['fdCustom2'] ?? '')),
             ];
-            $unitIssues = [];
-            if ($route === null) {
-                $unitIssues[] = 'route_not_found';
+            $unitIssues = $route['warning'] === null ? [] : [$route['warning']];
+            if ($route['warning'] !== null) {
+                $routeFallbacks[] = $route['warning'];
             }
+            $trace = $this->trace();
+            $trace['route_code_resolution'] = [
+                'mode' => $route['resolution_mode'],
+                'selected_source_row' => $route['selected_source_row'],
+                'variant_count' => $route['variant_count'],
+                'criteria' => $route['warning']['criteria'] ?? [
+                    'carrier' => $route['resolution_mode'] === 'kcsm_override' ? 'kcsm_override' : 'not_used',
+                    'destination_location' => $route['resolution_mode'] === 'destination_match' ? 'unique_match' : 'not_required',
+                ],
+            ];
             $units[] = [
                 'stable_input_position' => (int) ($sourceUnit['source_rows']['vehicle_load_report'] ?? $inputPosition),
                 'vin' => $vin,
@@ -105,7 +113,7 @@ final class ConsistDocumentBuilder
                     'cnacs_additional' => (array) ($source['cnacs_additional'] ?? []),
                     'cnacs_additional_count' => (int) ($sourceUnit['duplicate_counts']['cnacs'] ?? 0),
                 ],
-                'trace' => $this->trace(),
+                'trace' => $trace,
                 'issues' => $unitIssues,
             ];
         }
@@ -140,6 +148,16 @@ final class ConsistDocumentBuilder
             $platforms[$platformPosition]['unit_vins'][] = $unit['vin'];
         }
         unset($unit);
+        if ($routeFallbacks !== []) {
+            $routeCodes = array_values(array_unique(array_column($routeFallbacks, 'route_code')));
+            sort($routeCodes, SORT_NATURAL | SORT_FLAG_CASE);
+            $issues[] = [
+                'type' => 'route_code_resolution_summary',
+                'fallback_unit_count' => count($routeFallbacks),
+                'route_codes' => $routeCodes,
+                'warning_types' => ['route_code_historical_fallback'],
+            ];
+        }
         $operationalSummary = ($this->operationalSummary ?? new ConsistOperationalSummary())
             ->fromFinalUnits((array) $analysis['units'], $units);
         foreach ($operationalSummary['inconsistencies'] as $inconsistency) {

@@ -120,9 +120,9 @@ $test('vistas no contienen SQL y los formularios quedan aislados por flujo', sta
     return substr_count($consist, '<form') >= 2
         && str_contains($consist, 'enctype="multipart/form-data"')
         && str_contains($consist, 'name="action" value="analyze_vin_cross"')
-        && substr_count($configuration, '<form') === 1
-        && str_contains($configuration, 'name="action" value="import_route_catalog"')
-        && str_contains($configuration, 'name="_csrf"');
+        && substr_count($configuration, '<form') === 0
+        && str_contains($configuration, 'instalado automáticamente')
+        && !str_contains($configuration, 'name="route_catalog"');
 });
 $test('CSS está acotado a Rail y las clases reutilizadas permanecen contextualizadas', static function () use ($css): bool {
     preg_match_all('/\\.([a-zA-Z_][a-zA-Z0-9_-]*)/', $css, $matches);

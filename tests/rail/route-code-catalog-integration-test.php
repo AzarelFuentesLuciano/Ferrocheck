@@ -20,12 +20,14 @@ $pdo = new PDO('sqlite::memory:', options: [
 $pdo->exec(
     'CREATE TABLE rail_catalog_versions(
         id INTEGER PRIMARY KEY AUTOINCREMENT,source_filename TEXT NOT NULL,source_sha256 TEXT NOT NULL UNIQUE,
-        imported_by INTEGER NOT NULL,imported_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,active INTEGER NOT NULL
+        imported_by INTEGER,imported_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,active INTEGER NOT NULL,
+        origin TEXT NOT NULL DEFAULT "manual",seed_migration TEXT
     );
     CREATE TABLE rail_catalog_route_codes(
         id INTEGER PRIMARY KEY AUTOINCREMENT,catalog_version_id INTEGER NOT NULL,source_row INTEGER NOT NULL,
         route_code TEXT NOT NULL,route_king TEXT,market TEXT,shipping_destination TEXT,carrier TEXT,
-        UNIQUE(catalog_version_id,route_code)
+        heavy_duty TEXT,usa_canada TEXT,production_plant TEXT,rc_plant TEXT,load_by TEXT,border_crossing TEXT,
+        seed_migration TEXT,UNIQUE(catalog_version_id,source_row)
     );
     CREATE TABLE auditoria_eventos(
         id INTEGER PRIMARY KEY AUTOINCREMENT,usuario_id INTEGER,accion TEXT,modulo TEXT,entidad TEXT,
@@ -60,7 +62,7 @@ $throws = static function (callable $callback, string $message): bool {
 };
 
 $test('catálogo inexistente bloquea generación con instrucción clara', static fn (): bool =>
-    $throws(static fn () => $loader->load(), 'Importe y active')
+    $throws(static fn () => $loader->load(), 'migración oficial')
 );
 
 $directory = sys_get_temp_dir() . '/route-catalog-test-' . bin2hex(random_bytes(6));
@@ -132,7 +134,7 @@ $test('usuario sin permiso no importa catálogo', static fn (): bool =>
 
 $pdo->exec('UPDATE rail_catalog_versions SET active=0');
 $test('catálogo inactivo bloquea generación', static fn (): bool =>
-    $throws(static fn () => $loader->load(), 'Importe y active')
+    $throws(static fn () => $loader->load(), 'migración oficial')
 );
 $pdo->exec('UPDATE rail_catalog_versions SET active=1');
 $activeBeforeFailure = (int) $pdo->query('SELECT id FROM rail_catalog_versions WHERE active=1')->fetchColumn();
@@ -144,7 +146,7 @@ $invalidCatalog['routes']['DUPLICATE-1'] = [
     'market' => '', 'shipping_destination' => '', 'carrier' => '',
 ];
 $invalidCatalog['routes']['DUPLICATE-2'] = [
-    'source_row' => 11, 'route_code' => 'DUPLICATE', 'route_king' => '',
+    'source_row' => 10, 'route_code' => 'DUPLICATE', 'route_king' => '',
     'market' => '', 'shipping_destination' => '', 'carrier' => '',
 ];
 $test('fallo de persistencia revierte versión, rutas y auditoría', static function () use (
