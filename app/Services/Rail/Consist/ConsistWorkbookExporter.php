@@ -25,6 +25,10 @@ final class ConsistWorkbookExporter
     private const SUMMARY_WIDTHS = [
         33.140625, 14.28515625, 15.0, 30.7109375, 25.85546875, 16.140625, 9.42578125,
     ];
+    private const SUMMARY_SIDE_WIDTHS = [
+        'I' => 18.0,
+        'J' => 28.7109375,
+    ];
 
     public function __construct(?string $formatReference = null)
     {
@@ -49,17 +53,17 @@ final class ConsistWorkbookExporter
         $versionSheet->setTitle('Version');
 
         $units = array_values((array) ($consist['units'] ?? []));
+        $finalRows = array_map(fn (array $unit): array => $this->finalRow($unit), $units);
         $this->writeValues(
             $consistSheet,
             ConsistDocumentBuilder::HEADERS,
-            array_map(static fn (array $unit): array => array_values((array) ($unit['final_data_json'] ?? $unit['final_columns'] ?? [])), $units),
+            array_map('array_values', $finalRows),
         );
-        $summary = $this->summary($units);
+        [$summary, $summaryWarnings] = $this->summary($finalRows);
         $this->writeValues($summarySheet, self::summaryHeaders(), $summary);
-        $operationalSummary = (array) ($consist['operational_summary'] ?? []);
         $this->copyFormat($consistSheet, self::CONSIST_WIDTHS, count($units) + 1, 'ConsistTable');
         $this->copyFormat($summarySheet, self::SUMMARY_WIDTHS, count($summary) + 1, 'SummaryTable');
-        $this->writeOperationalSummary($summarySheet, $operationalSummary);
+        $this->writeStaticSummaries($summarySheet, $summary);
 
         foreach ([
             ['Versión', 'Detalles', 'Fecha'],
@@ -73,6 +77,14 @@ final class ConsistWorkbookExporter
                 );
             }
         }
+        $versionSheet->getColumnDimension('A')->setWidth(9.140625);
+        $versionSheet->getColumnDimension('B')->setWidth(68.0);
+        $versionSheet->getColumnDimension('C')->setWidth(11.85546875);
+        $versionSheet->getStyle('A1:C2')->getFont()->setName('Verdana')->setSize(10);
+        $versionSheet->getStyle('A1:C1')->getFont()->setBold(true);
+        $versionSheet->getStyle('A1:C1')->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
         $versionSheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
         $book->setActiveSheetIndex(0);
 
@@ -87,7 +99,8 @@ final class ConsistWorkbookExporter
             'sha256' => hash_file('sha256', $path),
             'total_units' => count($units),
             'total_summary_rows' => count($summary),
-            'operational_summary' => $operationalSummary,
+            'operational_summary' => (array) ($consist['operational_summary'] ?? []),
+            'summary_warnings' => $summaryWarnings,
         ];
     }
 
@@ -96,20 +109,32 @@ final class ConsistWorkbookExporter
         return ['fdTransportationName1', 'Carrier', 'fdTrack', 'fdDestinationLocation', 'Cruce', 'Shippers', 'UT'];
     }
 
-    private function summary(array $units): array
+    private function finalRow(array $unit): array
     {
-        $frequency = [];
-        foreach ($units as $unit) {
-            $vin = (string) ($unit['vin'] ?? '');
-            $frequency[$vin] = ($frequency[$vin] ?? 0) + 1;
+        $source = (array) ($unit['final_data_json'] ?? $unit['final_columns'] ?? []);
+        if (array_is_list($source)) {
+            $source = array_combine(
+                ConsistDocumentBuilder::HEADERS,
+                array_pad(array_slice($source, 0, count(ConsistDocumentBuilder::HEADERS)), count(ConsistDocumentBuilder::HEADERS), ''),
+            );
         }
+
+        $row = [];
+        foreach (ConsistDocumentBuilder::HEADERS as $header) {
+            $row[$header] = $source[$header] ?? '';
+        }
+        return $row;
+    }
+
+    private function summary(array $finalRows): array
+    {
         $platforms = [];
-        foreach ($units as $unit) {
-            if (($frequency[(string) ($unit['vin'] ?? '')] ?? 0) !== 1) {
-                continue;
+        $warnings = [];
+        foreach ($finalRows as $row) {
+            $platform = trim((string) ($row['fdTransportationName1'] ?? ''));
+            if ($platform === '') {
+                throw new RuntimeException('El Consist contiene una unidad sin plataforma y no puede exportarse.');
             }
-            $row = (array) ($unit['final_data_json'] ?? $unit['final_columns'] ?? []);
-            $platform = (string) ($row['fdTransportationName1'] ?? '');
             if (!isset($platforms[$platform])) {
                 $platforms[$platform] = [
                     $platform,
@@ -120,10 +145,34 @@ final class ConsistWorkbookExporter
                     (string) ($row['Shipper'] ?? ''),
                     0,
                 ];
+            } else {
+                $fields = ['Carrier', 'fdTrack', 'fdDestinationLocation', 'Cruce', 'Shipper'];
+                foreach ($fields as $index => $field) {
+                    $firstValue = (string) $platforms[$platform][$index + 1];
+                    $currentValue = (string) ($row[$field] ?? '');
+                    if ($currentValue !== $firstValue) {
+                        $warnings[$platform][$field] ??= [
+                            'first_value' => $firstValue,
+                            'other_values' => [],
+                        ];
+                        if (!in_array($currentValue, $warnings[$platform][$field]['other_values'], true)) {
+                            $warnings[$platform][$field]['other_values'][] = $currentValue;
+                        }
+                    }
+                }
             }
             $platforms[$platform][6]++;
         }
-        return array_values($platforms);
+        $structuredWarnings = [];
+        foreach ($warnings as $platform => $fields) {
+            $structuredWarnings[] = [
+                'type' => 'summary_platform_conflicting_values',
+                'platform' => $platform,
+                'selected_rule' => 'first_consist_row',
+                'fields' => $fields,
+            ];
+        }
+        return [array_values($platforms), $structuredWarnings];
     }
 
     private function writeValues(Worksheet $sheet, array $headers, array $rows): void
@@ -133,7 +182,8 @@ final class ConsistWorkbookExporter
         }
         foreach ($rows as $rowIndex => $row) {
             foreach (array_values($row) as $columnIndex => $value) {
-                $type = ($headers[$columnIndex] ?? '') === 'fdwholevin'
+                $header = (string) ($headers[$columnIndex] ?? '');
+                $type = in_array($header, ['fdwholevin', 'Route Code', 'CNACS-Pedimento'], true)
                     ? DataType::TYPE_STRING
                     : (is_numeric($value) && !preg_match('/^0\d+$/', (string) $value)
                     ? DataType::TYPE_NUMERIC
@@ -143,22 +193,77 @@ final class ConsistWorkbookExporter
         }
     }
 
-    private function writeOperationalSummary(Worksheet $sheet, array $summary): void
+    private function writeStaticSummaries(Worksheet $sheet, array $platformRows): void
     {
-        $metrics = [
-            'Plataformas Pendientes de Confirmar' => (int) ($summary['pending_platforms'] ?? 0),
-            'Plataformas Confirmadas' => (int) ($summary['confirmed_platforms'] ?? 0),
-            'Total de Plataformas Cargadas' => (int) ($summary['total_loaded_platforms'] ?? 0),
-        ];
-        $row = 1;
-        foreach ($metrics as $label => $value) {
+        $destinationCounts = $this->counts($platformRows, 3, true, false);
+        $crossingCounts = $this->counts($platformRows, 4, false, true);
+
+        $destinationEnd = $this->writeStaticSummary(
+            $sheet,
+            1,
+            'Row Labels',
+            'Cuenta de fdTransportationName1',
+            $destinationCounts,
+            count($platformRows),
+        );
+        $this->writeStaticSummary(
+            $sheet,
+            $destinationEnd + 3,
+            'Row Labels',
+            'Cantidad de plataformas',
+            $crossingCounts,
+            count($platformRows),
+        );
+        foreach (self::SUMMARY_SIDE_WIDTHS as $column => $width) {
+            $sheet->getColumnDimension($column)->setWidth($width);
+        }
+    }
+
+    private function counts(array $rows, int $column, bool $sortAscending, bool $includeBlank): array
+    {
+        $counts = $includeBlank ? ['(en blanco)' => 0] : [];
+        foreach ($rows as $row) {
+            $label = trim((string) ($row[$column] ?? ''));
+            $label = $label === '' ? '(en blanco)' : $label;
+            $counts[$label] = ($counts[$label] ?? 0) + 1;
+        }
+        if ($sortAscending) {
+            uksort($counts, static fn (string $left, string $right): int => strnatcasecmp($left, $right));
+        }
+        return $counts;
+    }
+
+    private function writeStaticSummary(
+        Worksheet $sheet,
+        int $startRow,
+        string $labelHeader,
+        string $countHeader,
+        array $counts,
+        int $total,
+    ): int {
+        $sheet->setCellValueExplicit([9, $startRow], $labelHeader, DataType::TYPE_STRING);
+        $sheet->setCellValueExplicit([10, $startRow], $countHeader, DataType::TYPE_STRING);
+        $sheet->getStyle("I{$startRow}:J{$startRow}")->getFont()->setName('Calibri')->setSize(10);
+        $sheet->getStyle("I{$startRow}:J{$startRow}")->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+
+        $row = $startRow + 1;
+        foreach ($counts as $label => $count) {
             $sheet->setCellValueExplicit([9, $row], $label, DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit([10, $row], $value, DataType::TYPE_NUMERIC);
+            $sheet->setCellValueExplicit([10, $row], $count, DataType::TYPE_NUMERIC);
             $row++;
         }
-        $sheet->getColumnDimension('I')->setWidth(38);
-        $sheet->getColumnDimension('J')->setWidth(14);
-        $sheet->getStyle('I1:I3')->getFont()->setBold(true);
+        $sheet->setCellValueExplicit([9, $row], 'Total general', DataType::TYPE_STRING);
+        $sheet->setCellValueExplicit([10, $row], $total, DataType::TYPE_NUMERIC);
+        $sheet->getStyle("I" . ($startRow + 1) . ":J{$row}")->getFont()->setName('Calibri')->setSize(10);
+        $sheet->getStyle("I" . ($startRow + 1) . ":I{$row}")->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle("J" . ($startRow + 1) . ":J{$row}")->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+        return $row;
     }
 
     private function copyFormat(

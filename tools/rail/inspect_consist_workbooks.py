@@ -147,6 +147,9 @@ def inspect(path: Path) -> dict:
                     "formula_patterns": [],
                     "candidate_headers": [],
                     "merged_ranges": [],
+                    "auto_filter": None,
+                    "column_widths": {},
+                    "key_style_ids": {},
                 }
                 if root is not None:
                     dimension = root.find("m:dimension", NS)
@@ -180,6 +183,19 @@ def inspect(path: Path) -> dict:
                     merges = root.find("m:mergeCells", NS)
                     if merges is not None:
                         info["merged_ranges"] = [item.get("ref") for item in merges][:100]
+                    auto_filter = root.find("m:autoFilter", NS)
+                    if auto_filter is not None:
+                        info["auto_filter"] = auto_filter.get("ref")
+                    columns = root.find("m:cols", NS)
+                    if columns is not None:
+                        for column in columns.findall("m:col", NS):
+                            info["column_widths"][
+                                f"{column.get('min')}:{column.get('max')}"
+                            ] = column.get("width")
+                    for reference in ("A1", "A2", "G1", "G2", "I1", "I2", "J1", "J2"):
+                        cell = root.find(f".//m:c[@r='{reference}']", NS)
+                        if cell is not None:
+                            info["key_style_ids"][reference] = cell.get("s", "0")
                 result["sheets"].append(info)
 
         result["tables"] = []

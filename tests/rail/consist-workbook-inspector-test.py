@@ -10,6 +10,7 @@ from tools.rail.inspect_consist_workbooks import inspect  # noqa: E402
 def main() -> int:
     references = ROOT / "docs" / "rail" / "consist" / "referencias"
     template = inspect(references / "Plantilla_Consist.xlsm")
+    official = inspect(references / "Consist Rail del 29 al 30 de Julio de 2026.xlsx")
     master = inspect(references / "vascor_sm_db.xlsx")
 
     assert template["zip_valid"] is True
@@ -24,6 +25,17 @@ def main() -> int:
     ]
     assert template["parts"]["vba"] is True
     assert len(template["parts"]["pivot_tables"]) == 16
+
+    assert official["sha256"] == "50d3557f9c0c95f5d8555f7b373fa424ef7544d27a5b276ad400b2d692ffa4d6"
+    assert [sheet["name"] for sheet in official["sheets"]] == ["Consist", "Summary", "Version"]
+    assert [sheet["state"] for sheet in official["sheets"]] == ["visible", "visible", "hidden"]
+    assert official["sheets"][0]["column_widths"]["1:1"] == "29.42578125"
+    assert official["sheets"][1]["column_widths"]["1:1"] == "33.140625"
+    assert official["sheets"][2]["column_widths"]["2:2"] == "68"
+    assert official["tables"][0]["ref"] == "A1:N438"
+    assert official["tables"][1]["ref"] == "A1:G56"
+    assert official["sheets"][0]["formula_count"] == 0
+    assert official["sheets"][1]["formula_count"] == 0
 
     assert master["zip_valid"] is True
     assert master["sha256"] == "42640d6baf5de85a151c38ea6d1234d5f8a0948bb605e2e173d7a60b5bf9972e"

@@ -8,6 +8,7 @@ $catalogMigration = (string) file_get_contents($root . '/database/migrations/202
 $summaryMigration = (string) file_get_contents($root . '/database/migrations/20260731_018_add_rail_consist_operational_summary.sql');
 $officialCatalogMigration = (string) file_get_contents($root . '/database/migrations/20260731_019_seed_official_rail_route_catalog.sql');
 $repository = (string) file_get_contents($root . '/app/Repositories/Rail/ConsistRepository.php');
+$workflow = (string) file_get_contents($root . '/app/Services/Rail/Consist/ConsistWorkflowService.php');
 $controller = (string) file_get_contents($root . '/app/Controllers/Rail/RailController.php');
 $passed = 0;
 $failed = 0;
@@ -73,6 +74,10 @@ $test('advertencias de resolución reutilizan issues, trace y auditoría general
     && str_contains($repository, 'route_code_resolution')
     && str_contains($repository, "'trace' => \$this->json(\$unit['trace'])")
     && str_contains($repository, "'issues' => \$this->json(\$unit['issues'])"));
+
+$test('contradicciones de Summary quedan en auditoría y no en el XLSX',
+    str_contains($workflow, "(array) (\$result['summary_warnings'] ?? [])")
+    && str_contains($repository, "'summary_warnings' => \$summaryWarnings"));
 
 echo "\nResumen Consist Persistence Contract: {$passed} PASS, {$failed} FAIL\n";
 exit($failed === 0 ? 0 : 1);

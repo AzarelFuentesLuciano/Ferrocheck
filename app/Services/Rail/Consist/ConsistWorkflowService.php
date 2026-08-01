@@ -48,7 +48,13 @@ final class ConsistWorkflowService
         $result = $this->exporter->export($consist, $this->exportDirectory);
         try {
             $result['validation'] = $this->exportValidator->validate($result['path']);
-            $this->repository->recordExport($id, $user->id, (string) $result['sha256'], (string) $result['filename']);
+            $this->repository->recordExport(
+                $id,
+                $user->id,
+                (string) $result['sha256'],
+                (string) $result['filename'],
+                (array) ($result['summary_warnings'] ?? []),
+            );
         } catch (\Throwable $exception) {
             if (is_file((string) $result['path'])) {
                 unlink((string) $result['path']);

@@ -176,9 +176,15 @@ class ConsistRepository
         ];
     }
 
-    public function recordExport(int $id, int $actorId, string $sha256, string $filename): void
+    public function recordExport(
+        int $id,
+        int $actorId,
+        string $sha256,
+        string $filename,
+        array $summaryWarnings = [],
+    ): void
     {
-        $this->transaction(function () use ($id, $actorId, $sha256, $filename): void {
+        $this->transaction(function () use ($id, $actorId, $sha256, $filename, $summaryWarnings): void {
             $statement = $this->pdo->prepare(
                 'UPDATE rail_consists
                  SET exported_at=CURRENT_TIMESTAMP(6),exported_by=:actor,export_sha256=:sha WHERE id=:id'
@@ -194,7 +200,11 @@ class ConsistRepository
             $audit->execute([
                 'actor' => $actorId,
                 'id' => $id,
-                'value' => $this->json(['filename' => $filename, 'sha256' => $sha256]),
+                'value' => $this->json(array_filter([
+                    'filename' => $filename,
+                    'sha256' => $sha256,
+                    'summary_warnings' => $summaryWarnings,
+                ], static fn (mixed $value): bool => $value !== [])),
             ]);
         });
     }
